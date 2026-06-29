@@ -28,7 +28,10 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
     return DoubleBackToExit(
       child: Scaffold(
         body: IndexedStack(index: _currentIndex, children: _screens),
-        floatingActionButton: ,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          child: Icon(Icons.add),
+        ),
         bottomNavigationBar: Material(
           elevation: 8,
           child: BottomNavigationBar(
@@ -57,7 +60,6 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
                 label: 'Reports',
               ),
             ],
-            
           ),
         ),
       ),
