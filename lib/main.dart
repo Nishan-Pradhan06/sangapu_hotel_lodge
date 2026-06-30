@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sangapu/features/global_page/bottom_nav_bar.dart';
+import 'core/theme/app_theme.dart';
+import 'routers/app_router.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,11 +12,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Sangapu Hotel and Lodge',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: BottomNavBarPage(),
+      theme:AppTheme.light,
+      routerConfig: appRoute,
     );
   }
 }
