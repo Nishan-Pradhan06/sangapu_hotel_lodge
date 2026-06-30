@@ -56,7 +56,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
                 label: 'Monthly',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.report_rounded),
+                icon: Icon(Icons.analytics_rounded),
                 label: 'Reports',
               ),
             ],
