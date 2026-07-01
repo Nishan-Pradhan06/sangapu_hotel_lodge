@@ -21,47 +21,49 @@ class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Create Room Entry')),
-      body: CustomPadding(
-        child: Column(
-          spacing: 10,
-          children: [
-            CustomContainer(
-              borderRadius: BorderRadius.circular(10),
-              useIntrinsicHeight: true,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'DATE OF ENTRY',
-                    style: TextTheme.of(context).titleMedium,
-                  ),
-                  Text(
-                    'Wednesday, July 1, 2026',
-                    style: TextTheme.of(context).titleLarge,
-                  ),
+      body: SingleChildScrollView(
+        child: CustomPadding(
+          child: Column(
+            spacing: 10,
+            children: [
+              CustomContainer(
+                borderRadius: BorderRadius.circular(10),
+                useIntrinsicHeight: true,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'DATE OF ENTRY',
+                      style: TextTheme.of(context).titleMedium,
+                    ),
+                    Text(
+                      'Wednesday, July 1, 2026',
+                      style: TextTheme.of(context).titleLarge,
+                    ),
+                  ],
+                ),
+              ),
+              CustomTextField(
+                label: 'Regular Price',
+                type: CustomTextFieldType.dropdown,
+                controller: _regularPriceController,
+                dropdownItems: [
+                  'Rs. 800',
+                  'Rs. 900',
+                  'Rs. 1000',
+                  'Rs. 1100',
+                  'Rs. 1200',
                 ],
               ),
-            ),
-            CustomTextField(
-              label: 'Regular Price',
-              type: CustomTextFieldType.dropdown,
-              controller: _regularPriceController,
-              dropdownItems: [
-                'Rs. 800',
-                'Rs. 900',
-                'Rs. 1000',
-                'Rs. 1100',
-                'Rs. 1200',
-              ],
-            ),
-            CustomTextField(
-              controller: _customPriceController,
-              label: 'Enter Custom Amount',
-              type: CustomTextFieldType.number,
-              keyboardType: TextInputType.numberWithOptions(),
-            ),
-            CustomTextField(label: 'Additional Notes', maxLines: 8),
-          ],
+              CustomTextField(
+                controller: _customPriceController,
+                label: 'Enter Custom Amount',
+                type: CustomTextFieldType.number,
+                keyboardType: TextInputType.numberWithOptions(),
+              ),
+              CustomTextField(label: 'Additional Notes', maxLines: 8),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: CustomPadding(
