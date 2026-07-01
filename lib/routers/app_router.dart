@@ -11,7 +11,7 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>(
 
 final appRoute = GoRouter(
   navigatorKey: rootNavigatorKey,
-  initialLocation: AppRoutesName.reportOverviewPage.path,
+  initialLocation: AppRoutesName.bottomNavRoutePage.path,
   routes: [
     // ...authRoutes.map((r) => _wrapWithTransition(r)),
     ...globalAppRoutes.map((r) => _wrapWithTransition(r)),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/widgets/double_press_to_exit.dart';
-import '../home/pages/home_screen.dart';
+import '../reports/pages/report_overview_page.dart';
 
 class BottomNavBarPage extends StatefulWidget {
   const BottomNavBarPage({super.key});
@@ -12,7 +12,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    HomeScreen(),
+    ReportOverviewPage(),
     Text('Home'),
     Text('Home'),
     Text('Home'),

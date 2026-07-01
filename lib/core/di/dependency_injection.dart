@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:retry/retry.dart';
-
-import '../network/api_services.dart';
+import 'package:get_it/get_it.dart';
 import '../network/dio_client.dart';
 import '../services/once_cache_service.dart';
 
