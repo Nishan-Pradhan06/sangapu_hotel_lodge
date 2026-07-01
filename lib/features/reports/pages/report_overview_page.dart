@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sangapu/core/widgets/custom_container.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class ReportOverviewPage extends StatelessWidget {
+  const ReportOverviewPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,11 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Column(children: [Text('Hello')]),
+      body: Column(
+        children: [
+          CustomContainer(child: Column())
+        ],
+      ),
     );
   }
 }

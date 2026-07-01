@@ -1,14 +1,12 @@
 class AppRoutesName {
   //#---------------GLOBAL ROUTES NANE--------------##
   static const String splashScreenRoute = 'splashScreenRoute';
-  static const String gettingStartingPageRoute = 'gettingStartingPageRoute';
-  static const String bottomNavRoutePage = 'learnerBottomNavRoutePage';
+  static const String bottomNavRoutePage = 'bottomNavRoutePage';
 
   //#---------------AUTH ROUTES NANE--------------##
   static const String loginScreenRoute = 'loginScreenRoute';
   static const String signupScreenRoute = 'signupScreenRoute';
-  static const String verifyEmailScreenRoute = 'verifyEmailScreenRoute';
 
   //#---------------PAGE ROUTES ROUTES NANE--------------##
-  static const String learnerHomePage = 'learnerHomePage';
+  static const String reportOverviewPage = 'reportOverviewPage';
 }
