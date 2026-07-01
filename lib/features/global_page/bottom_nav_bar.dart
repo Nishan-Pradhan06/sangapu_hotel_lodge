@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sangapu/routers/app_routes_names.dart';
 import '../../core/widgets/double_press_to_exit.dart';
 import '../reports/pages/report_overview_page.dart';
 
@@ -29,7 +31,9 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
       child: Scaffold(
         body: IndexedStack(index: _currentIndex, children: _screens),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            context.pushNamed(AppRoutesName.createRoomEntryPage);
+          },
           child: Icon(Icons.add),
         ),
         bottomNavigationBar: Material(

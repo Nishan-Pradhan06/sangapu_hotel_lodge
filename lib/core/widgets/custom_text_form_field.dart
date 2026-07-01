@@ -227,13 +227,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
           : OutlineInputBorder(
               borderRadius: BorderRadius.circular(widget.borderRadius),
               borderSide: BorderSide(
-                color: widget.borderColor ?? Colors.blue,
+                color: widget.borderColor ?? ColorScheme.of(context).primary,
                 width: 2,
               ),
             ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(widget.borderRadius),
-        borderSide: const BorderSide(color: Colors.red),
+        borderSide: BorderSide(color: ColorScheme.of(context).error),
       ),
       disabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(widget.borderRadius),

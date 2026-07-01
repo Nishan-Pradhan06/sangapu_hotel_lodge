@@ -9,4 +9,5 @@ class AppRoutesName {
 
   //#---------------PAGE ROUTES ROUTES NANE--------------##
   static const String reportOverviewPage = 'reportOverviewPage';
+  static const String createRoomEntryPage = 'createRoomEntryPage';
 }
