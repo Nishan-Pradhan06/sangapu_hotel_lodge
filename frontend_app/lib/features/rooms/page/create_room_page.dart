@@ -13,7 +13,7 @@ class CreateRoomEntryPage extends StatefulWidget {
 
 class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
   final _regularPriceController = TextEditingController(
-    text: 'Select s standard rate',
+    text: 'Select a standard rate',
   );
   final _customPriceController = TextEditingController();
 
