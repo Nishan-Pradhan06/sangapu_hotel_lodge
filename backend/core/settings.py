@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-egdcer60%=j9c7^j6yxetze_ou3mo4mtu+m%b$5@o&&33@b*4)
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    "sangapu_hotel_lodge.onrender.com",
+    "http://127.0.0.1:8000/", "https://sangapu-hotel-lodge.onrender.com",
 ]
 
 
