@@ -52,26 +52,42 @@ class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
                     ],
                   ),
                 ),
-                // CustomTextField(
-                //   label: 'Regular Price',
-                //   type: CustomTextFieldType.dropdown,
-                //   controller: _regularPriceController,
-                //   dropdownItems: [
-                //     'Select a standard rate',
-                //     'Rs. 800',
-                //     'Rs. 900',
-                //     'Rs. 1000',
-                //     'Rs. 1100',
-                //     'Rs. 1200',
-                //   ],
-                //   hint: 'Select a standard rate',
-                // ),
+                CustomTextField(
+                  key: ValueKey(
+                    'dropdown_${_customPriceController.text.isNotEmpty}_${_regularPriceController.text}',
+                  ),
+                  label: 'Regular Price',
+                  type: CustomTextFieldType.dropdown,
+                  controller: _regularPriceController,
+                  enabled: _customPriceController.text.isEmpty,
+                  dropdownItems: const [
+                    'Select a standard rate',
+                    'Rs. 800',
+                    'Rs. 900',
+                    'Rs. 1000',
+                    'Rs. 1100',
+                    'Rs. 1200',
+                  ],
+                  hint: 'Select a standard rate',
+                  onDropdownChanged: (value) {
+                    if (value != 'Select a standard rate' && value != null) {
+                      _customPriceController.clear();
+                      setState(() {});
+                    }
+                  },
+                ),
                 CustomTextField(
                   controller: _customPriceController,
                   label: 'Enter Custom Amount',
                   hint: '0.00',
                   type: CustomTextFieldType.number,
-                  keyboardType: TextInputType.numberWithOptions(),
+                  keyboardType: const TextInputType.numberWithOptions(),
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      _regularPriceController.text = 'Select a standard rate';
+                    }
+                    setState(() {});
+                  },
                 ),
                 CustomTextField(
                   label: 'Additional Notes',
@@ -109,8 +125,20 @@ class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
                 text: 'Save',
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
+                    int? parsedFixedPrice;
+                    if (_regularPriceController.text !=
+                            'Select a standard rate' &&
+                        _regularPriceController.text.isNotEmpty) {
+                      final match = RegExp(
+                        r'\d+',
+                      ).firstMatch(_regularPriceController.text);
+                      if (match != null) {
+                        parsedFixedPrice = int.tryParse(match.group(0)!);
+                      }
+                    }
+
                     final roomEntryModel = RoomEntryModel(
-                      // fixedPrice: int.parse(_regularPriceController.text),
+                      fixedPrice: parsedFixedPrice,
                       customPrice: _customPriceController.text,
                       additionalNotes: _additionalNotesController.text,
                       nepaliDate: DateHelper.nepaliDate(),
