@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/widgets/double_press_to_exit.dart';
 import '../reports/pages/report_overview_page.dart';
+import '../statements/pages/statements_page.dart';
 
 class BottomNavBarPage extends StatefulWidget {
   const BottomNavBarPage({super.key});
@@ -16,7 +17,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
     ReportOverviewPage(),
     Text('Home'),
     Text('Home'),
-    Text('Home'),
+    StatementPage(),
   ];
 
   @override
@@ -28,6 +29,8 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
   Widget build(BuildContext context) {
     return DoubleBackToExit(
       child: Scaffold(
+        backgroundColor: ColorScheme.of(context).surface,
+
         body: IndexedStack(index: _currentIndex, children: _screens),
 
         bottomNavigationBar: Material(

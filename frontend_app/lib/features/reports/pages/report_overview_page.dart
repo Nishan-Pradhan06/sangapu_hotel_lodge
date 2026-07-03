@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/helpers/nepali_date_helper.dart';
 import '../../../core/widgets/custom_padding.dart';
 import '../widgets/earning_cards.dart';
 import 'package:go_router/go_router.dart';
@@ -8,15 +9,20 @@ class ReportOverviewPage extends StatelessWidget {
   const ReportOverviewPage({super.key});
 
   @override
-  
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('SHANGAPU HOTEL & LODGE'),
-            Text('Monday, June 29, 2016', style: TextStyle(fontSize: 16)),
+            Text(
+              'SHANGAPU HOTEL & LODGE',
+              style: TextTheme.of(context).titleLarge,
+            ),
+            Text(
+              DateHelper.nepaliDate(),
+              style: TextTheme.of(context).bodySmall,
+            ),
           ],
         ),
       ),
@@ -42,7 +48,7 @@ class ReportOverviewPage extends StatelessWidget {
           ],
         ),
       ),
-       floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.pushNamed(AppRoutesName.createRoomEntryPage);
         },
