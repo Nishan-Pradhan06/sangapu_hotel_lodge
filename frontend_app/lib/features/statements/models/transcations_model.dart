@@ -25,9 +25,9 @@ class TransactionResponse {
 }
 
 class Summarymodel {
-  final int totalIncome;
-  final int totalExpenses;
-  final int netBalance;
+  final double totalIncome;
+  final double totalExpenses;
+  final double netBalance;
   final int totalRecords;
 
   Summarymodel({
@@ -39,10 +39,10 @@ class Summarymodel {
 
   factory Summarymodel.fromJson(Map<String, dynamic> json) {
     return Summarymodel(
-      totalIncome: json['total_income'] ?? 0,
-      totalExpenses: json['total_expenses'] ?? 0,
-      netBalance: json['net_balance'] ?? 0,
-      totalRecords: json['total_records'] ?? 0,
+      totalIncome: (json['total_income'] as num?)?.toDouble() ?? 0.0,
+      totalExpenses: (json['total_expenses'] as num?)?.toDouble() ?? 0.0,
+      netBalance: (json['net_balance'] as num?)?.toDouble() ?? 0.0,
+      totalRecords: (json['total_records'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -60,7 +60,7 @@ class TransactionModel {
   final int id;
   final String type;
   final String category;
-  final int amount;
+  final double amount;
   final String remarks;
   final String nepaliDate;
   final DateTime createdAt;
@@ -77,13 +77,13 @@ class TransactionModel {
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
     return TransactionModel(
-      id: json['id'],
+      id: (json['id'] as num?)?.toInt() ?? 0,
       type: json['type'] ?? '',
       category: json['category'] ?? '',
-      amount: json['amount'] ?? 0,
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
       remarks: json['remarks'] ?? '',
       nepaliDate: json['nepali_date'] ?? '',
-      createdAt: DateTime.parse(json['created_at']),
+      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ?? DateTime.now(),
     );
   }
 

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/widgets/double_press_to_exit.dart';
 import '../reports/pages/report_overview_page.dart';
+import '../statements/bloc/statements_bloc.dart';
 import '../statements/pages/statements_page.dart';
 
 class BottomNavBarPage extends StatefulWidget {
@@ -22,6 +24,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
 
   @override
   void initState() {
+    context.read<StatementsBloc>().add(const StatementsEvent.getStatement());
     super.initState();
   }
 

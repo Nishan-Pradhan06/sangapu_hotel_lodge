@@ -1,11 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/custom_padding.dart';
+import '../bloc/statements_bloc.dart';
 import '../widgets/filter_chip.dart';
 import '../widgets/transcation_tile.dart';
 
-class StatementPage extends StatelessWidget {
+class StatementPage extends StatefulWidget {
   const StatementPage({super.key});
+
+  @override
+  State<StatementPage> createState() => _StatementPageState();
+}
+
+class _StatementPageState extends State<StatementPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<StatementsBloc>().add(const StatementsEvent.getStatement());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,168 +27,113 @@ class StatementPage extends StatelessWidget {
     final textTheme = theme.textTheme;
 
     // Semantic amount colors sourced from AppTheme, not hardcoded here.
-    final positiveColor = AppTheme.success;
     final negativeColor = colorScheme.error;
+    final positiveColor = AppTheme.success;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('View Statement', style: textTheme.titleLarge),
         actions: [
-          Icon(Icons.download_outlined, color: colorScheme.onSurface, size: 24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Icon(
+              Icons.download_outlined,
+              color: colorScheme.onSurface,
+              size: 24,
+            ),
+          ),
         ],
       ),
       body: SafeArea(
-        child: CustomPadding(
-          horizontal: 4,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        child: RefreshIndicator.adaptive(
+          onRefresh: () {
+            context.read<StatementsBloc>().add(
+              const StatementsEvent.getStatement(),
+            );
+            return Future.value();
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: CustomPadding(
+              horizontal: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(width: 8),
-                  FilterChipWidget(
-                    label: "Date",
-                    color: colorScheme.outline,
-                    textColor: colorScheme.onSurface,
+                  Row(
+                    children: [
+                      const SizedBox(width: 8),
+                      FilterChipWidget(
+                        label: "Date",
+                        color: colorScheme.outline,
+                        textColor: colorScheme.onSurface,
+                      ),
+                      const SizedBox(width: 8),
+                      FilterChipWidget(
+                        label: "Money Movement",
+                        color: colorScheme.outline,
+                        textColor: colorScheme.onSurface,
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  FilterChipWidget(
-                    label: "Money Movement",
-                    color: colorScheme.outline,
-                    textColor: colorScheme.onSurface,
+                  const SizedBox(height: 16),
+                  BlocBuilder<StatementsBloc, StatementsState>(
+                    builder: (context, state) {
+                      return state.when(
+                        initial: () => SizedBox(),
+                        loading: () =>
+                            Center(child: CircularProgressIndicator.adaptive()),
+                        failure: (failure) => Text('Error: ${failure.message}'),
+                        loaded: (data) {
+                          return ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            shrinkWrap: true,
+                            itemCount: data.transactions.length,
+                            itemBuilder: (context, index) {
+                              final transaction = data.transactions[index];
+                              return Column(
+                                children: [
+                                  TransactionTile(
+                                    title: Text(
+                                      transaction.category,
+                                      style: textTheme.titleSmall,
+                                    ),
+                                    dateTime: Text(
+                                      transaction.nepaliDate,
+                                      style: textTheme.bodySmall,
+                                    ),
+                                    amount: Text(
+                                      "+ ${transaction.amount.toString()}",
+
+                                      style: textTheme.titleMedium?.copyWith(
+                                        color: transaction.type == 'Income'
+                                            ? positiveColor
+                                            : negativeColor,
+                                      ),
+                                    ),
+                                    balance: Text(
+                                      data.summary.netBalance.toString(),
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ),
+                                  Divider(
+                                    color: colorScheme.outline,
+                                    height: 32,
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  children: [
-                    TransactionTile(
-                      title: Text(
-                        "CIPS/Others: nishan/NEPALPAY QR ACCOUNT/ITAHARI NAMUNA COLLEGE /VIBOR",
-                        style: textTheme.titleSmall,
-                      ),
-                      dateTime: Text(
-                        "08:01 AM | 2 Jul 2026",
-                        style: textTheme.bodySmall,
-                      ),
-                      amount: Text(
-                        "-5,000.00",
-                        style: textTheme.titleMedium?.copyWith(
-                          color: negativeColor,
-                        ),
-                      ),
-                      balance: Text(
-                        "13,077.91",
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                    Divider(color: colorScheme.outline, height: 32),
-
-                    TransactionTile(
-                      title: Text(
-                        "Card 5th Installment Fee",
-                        style: textTheme.titleSmall,
-                      ),
-                      dateTime: Text(
-                        "08:57 PM | 1 Jul 2026",
-                        style: textTheme.bodySmall,
-                      ),
-                      amount: Text(
-                        "-400.00",
-                        style: textTheme.titleMedium?.copyWith(
-                          color: negativeColor,
-                        ),
-                      ),
-                      balance: Text(
-                        "18,077.91",
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                    Divider(color: colorScheme.outline, height: 32),
-
-                    TransactionTile(
-                      title: Text(
-                        "MOS::Professional Services",
-                        style: textTheme.titleSmall,
-                      ),
-                      dateTime: Text(
-                        "09:00 AM | 1 Jul 2026",
-                        style: textTheme.bodySmall,
-                      ),
-                      amount: Text(
-                        "-1,091.52",
-                        style: textTheme.titleMedium?.copyWith(
-                          color: negativeColor,
-                        ),
-                      ),
-                      balance: Text(
-                        "18,477.91",
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                    Divider(color: colorScheme.outline, height: 32),
-
-                    TransactionTile(
-                      title: Text(
-                        "LAW:1782875588504:GLBBNPKA",
-                        style: textTheme.titleSmall,
-                      ),
-                      dateTime: Text(
-                        "08:58 AM | 1 Jul 2026",
-                        style: textTheme.bodySmall,
-                      ),
-                      amount: Text(
-                        "+1,100.00",
-                        style: textTheme.titleMedium?.copyWith(
-                          color: positiveColor,
-                        ),
-                      ),
-                      balance: Text(
-                        "19,569.43",
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                    Divider(color: colorScheme.outline, height: 32),
-
-                    TransactionTile(
-                      title: Text(
-                        "CIPS/Others: khana /NEPALPAY QR ACCOUNT/ITAHARI NAMUNA COLLEGE /VIBOR",
-                        style: textTheme.titleSmall,
-                      ),
-                      dateTime: Text(
-                        "09:12 AM | 30 Jun 2026",
-                        style: textTheme.bodySmall,
-                      ),
-                      amount: Text(
-                        "-125.00",
-                        style: textTheme.titleMedium?.copyWith(
-                          color: negativeColor,
-                        ),
-                      ),
-                      balance: Text(
-                        "18,469.43",
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
