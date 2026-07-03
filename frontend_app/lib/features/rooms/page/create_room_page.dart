@@ -52,20 +52,20 @@ class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
                     ],
                   ),
                 ),
-                CustomTextField(
-                  label: 'Regular Price',
-                  type: CustomTextFieldType.dropdown,
-                  controller: _regularPriceController,
-                  dropdownItems: [
-                    'Select a standard rate',
-                    'Rs. 800',
-                    'Rs. 900',
-                    'Rs. 1000',
-                    'Rs. 1100',
-                    'Rs. 1200',
-                  ],
-                  hint: 'Select a standard rate',
-                ),
+                // CustomTextField(
+                //   label: 'Regular Price',
+                //   type: CustomTextFieldType.dropdown,
+                //   controller: _regularPriceController,
+                //   dropdownItems: [
+                //     'Select a standard rate',
+                //     'Rs. 800',
+                //     'Rs. 900',
+                //     'Rs. 1000',
+                //     'Rs. 1100',
+                //     'Rs. 1200',
+                //   ],
+                //   hint: 'Select a standard rate',
+                // ),
                 CustomTextField(
                   controller: _customPriceController,
                   label: 'Enter Custom Amount',
@@ -110,7 +110,7 @@ class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     final roomEntryModel = RoomEntryModel(
-                      fixedPrice: int.parse(_regularPriceController.text),
+                      // fixedPrice: int.parse(_regularPriceController.text),
                       customPrice: _customPriceController.text,
                       additionalNotes: _additionalNotesController.text,
                       nepaliDate: DateHelper.nepaliDate(),

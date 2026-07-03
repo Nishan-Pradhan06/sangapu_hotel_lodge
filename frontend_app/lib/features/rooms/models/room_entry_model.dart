@@ -1,12 +1,12 @@
 class RoomEntryModel {
-  final int fixedPrice;
-  final String customPrice;
+  final int? fixedPrice;
+  final String? customPrice;
   final String additionalNotes;
   final String nepaliDate;
 
   const RoomEntryModel({
-    required this.fixedPrice,
-    required this.customPrice,
+    this.fixedPrice,
+    this.customPrice,
     required this.additionalNotes,
     required this.nepaliDate,
   });
