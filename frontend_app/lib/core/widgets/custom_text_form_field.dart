@@ -120,13 +120,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
             items: widget.dropdownItems
                 ?.map((e) => DropdownMenuItem(value: e, child: Text(e)))
                 .toList(),
-            onChanged: (value) {
-              setState(() => _dropdownValue = value);
-              widget.onDropdownChanged?.call(value);
-              if (widget.controller != null && value != null) {
-                widget.controller!.text = value;
-              }
-            },
+            onChanged: widget.enabled
+                ? (value) {
+                    setState(() => _dropdownValue = value);
+                    widget.onDropdownChanged?.call(value);
+                    if (widget.controller != null && value != null) {
+                      widget.controller!.text = value;
+                    }
+                  }
+                : null,
             validator: widget.validator,
           ),
         ],
