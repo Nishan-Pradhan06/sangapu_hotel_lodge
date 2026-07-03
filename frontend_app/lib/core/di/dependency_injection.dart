@@ -3,6 +3,8 @@ import 'package:get_it/get_it.dart';
 import 'package:retry/retry.dart';
 import '../../features/auth/blocs/login/log_in_bloc.dart';
 import '../../features/auth/repository/auth_repository.dart';
+import '../../features/rooms/blocs/room_entry/room_entry_bloc.dart';
+import '../../features/rooms/repository/room_entry_repository.dart';
 import '../network/api_services.dart';
 import '../network/dio_client.dart';
 import '../services/once_cache_service.dart';
@@ -14,12 +16,16 @@ Future<void> setupServiceLocator() async {
 
   //###---------------AUTH BLOC---------------------###
   sl.registerLazySingleton(() => LogInBloc(repo: sl()));
+  sl.registerLazySingleton(() => RoomEntryBloc(repo: sl()));
 
   //###---------------CUBIT--------------------###
 
   //###---------------REPOSITORY---------------###
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(apiService: sl()),
+  );
+  sl.registerLazySingleton<RoomEntryRepository>(
+    () => RoomEntryRepositoryImpl(apiService: sl()),
   );
 
   //###---------------EXTERNAL REPOSITORY SERVICES---------------###
