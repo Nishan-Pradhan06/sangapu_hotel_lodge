@@ -14,11 +14,6 @@ class StatementPage extends StatefulWidget {
 }
 
 class _StatementPageState extends State<StatementPage> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<StatementsBloc>().add(const StatementsEvent.getStatement());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,8 +99,7 @@ class _StatementPageState extends State<StatementPage> {
                                       style: textTheme.bodySmall,
                                     ),
                                     amount: Text(
-                                      "+ ${transaction.amount.toString()}",
-
+                                      " ${transaction.type == 'Income' ? '+' : '-'} ${transaction.amount.toString()}",
                                       style: textTheme.titleMedium?.copyWith(
                                         color: transaction.type == 'Income'
                                             ? positiveColor
