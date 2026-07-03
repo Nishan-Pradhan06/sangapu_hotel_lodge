@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'core/init/app_initilizer.dart';
 import 'core/theme/app_theme.dart';
 import 'routers/app_router.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppInitializer.init();
   runApp(const MyApp());
 }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../common/extension/extension.dart';
 import 'app_routes_names.dart';
+import 'auth_route/auth_routes.dart';
 import 'global_route/global_routes.dart';
 import 'pages_route/pages_route.dart';
 
@@ -11,9 +12,9 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>(
 
 final appRoute = GoRouter(
   navigatorKey: rootNavigatorKey,
-  initialLocation: AppRoutesName.bottomNavRoutePage.path,
+  initialLocation: AppRoutesName.loginScreenRoute.path,
   routes: [
-    // ...authRoutes.map((r) => _wrapWithTransition(r)),
+    ...authRoutes.map((r) => _wrapWithTransition(r)),
     ...globalAppRoutes.map((r) => _wrapWithTransition(r)),
     ...pageAppRoutes.map((r) => _wrapWithTransition(r)),
   ],
