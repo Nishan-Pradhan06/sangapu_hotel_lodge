@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/widgets/custom_padding.dart';
 import '../widgets/earning_cards.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sangapu/routers/app_routes_names.dart';
 
 class ReportOverviewPage extends StatelessWidget {
   const ReportOverviewPage({super.key});
@@ -39,6 +41,12 @@ class ReportOverviewPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+       floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.pushNamed(AppRoutesName.createRoomEntryPage);
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
