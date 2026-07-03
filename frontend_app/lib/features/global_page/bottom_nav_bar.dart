@@ -52,16 +52,16 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_today_rounded),
-                label: 'Today',
+                icon: Icon(Icons.trending_up_rounded),
+                label: 'Income',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_month_rounded),
-                label: 'Monthly',
+                icon: Icon(Icons.trending_down_rounded),
+                label: 'Expenses',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.analytics_rounded),
-                label: 'Reports',
+                label: 'Statements',
               ),
             ],
           ),
