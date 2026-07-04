@@ -8,6 +8,6 @@ class AppRoutesName {
   static const String signupScreenRoute = 'signupScreenRoute';
 
   //#---------------PAGE ROUTES ROUTES NANE--------------##
-  static const String reportOverviewPage = 'reportOverviewPage';
+  static const String dashboardPage = 'dashboardPage';
   static const String createRoomEntryPage = 'createRoomEntryPage';
 }
