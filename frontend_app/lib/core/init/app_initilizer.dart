@@ -10,7 +10,7 @@ class AppInitializer {
     // Load .env
     await dotenv.load(fileName: '.env');
 
-    EnvConfig.initialize(Environment.production);
+    EnvConfig.initialize(Environment.development);
 
     log(EnvConfig.instance.apiBaseUrl);
 

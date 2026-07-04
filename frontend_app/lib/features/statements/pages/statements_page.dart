@@ -14,7 +14,6 @@ class StatementPage extends StatefulWidget {
 }
 
 class _StatementPageState extends State<StatementPage> {
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -91,7 +90,7 @@ class _StatementPageState extends State<StatementPage> {
                                 children: [
                                   TransactionTile(
                                     title: Text(
-                                      transaction.category,
+                                      "${transaction.category} | ${transaction.remarks}",
                                       style: textTheme.titleSmall,
                                     ),
                                     dateTime: Text(

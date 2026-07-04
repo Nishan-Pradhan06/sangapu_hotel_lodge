@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/widgets/double_press_to_exit.dart';
+import '../expenses/page/expenses_page.dart';
 import '../income/dashboard/page/dashboard.dart';
+import '../income/pages/income_page.dart';
 import '../statements/bloc/statements_bloc.dart';
 import '../statements/pages/statements_page.dart';
 
@@ -17,8 +19,8 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
 
   final List<Widget> _screens = [
     DashboardPage(),
-    Text('Home'),
-    Text('Home'),
+    IncomePage(),
+    ExpensesPage(),
     StatementPage(),
   ];
 
