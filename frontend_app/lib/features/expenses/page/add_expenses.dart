@@ -8,7 +8,10 @@ import '../../../core/widgets/custom_container.dart';
 import '../../../core/widgets/custom_padding.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
 import '../../../core/widgets/custom_toast.dart';
-import '../../rooms/blocs/room_entry/room_entry_bloc.dart';
+import '../../statements/bloc/statements_bloc.dart';
+import '../blocs/bloc/add_expenses_record_bloc.dart';
+import '../blocs/get_expenses/get_expenses_bloc.dart';
+import '../models/create_expenses.dart';
 
 class AddExpenses extends StatefulWidget {
   const AddExpenses({super.key});
@@ -19,10 +22,17 @@ class AddExpenses extends StatefulWidget {
 
 class _AddExpensesState extends State<AddExpenses> {
   final _formKey = GlobalKey<FormState>();
-
   final _expensesTypeController = TextEditingController();
-  final _otherExpensesTypeController = TextEditingController();
+  final _expensesAmountController = TextEditingController();
   final _remarkController = TextEditingController();
+
+  Map<String, String> expenseCategoryMap = {
+    'Electricity Bill': 'electricity',
+    'Staff Salary': 'staff_salary',
+    'Water Bill': 'water',
+    'Maintenance': 'maintenance',
+    'Others': 'others',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -56,38 +66,28 @@ class _AddExpensesState extends State<AddExpenses> {
                 ),
                 CustomTextField(
                   key: ValueKey(
-                    'dropdown_${_otherExpensesTypeController.text.isNotEmpty}_${_expensesTypeController.text}',
+                    'dropdown_${_expensesAmountController.text.isNotEmpty}_${_expensesTypeController.text}',
                   ),
                   label: 'Expense Type',
                   type: CustomTextFieldType.dropdown,
                   controller: _expensesTypeController,
-                  enabled: _otherExpensesTypeController.text.isEmpty,
+                  enabled: _expensesAmountController.text.isEmpty,
                   dropdownItems: const [
                     'Select a Expense Type',
                     'Electricity Bill',
                     'Staff Salary',
                     'Water Bill',
                     'Maintenance',
+                    'Others',
                   ],
                   hint: 'Select a Expense Type',
-                  onDropdownChanged: (value) {
-                    if (value != 'Select a Expense Type' && value != null) {
-                      _otherExpensesTypeController.clear();
-                      setState(() {});
-                    }
-                  },
                 ),
                 CustomTextField(
-                  controller: _otherExpensesTypeController,
-                  label: 'Other Expense Type',
-                  hint: 'Sapati, Internet, etc.',
-                  type: CustomTextFieldType.text,
-                  onChanged: (value) {
-                    if (value.isNotEmpty) {
-                      _expensesTypeController.text = 'Select a Expense Type';
-                    }
-                    setState(() {});
-                  },
+                  controller: _expensesAmountController,
+                  label: 'Expense Amount',
+                  hint: '0.00',
+                  type: CustomTextFieldType.number,
+                  keyboardType: TextInputType.numberWithOptions(),
                 ),
                 CustomTextField(
                   label: 'Remarks',
@@ -99,63 +99,63 @@ class _AddExpensesState extends State<AddExpenses> {
           ),
         ),
       ),
-      //   bottomNavigationBar: BlocConsumer<RoomEntryBloc, RoomEntryState>(
-      //     listener: (context, state) {
-      //       state.whenOrNull(
-      //         failure: (failure) {
-      //           CustomToast.showError(failure.message);
-      //         },
-      //         loaded: (data) {
-      //           CustomToast.showSuccess("Add Expenses Successfully");
-      //           context.read<StatementsBloc>().add(
-      //             const StatementsEvent.getStatement(),
-      //           );
-      //           context.pop();
-      //         },
-      //       );
-      //     },
-      //     builder: (context, state) {
-      //       final bool isLoading = state.maybeWhen(
-      //         loading: () => true,
-      //         orElse: () => false,
-      //       );
-      //       return CustomPadding(
-      //         child: SizedBox(
-      //           height: MediaQuery.heightOf(context) / 14,
-      //           child: CustomButton(
-      //             isLoading: isLoading,
-      //             isDisabled: isLoading,
-      //             text: 'Save',
-      //             onPressed: () {
-      //               if (_formKey.currentState!.validate()) {
-      //                 int? parsedFixedPrice;
-      //                 if (_regularPriceController.text !=
-      //                         'Select a standard rate' &&
-      //                     _regularPriceController.text.isNotEmpty) {
-      //                   final match = RegExp(
-      //                     r'\d+',
-      //                   ).firstMatch(_regularPriceController.text);
-      //                   if (match != null) {
-      //                     parsedFixedPrice = int.tryParse(match.group(0)!);
-      //                   }
-      //                 }
-
-      //                 final roomEntryModel = RoomEntryModel(
-      //                   fixedPrice: parsedFixedPrice,
-      //                   customPrice: _customPriceController.text,
-      //                   additionalNotes: _additionalNotesController.text,
-      //                   nepaliDate: DateHelper.nepaliDate(),
-      //                 );
-      //                 context.read<RoomEntryBloc>().add(
-      //                   RoomEntryEvent.roomEntry(roomEntryModel),
-      //                 );
-      //               }
-      //             },
-      //           ),
-      //         ),
-      //       );
-      //     },
-      //   ),
+      bottomNavigationBar:
+          BlocConsumer<AddExpensesRecordBloc, AddExpensesRecordState>(
+            listener: (context, state) {
+              state.whenOrNull(
+                failure: (failure) {
+                  CustomToast.showError(failure.message);
+                },
+                loaded: (data) {
+                  CustomToast.showSuccess("Add Expenses Successfully");
+                  context.read<GetExpensesBloc>().add(
+                    const GetExpensesEvent.getExpenses(),
+                  );
+                  context.read<StatementsBloc>().add(
+                    const StatementsEvent.getStatement(),
+                  );
+                  context.pop();
+                },
+              );
+            },
+            builder: (context, state) {
+              final bool isLoading = state.maybeWhen(
+                loading: () => true,
+                orElse: () => false,
+              );
+              return CustomPadding(
+                child: SizedBox(
+                  height: MediaQuery.heightOf(context) / 14,
+                  child: CustomButton(
+                    isLoading: isLoading,
+                    isDisabled: isLoading,
+                    text: 'Save',
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        context.read<AddExpensesRecordBloc>().add(
+                          AddExpensesRecordEvent.addExpensesRecord(
+                            ExpensesRecordModel(
+                              category:
+                                  expenseCategoryMap[_expensesTypeController
+                                      .text] ??
+                                  '',
+                              amount:
+                                  double.tryParse(
+                                    _expensesAmountController.text,
+                                  ) ??
+                                  0.0,
+                              remarks: _remarkController.text,
+                              nepaliDate: DateHelper.nepaliDate(),
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
     );
   }
 }

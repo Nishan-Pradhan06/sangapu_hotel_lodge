@@ -106,7 +106,8 @@ class _StatementPageState extends State<StatementPage> {
                                       ),
                                     ),
                                     balance: Text(
-                                      data.summary.netBalance.toString(),
+                                      // data.summary.netBalance.toString(),
+                                      "",
                                       style: textTheme.bodyMedium?.copyWith(
                                         color: colorScheme.onSurfaceVariant,
                                       ),

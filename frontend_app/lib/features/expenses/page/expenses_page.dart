@@ -59,73 +59,76 @@ class ExpensesPage extends StatelessWidget {
                         ),
                       );
                     }
-                    return ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: expenses.data.length,
-                      itemBuilder: (context, index) {
-                        final expense = expenses.data[index];
-                        return Column(
-                          children: [
-                            EarningsCard(
-                              title: 'Total Daily Expenses',
-                              amount:
-                                  "Rs ${expenses.summary.totalDailyExpenses.toString()}",
-                              backgroundColor: const Color(
-                                0xFF7e1a44,
-                              ).withValues(alpha: 0.9),
-                              subtitle: 'Total Record of a Day',
-                              icon: Icons.show_chart_rounded,
+                    return Column(
+                      children: [
+                        EarningsCard(
+                          title: 'Total Daily Expenses',
+                          amount:
+                              "Rs ${expenses.summary.totalDailyExpenses.toString()}",
+                          backgroundColor: const Color(
+                            0xFF7e1a44,
+                          ).withValues(alpha: 0.9),
+                          subtitle: 'Total Record of a Day',
+                          icon: Icons.show_chart_rounded,
+                        ),
+                        SizedBox(height: 16),
+                        EarningsCard(
+                          title: 'Total Monthly Expenses',
+                          amount:
+                              "Rs ${expenses.summary.totalMonthlyExpenses.toString()}",
+                          backgroundColor: const Color(
+                            0xFF7e1a44,
+                          ).withValues(alpha: 0.9),
+                          subtitle: 'Total Record of a Month',
+                          icon: Icons.show_chart_rounded,
+                        ),
+                        SizedBox(height: 16),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Expenses List',
+                            style: textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
-                            SizedBox(height: 16),
-                            EarningsCard(
-                              title: 'Total Monthly Expenses',
-                              amount:
-                                  "Rs ${expenses.summary.totalMonthlyExpenses.toString()}",
-                              backgroundColor: const Color(
-                                0xFF7e1a44,
-                              ).withValues(alpha: 0.9),
-                              subtitle: 'Total Record of a Month',
-                              icon: Icons.show_chart_rounded,
-                            ),
-                            SizedBox(height: 16),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Expenses List',
-                                style: textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: expenses.data.length,
+                          itemBuilder: (context, index) {
+                            final expense = expenses.data[index];
+                            return Column(
+                              children: [
+                                TransactionTile(
+                                  title: Text(
+                                    "${expense.category} | ${expense.remarks}",
+                                    style: textTheme.titleSmall,
+                                  ),
+                                  dateTime: Text(
+                                    expense.nepaliDate,
+                                    style: textTheme.bodySmall,
+                                  ),
+                                  amount: Text(
+                                    " -${expense.amount.toString()}",
+                                    style: textTheme.titleMedium?.copyWith(
+                                      color: negativeColor,
+                                    ),
+                                  ),
+                                  balance: Text(
+                                    "",
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            SizedBox(height: 16),
-
-                            TransactionTile(
-                              title: Text(
-                                "${expense.category} | ${expense.remarks}",
-                                style: textTheme.titleSmall,
-                              ),
-                              dateTime: Text(
-                                expense.nepaliDate,
-                                style: textTheme.bodySmall,
-                              ),
-                              amount: Text(
-                                " -${expense.amount.toString()}",
-                                style: textTheme.titleMedium?.copyWith(
-                                  color: negativeColor,
-                                ),
-                              ),
-                              balance: Text(
-                                "",
-                                style: textTheme.bodyMedium?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                            Divider(color: colorScheme.outline, height: 32),
-                          ],
-                        );
-                      },
+                                Divider(color: colorScheme.outline, height: 32),
+                              ],
+                            );
+                          },
+                        ),
+                      ],
                     );
                   },
                   failure: (failure) => Center(

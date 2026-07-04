@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:retry/retry.dart';
+import 'package:sangapu/features/expenses/blocs/bloc/add_expenses_record_bloc.dart';
 import 'package:sangapu/features/expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import '../../features/auth/blocs/login/log_in_bloc.dart';
 import '../../features/auth/repository/auth_repository.dart';
@@ -23,6 +24,7 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(() => RoomEntryBloc(repo: sl()));
   sl.registerLazySingleton(() => StatementsBloc(repo: sl()));
   sl.registerLazySingleton(() => GetExpensesBloc(repo: sl()));
+  sl.registerLazySingleton(() => AddExpensesRecordBloc(repo: sl()));
 
   //###---------------CUBIT--------------------###
 
