@@ -6,8 +6,10 @@ class ExpenseResponse {
 
   factory ExpenseResponse.fromJson(Map<String, dynamic> json) {
     return ExpenseResponse(
-      summary: Summary.fromJson(json['summary']),
-      data: (json['data'] as List).map((e) => Expense.fromJson(e)).toList(),
+      summary: Summary.fromJson(json['summary'] as Map<String, dynamic>),
+      data: (json['data'] as List<dynamic>)
+          .map((e) => Expense.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -20,8 +22,8 @@ class ExpenseResponse {
 }
 
 class Summary {
-  final int totalDailyExpenses;
-  final int totalMonthlyExpenses;
+  final double totalDailyExpenses;
+  final double totalMonthlyExpenses;
   final int totalRecords;
 
   Summary({
@@ -32,9 +34,9 @@ class Summary {
 
   factory Summary.fromJson(Map<String, dynamic> json) {
     return Summary(
-      totalDailyExpenses: json['total_daily_expenses'],
-      totalMonthlyExpenses: json['total_monthly_expenses'],
-      totalRecords: json['total_records'],
+      totalDailyExpenses: (json['total_daily_expenses'] as num).toDouble(),
+      totalMonthlyExpenses: (json['total_monthly_expenses'] as num).toDouble(),
+      totalRecords: (json['total_records'] as num).toInt(),
     );
   }
 
@@ -68,13 +70,13 @@ class Expense {
 
   factory Expense.fromJson(Map<String, dynamic> json) {
     return Expense(
-      id: json['id'],
-      category: json['category'],
+      id: (json['id'] as num).toInt(),
+      category: json['category'] as String,
       amount: double.parse(json['amount'].toString()),
-      remarks: json['remarks'],
-      nepaliDate: json['nepali_date'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
+      remarks: json['remarks'] as String,
+      nepaliDate: json['nepali_date'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
 
@@ -82,7 +84,7 @@ class Expense {
     return {
       'id': id,
       'category': category,
-      'amount': amount.toStringAsFixed(2),
+      'amount': amount,
       'remarks': remarks,
       'nepali_date': nepaliDate,
       'created_at': createdAt.toIso8601String(),

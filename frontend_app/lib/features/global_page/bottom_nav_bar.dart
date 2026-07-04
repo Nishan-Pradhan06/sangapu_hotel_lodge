@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/widgets/double_press_to_exit.dart';
+import '../expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import '../expenses/page/expenses_page.dart';
 import '../dashboard/page/dashboard.dart';
 import '../income/pages/income_page.dart';
@@ -27,6 +28,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
   @override
   void initState() {
     context.read<StatementsBloc>().add(const StatementsEvent.getStatement());
+    context.read<GetExpensesBloc>().add(const GetExpensesEvent.getExpenses());
     super.initState();
   }
 

@@ -38,6 +38,7 @@ dependencies:
   skeletonizer: ^2.1.3
   nepali_utils: ^3.0.8
   intl: ^0.20.3
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:

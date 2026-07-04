@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:retry/retry.dart';
+import 'package:sangapu/features/expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import '../../features/auth/blocs/login/log_in_bloc.dart';
 import '../../features/auth/repository/auth_repository.dart';
+import '../../features/expenses/repository/expenses_repository.dart';
 import '../../features/rooms/blocs/room_entry/room_entry_bloc.dart';
 import '../../features/rooms/repository/room_entry_repository.dart';
 import '../../features/statements/bloc/statements_bloc.dart';
@@ -20,6 +22,7 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(() => LogInBloc(repo: sl()));
   sl.registerLazySingleton(() => RoomEntryBloc(repo: sl()));
   sl.registerLazySingleton(() => StatementsBloc(repo: sl()));
+  sl.registerLazySingleton(() => GetExpensesBloc(repo: sl()));
 
   //###---------------CUBIT--------------------###
 
@@ -32,6 +35,9 @@ Future<void> setupServiceLocator() async {
   );
   sl.registerLazySingleton<TransactionRepository>(
     () => TransactionRepositoryImpl(apiService: sl()),
+  );
+  sl.registerLazySingleton<ExpensesRepository>(
+    () => ExpensesRepositoryImpl(apiService: sl()),
   );
 
   //###---------------EXTERNAL REPOSITORY SERVICES---------------###

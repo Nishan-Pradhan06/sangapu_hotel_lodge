@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sangapu/features/expenses/blocs/get_expenses/get_expenses_bloc.dart';
+import 'package:sangapu/routers/app_routes_names.dart';
 
 import '../../../core/widgets/custom_padding.dart';
 import '../../reports/widgets/earning_cards.dart';
@@ -20,67 +24,122 @@ class ExpensesPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Expenses', style: TextTheme.of(context).titleLarge),
       ),
-      body: CustomPadding(
-        horizontal: 20,
-        child: Column(
-          spacing: 20,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            EarningsCard(
-              title: 'Today Expenses',
-              amount: 'Rs 500.00',
-              backgroundColor: const Color(0xFF7e1a44).withValues(alpha: 0.9),
-              subtitle: '-12% from yesterday',
-              icon: Icons.show_chart_rounded,
-            ),
-            EarningsCard(
-              title: 'Today Expenses',
-              amount: 'Rs 500.00',
-              backgroundColor: const Color(0xFF7e1a44).withValues(alpha: 0.9),
-              subtitle: '-12% from yesterday',
-              icon: Icons.show_chart_rounded,
-            ),
-            Text('Expenses List', style: TextTheme.of(context).titleMedium),
-            Column(
-              children: [
-                TransactionTile(
-                  title: Text(
-                    "hell",
-                    // "${transaction.category} | ${transaction.remarks}",
-                    style: textTheme.titleSmall,
-                  ),
-                  dateTime: Text(
-                    "11111",
-                    // transaction.nepaliDate,
-                    style: textTheme.bodySmall,
-                  ),
-                  amount: Text(
-                    "dd",
-                    // " -${transaction.amount.toString()}",
-                    style: textTheme.titleMedium?.copyWith(
-                      color: negativeColor,
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'add_expense_fab',
+
+        onPressed: () {
+          context.pushNamed(AppRoutesName.addExpense);
+        },
+        child: const Icon(Icons.add),
+      ),
+      body: RefreshIndicator.adaptive(
+        onRefresh: () {
+          context.read<GetExpensesBloc>().add(
+            const GetExpensesEvent.getExpenses(),
+          );
+          return Future.value();
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: CustomPadding(
+            horizontal: 20,
+            child: BlocBuilder<GetExpensesBloc, GetExpensesState>(
+              builder: (context, state) {
+                return state.when(
+                  initial: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  loaded: (expenses) {
+                    if (expenses.data.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No expenses recorded yet.',
+                          style: TextTheme.of(context).bodyMedium,
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: expenses.data.length,
+                      itemBuilder: (context, index) {
+                        final expense = expenses.data[index];
+                        return Column(
+                          children: [
+                            EarningsCard(
+                              title: 'Total Daily Expenses',
+                              amount:
+                                  "Rs ${expenses.summary.totalDailyExpenses.toString()}",
+                              backgroundColor: const Color(
+                                0xFF7e1a44,
+                              ).withValues(alpha: 0.9),
+                              subtitle: 'Total Record of a Day',
+                              icon: Icons.show_chart_rounded,
+                            ),
+                            SizedBox(height: 16),
+                            EarningsCard(
+                              title: 'Total Monthly Expenses',
+                              amount:
+                                  "Rs ${expenses.summary.totalMonthlyExpenses.toString()}",
+                              backgroundColor: const Color(
+                                0xFF7e1a44,
+                              ).withValues(alpha: 0.9),
+                              subtitle: 'Total Record of a Month',
+                              icon: Icons.show_chart_rounded,
+                            ),
+                            SizedBox(height: 16),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Expenses List',
+                                style: textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 16),
+
+                            TransactionTile(
+                              title: Text(
+                                "${expense.category} | ${expense.remarks}",
+                                style: textTheme.titleSmall,
+                              ),
+                              dateTime: Text(
+                                expense.nepaliDate,
+                                style: textTheme.bodySmall,
+                              ),
+                              amount: Text(
+                                " -${expense.amount.toString()}",
+                                style: textTheme.titleMedium?.copyWith(
+                                  color: negativeColor,
+                                ),
+                              ),
+                              balance: Text(
+                                "",
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                            Divider(color: colorScheme.outline, height: 32),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  failure: (failure) => Center(
+                    child: Text(
+                      'Failed to load expenses.',
+                      style: TextTheme.of(context).bodyMedium,
                     ),
                   ),
-                  balance: Text(
-                    "Dd",
-                    // data.summary.netBalance.toString(),
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-                Divider(color: colorScheme.outline, height: 32),
-              ],
+                );
+              },
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
-// Center(
-//                 child: Text(
-//                   'No expenses recorded yet.',
-//                   style: TextTheme.of(context).bodyMedium,
-//                 ),
-//               ),

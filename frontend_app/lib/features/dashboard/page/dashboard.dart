@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/helpers/nepali_date_helper.dart';
 import '../../../core/widgets/custom_padding.dart';
+import '../../../core/widgets/earnings_card_simmer.dart';
 import '../../../routers/app_routes_names.dart';
+import '../../expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import '../../reports/widgets/earning_cards.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -46,12 +49,32 @@ class DashboardPage extends StatelessWidget {
               icon: Icons.calendar_month_rounded,
               subtitle: 'On Track for target',
             ),
-            EarningsCard(
-              title: 'Today Expenses',
-              amount: 'Rs 500.00',
-              backgroundColor: const Color(0xFF7e1a44).withValues(alpha: 0.9),
-              subtitle: '-12% from yesterday',
-              icon: Icons.show_chart_rounded,
+            BlocBuilder<GetExpensesBloc, GetExpensesState>(
+              builder: (context, state) {
+                return state.when(
+                  initial: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  loading: () => EarningsCardShimmer(),
+                  failure: (failure) => Center(
+                    child: Text(
+                      'Failed to load expenses: ${failure.message}',
+                      style: TextTheme.of(context).bodyMedium,
+                    ),
+                  ),
+                  loaded: (expenses) {
+                    return EarningsCard(
+                      title: 'Total Daily Expenses',
+                      amount:
+                          "Rs ${expenses.summary.totalDailyExpenses.toString()}",
+                      backgroundColor: const Color(
+                        0xFF7e1a44,
+                      ).withValues(alpha: 0.9),
+                      subtitle: 'Total Record of a Day',
+                      icon: Icons.show_chart_rounded,
+                    );
+                  },
+                );
+              },
             ),
           ],
         ),
