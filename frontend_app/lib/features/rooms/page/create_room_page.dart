@@ -6,6 +6,7 @@ import 'package:sangapu/core/widgets/custom_container.dart';
 import 'package:sangapu/core/widgets/custom_padding.dart';
 import 'package:sangapu/core/widgets/custom_text_form_field.dart';
 import 'package:sangapu/features/rooms/blocs/room_entry/room_entry_bloc.dart';
+import 'package:sangapu/features/statements/bloc/statements_bloc.dart';
 import '../../../core/helpers/nepali_date_helper.dart';
 import '../../../core/widgets/custom_toast.dart';
 import '../models/room_entry_model.dart';
@@ -107,6 +108,9 @@ class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
             },
             loaded: (data) {
               CustomToast.showSuccess("Room entry successful");
+              context.read<StatementsBloc>().add(
+                const StatementsEvent.getStatement(),
+              );
               context.pop();
             },
           );

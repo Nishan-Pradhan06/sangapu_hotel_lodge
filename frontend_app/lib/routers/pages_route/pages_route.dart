@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 import '../../common/extension/extension.dart';
-import '../../features/income/dashboard/page/dashboard.dart';
+import '../../features/dashboard/page/dashboard.dart';
 import '../../features/rooms/page/create_room_page.dart';
 import '../app_routes_names.dart';
 
