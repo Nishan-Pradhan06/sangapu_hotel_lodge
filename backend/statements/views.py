@@ -1,5 +1,6 @@
 import io
 from decimal import Decimal
+from datetime import datetime
 
 from django.http import HttpResponse
 from rest_framework.views import APIView
@@ -11,7 +12,7 @@ from expenses.models import ExpenseEntry
 
 
 # ─────────────────────────────────────────────
-#  Shared helper: build + filter records
+#  Shared helpers: build + filter records
 # ─────────────────────────────────────────────
 def _build_income_records(entries):
     records = []
@@ -109,11 +110,11 @@ class StatementView(APIView):
 
 
 # ─────────────────────────────────────────────
-#  Excel Export
+#  Excel Export  — Bank Statement Level
 # ─────────────────────────────────────────────
 class StatementExcelExportView(APIView):
     """
-    Export statement as Excel (.xlsx).
+    Export statement as Excel (.xlsx) — A4 portrait, bank-statement design.
 
     Query Params: type, date, month, ordering
     """
@@ -122,69 +123,201 @@ class StatementExcelExportView(APIView):
     def get(self, request, *args, **kwargs):
         from openpyxl import Workbook
         from openpyxl.styles import (
-            Font, PatternFill, Alignment, Border, Side
+            Font, PatternFill, Alignment, Border, Side, GradientFill
         )
         from openpyxl.utils import get_column_letter
+        from openpyxl.worksheet.page import PageMargins
 
         records, total_income, total_expenses = get_filtered_records(request)
         net_balance = total_income - total_expenses
+        generated_at = datetime.now().strftime("%Y-%m-%d  %H:%M:%S")
+        user_name = getattr(request.user, 'name', '') or request.user.email
 
         wb = Workbook()
         ws = wb.active
-        ws.title = "Statement"
+        ws.title = "Bank Statement"
 
-        # ── colour palette ──────────────────────────────
-        HEADER_FILL   = PatternFill("solid", fgColor="1F4E79")
-        INCOME_FILL   = PatternFill("solid", fgColor="E8F5E9")
-        EXPENSE_FILL  = PatternFill("solid", fgColor="FFEBEE")
-        SUMMARY_FILL  = PatternFill("solid", fgColor="FFF9C4")
-        TITLE_FILL    = PatternFill("solid", fgColor="2E75B6")
+        # ── A4 portrait page setup ──────────────────────────────────────────
+        ws.page_setup.paperSize   = ws.PAPERSIZE_A4        # A4
+        ws.page_setup.orientation = ws.ORIENTATION_PORTRAIT
+        ws.page_setup.fitToPage   = True
+        ws.page_setup.fitToWidth  = 1
+        ws.page_setup.fitToHeight = 0
+        ws.page_margins = PageMargins(
+            left=0.5, right=0.5, top=0.75, bottom=0.75,
+            header=0.3, footer=0.3
+        )
+        ws.print_title_rows = '7:7'   # repeat column-header row on each printed page
 
-        thin = Side(style='thin', color="BDBDBD")
-        border = Border(left=thin, right=thin, top=thin, bottom=thin)
+        # ── Colour / style constants ────────────────────────────────────────
+        C_NAVY      = "1A3C5E"   # deep navy — header bg
+        C_BLUE      = "2563EB"   # accent blue
+        C_LIGHT     = "EFF6FF"   # very light blue tint for alt rows
+        C_WHITE     = "FFFFFF"
+        C_INCOME    = "D1FAE5"   # soft green
+        C_INCOME_TXT= "065F46"
+        C_EXPENSE   = "FEE2E2"   # soft red
+        C_EXPENSE_TXT="991B1B"
+        C_GOLD      = "FEF9C3"   # summary highlight
+        C_BALANCE   = "DBEAFE"   # net-balance row
+        C_GREY_TXT  = "6B7280"
+        C_DARK_TXT  = "111827"
+        C_DIVIDER   = "BFDBFE"
 
-        # ── Title ───────────────────────────────────────
-        ws.merge_cells("A1:G1")
-        title_cell = ws["A1"]
-        title_cell.value = "Hotel Lodge — Statement Report"
-        title_cell.font = Font(name="Calibri", size=16, bold=True, color="FFFFFF")
-        title_cell.fill = TITLE_FILL
-        title_cell.alignment = Alignment(horizontal="center", vertical="center")
-        ws.row_dimensions[1].height = 32
+        def solid(hex_color):
+            return PatternFill("solid", fgColor=hex_color)
 
-        ws.append([])  # blank row
+        def border_side(style="thin", color="D1D5DB"):
+            return Side(style=style, color=color)
 
-        # ── Summary block ───────────────────────────────
-        summary_rows = [
-            ("Total Income",   float(total_income)),
-            ("Total Expenses", float(total_expenses)),
-            ("Net Balance",    float(net_balance)),
-        ]
-        for label, value in summary_rows:
-            row_idx = ws.max_row + 1
-            ws.cell(row=row_idx, column=1, value=label).font = Font(bold=True)
-            cell = ws.cell(row=row_idx, column=2, value=value)
-            cell.number_format = '#,##0.00'
-            cell.fill = SUMMARY_FILL
-            if label == "Net Balance":
-                cell.font = Font(bold=True, color="1B5E20" if value >= 0 else "B71C1C")
+        thin_border = Border(
+            left=border_side(), right=border_side(),
+            top=border_side(), bottom=border_side()
+        )
+        thick_bottom = Border(
+            left=border_side(), right=border_side(),
+            top=border_side(), bottom=border_side("medium", "1A3C5E")
+        )
+        header_border = Border(
+            left=border_side("medium", C_NAVY),
+            right=border_side("medium", C_NAVY),
+            top=border_side("medium", C_NAVY),
+            bottom=border_side("medium", C_NAVY),
+        )
 
-        ws.append([])  # blank row
+        def set_font(cell, bold=False, size=10, color=C_DARK_TXT, italic=False, name="Calibri"):
+            cell.font = Font(name=name, bold=bold, size=size, color=color, italic=italic)
 
-        # ── Column headers ──────────────────────────────
-        headers = ["#", "Date (BS)", "Type", "Category", "Amount (Rs.)", "Remarks", "Recorded At"]
-        header_row = ws.max_row + 1
-        for col, h in enumerate(headers, start=1):
-            cell = ws.cell(row=header_row, column=col, value=h)
-            cell.font      = Font(name="Calibri", bold=True, color="FFFFFF", size=11)
-            cell.fill      = HEADER_FILL
-            cell.alignment = Alignment(horizontal="center")
-            cell.border    = border
+        def center(cell):
+            cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-        # ── Data rows ───────────────────────────────────
-        for idx, r in enumerate(records, start=1):
-            row_idx = ws.max_row + 1
-            fill = INCOME_FILL if r['type'] == 'Income' else EXPENSE_FILL
+        def vcenter(cell):
+            cell.alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
+
+        def right_align(cell):
+            cell.alignment = Alignment(horizontal="right", vertical="center")
+
+        # ── Column widths (A4 portrait = ~120 units across 7 cols) ─────────
+        col_widths = [5, 13, 14, 14, 22, 16, 36]
+        for i, w in enumerate(col_widths, 1):
+            ws.column_dimensions[get_column_letter(i)].width = w
+
+        row = 1
+
+        # ══════════════════════════════════════════════════════════════════
+        # ROW 1-2  BANK LOGO / HEADER BANNER
+        # ══════════════════════════════════════════════════════════════════
+        ws.merge_cells(f"A{row}:G{row}")
+        c = ws.cell(row=row, column=1, value="🏨  HOTEL LODGE")
+        c.font      = Font(name="Calibri", bold=True, size=18, color=C_WHITE)
+        c.fill      = solid(C_NAVY)
+        c.alignment = Alignment(horizontal="center", vertical="center")
+        ws.row_dimensions[row].height = 34
+        row += 1
+
+        ws.merge_cells(f"A{row}:G{row}")
+        c = ws.cell(row=row, column=1, value="OFFICIAL ACCOUNT STATEMENT")
+        c.font      = Font(name="Calibri", bold=False, size=10, color="93C5FD", italic=True)
+        c.fill      = solid(C_NAVY)
+        c.alignment = Alignment(horizontal="center", vertical="center")
+        ws.row_dimensions[row].height = 18
+        row += 1
+
+        # ── thin separator ─────────────────────────────────────────────────
+        ws.merge_cells(f"A{row}:G{row}")
+        c = ws.cell(row=row, column=1, value="")
+        c.fill = solid(C_BLUE)
+        ws.row_dimensions[row].height = 3
+        row += 1
+
+        # ══════════════════════════════════════════════════════════════════
+        # ROW 4  Meta info  (Account Holder | Generated)
+        # ══════════════════════════════════════════════════════════════════
+        ws.row_dimensions[row].height = 20
+        # left: account holder
+        ws.merge_cells(f"A{row}:D{row}")
+        c = ws.cell(row=row, column=1, value=f"Account Holder:  {user_name}")
+        set_font(c, bold=True, size=10, color=C_NAVY)
+        vcenter(c)
+        c.fill = solid("F0F9FF")
+        # right: generated date
+        ws.merge_cells(f"E{row}:G{row}")
+        c = ws.cell(row=row, column=5, value=f"Generated:  {generated_at}")
+        set_font(c, size=9, color=C_GREY_TXT, italic=True)
+        right_align(c)
+        c.fill = solid("F0F9FF")
+        row += 1
+
+        # ══════════════════════════════════════════════════════════════════
+        # ROW 5  Summary Cards  (Total Income | Total Expenses | Net Balance)
+        # ══════════════════════════════════════════════════════════════════
+        ws.row_dimensions[row].height = 28
+
+        # Card 1 – Income
+        ws.merge_cells(f"A{row}:B{row}")
+        c = ws.cell(row=row, column=1,
+                    value=f"▲ Total Income\nRs. {float(total_income):,.2f}")
+        c.font      = Font(name="Calibri", bold=True, size=10, color=C_INCOME_TXT)
+        c.fill      = solid(C_INCOME)
+        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        c.border    = thin_border
+        ws.row_dimensions[row].height = 34
+
+        # Card 2 – Expenses
+        ws.merge_cells(f"C{row}:D{row}")
+        c = ws.cell(row=row, column=3,
+                    value=f"▼ Total Expenses\nRs. {float(total_expenses):,.2f}")
+        c.font      = Font(name="Calibri", bold=True, size=10, color=C_EXPENSE_TXT)
+        c.fill      = solid(C_EXPENSE)
+        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        c.border    = thin_border
+
+        # Card 3 – Net Balance
+        bal_color = "065F46" if net_balance >= 0 else "991B1B"
+        bal_bg    = "D1FAE5" if net_balance >= 0 else "FEE2E2"
+        bal_sign  = "+" if net_balance >= 0 else ""
+        ws.merge_cells(f"E{row}:G{row}")
+        c = ws.cell(row=row, column=5,
+                    value=f"◆ Net Balance\nRs. {bal_sign}{float(net_balance):,.2f}")
+        c.font      = Font(name="Calibri", bold=True, size=11, color=bal_color)
+        c.fill      = solid(bal_bg)
+        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        c.border    = Border(
+            left=border_side("medium", C_BLUE), right=border_side("medium", C_BLUE),
+            top=border_side("medium", C_BLUE),  bottom=border_side("medium", C_BLUE),
+        )
+        row += 1
+
+        # ── divider ────────────────────────────────────────────────────────
+        ws.merge_cells(f"A{row}:G{row}")
+        c = ws.cell(row=row, column=1, value="")
+        c.fill = solid(C_DIVIDER)
+        ws.row_dimensions[row].height = 3
+        row += 1
+
+        # ══════════════════════════════════════════════════════════════════
+        # ROW 7  Column Headers
+        # ══════════════════════════════════════════════════════════════════
+        headers = ["#", "Date (BS)", "Type", "Category", "Amount (Rs.)", "Recorded At", "Remarks"]
+        ws.row_dimensions[row].height = 22
+        for col, h in enumerate(headers, 1):
+            c = ws.cell(row=row, column=col, value=h)
+            c.font      = Font(name="Calibri", bold=True, size=10, color=C_WHITE)
+            c.fill      = solid(C_NAVY)
+            c.alignment = Alignment(horizontal="center", vertical="center")
+            c.border    = header_border
+        row += 1
+
+        # ══════════════════════════════════════════════════════════════════
+        # DATA ROWS
+        # ══════════════════════════════════════════════════════════════════
+        for idx, r in enumerate(records, 1):
+            is_income = r['type'] == 'Income'
+            row_fill  = solid(C_INCOME if is_income else C_EXPENSE)
+            alt_fill  = solid("F0FDF4" if is_income else "FFF5F5")
+            use_fill  = row_fill if idx % 2 == 1 else alt_fill
+            txt_color = C_INCOME_TXT if is_income else C_EXPENSE_TXT
+            ws.row_dimensions[row].height = 18
 
             values = [
                 idx,
@@ -192,23 +325,71 @@ class StatementExcelExportView(APIView):
                 r['type'],
                 r['category'],
                 r['amount'],
-                r['remarks'],
                 str(r['created_at'])[:19],
+                r['remarks'],
             ]
-            for col, val in enumerate(values, start=1):
-                cell = ws.cell(row=row_idx, column=col, value=val)
-                cell.fill   = fill
-                cell.border = border
-                cell.alignment = Alignment(vertical="center")
-                if col == 5:  # amount
-                    cell.number_format = '#,##0.00'
+            for col, val in enumerate(values, 1):
+                c = ws.cell(row=row, column=col, value=val)
+                c.fill   = use_fill
+                c.border = thin_border
+                c.alignment = Alignment(vertical="center", wrap_text=(col == 7))
 
-        # ── Column widths ───────────────────────────────
-        col_widths = [5, 14, 10, 18, 15, 35, 22]
-        for i, w in enumerate(col_widths, start=1):
-            ws.column_dimensions[get_column_letter(i)].width = w
+                if col == 1:    # #
+                    c.font      = Font(name="Calibri", size=9, color=C_GREY_TXT)
+                    c.alignment = Alignment(horizontal="center", vertical="center")
+                elif col == 2:  # date
+                    c.font      = Font(name="Calibri", size=9, bold=True, color=C_DARK_TXT)
+                elif col == 3:  # type
+                    c.font      = Font(name="Calibri", size=9, bold=True, color=txt_color)
+                    c.alignment = Alignment(horizontal="center", vertical="center")
+                elif col == 4:  # category
+                    c.font      = Font(name="Calibri", size=9, color=C_DARK_TXT)
+                    c.alignment = Alignment(horizontal="center", vertical="center")
+                elif col == 5:  # amount
+                    c.font          = Font(name="Calibri", size=10, bold=True, color=txt_color)
+                    c.number_format = '#,##0.00'
+                    c.alignment     = Alignment(horizontal="right", vertical="center")
+                elif col == 6:  # recorded at
+                    c.font      = Font(name="Calibri", size=8, color=C_GREY_TXT, italic=True)
+                    c.alignment = Alignment(horizontal="center", vertical="center")
+                else:           # remarks
+                    c.font      = Font(name="Calibri", size=9, color=C_DARK_TXT)
+            row += 1
 
-        # ── Stream response ─────────────────────────────
+        # ══════════════════════════════════════════════════════════════════
+        # TOTALS FOOTER ROW
+        # ══════════════════════════════════════════════════════════════════
+        ws.row_dimensions[row].height = 22
+        ws.merge_cells(f"A{row}:D{row}")
+        c = ws.cell(row=row, column=1, value=f"TOTAL  ({len(records)} transactions)")
+        c.font      = Font(name="Calibri", bold=True, size=10, color=C_WHITE)
+        c.fill      = solid(C_NAVY)
+        c.alignment = Alignment(horizontal="right", vertical="center")
+        c.border    = thick_bottom
+
+        c = ws.cell(row=row, column=5, value=float(total_income - total_expenses))
+        c.font          = Font(name="Calibri", bold=True, size=11, color=C_WHITE)
+        c.fill          = solid(C_BLUE)
+        c.number_format = '#,##0.00'
+        c.alignment     = Alignment(horizontal="right", vertical="center")
+        c.border        = thick_bottom
+
+        for col in [6, 7]:
+            c = ws.cell(row=row, column=col, value="")
+            c.fill   = solid(C_NAVY)
+            c.border = thick_bottom
+        row += 1
+
+        # ── footer note ────────────────────────────────────────────────────
+        ws.row_dimensions[row].height = 14
+        ws.merge_cells(f"A{row}:G{row}")
+        c = ws.cell(row=row, column=1,
+                    value="This is a system-generated statement. No signature required.")
+        c.font      = Font(name="Calibri", size=8, color=C_GREY_TXT, italic=True)
+        c.fill      = solid("F8FAFC")
+        c.alignment = Alignment(horizontal="center", vertical="center")
+
+        # ── Stream ─────────────────────────────────────────────────────────
         buffer = io.BytesIO()
         wb.save(buffer)
         buffer.seek(0)
@@ -217,147 +398,301 @@ class StatementExcelExportView(APIView):
             buffer,
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-        response["Content-Disposition"] = 'attachment; filename="statement.xlsx"'
+        response["Content-Disposition"] = 'attachment; filename="hotel_lodge_statement.xlsx"'
         return response
 
 
 # ─────────────────────────────────────────────
-#  PDF Export
+#  PDF Export  — Bank Statement Level (A4 Portrait)
 # ─────────────────────────────────────────────
 class StatementPDFExportView(APIView):
     """
-    Export statement as PDF.
+    Export statement as PDF — A4 portrait, bank-statement design.
 
     Query Params: type, date, month, ordering
     """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        from reportlab.lib.pagesizes import A4, landscape
+        from reportlab.lib.pagesizes import A4
         from reportlab.lib import colors
         from reportlab.lib.units import mm
         from reportlab.platypus import (
             SimpleDocTemplate, Table, TableStyle, Paragraph,
-            Spacer, HRFlowable
+            Spacer, HRFlowable, KeepTogether
         )
         from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-        from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+        from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
+        from reportlab.platypus import Image
+        from reportlab.graphics.shapes import Drawing, Rect
+        from reportlab.graphics import renderPDF
 
         records, total_income, total_expenses = get_filtered_records(request)
-        net_balance = total_income - total_expenses
+        net_balance   = total_income - total_expenses
+        generated_at  = datetime.now().strftime("%Y-%m-%d  %H:%M:%S")
+        user_name     = getattr(request.user, 'name', '') or request.user.email
+        total_records = len(records)
 
+        # ── Colours ────────────────────────────────────────────────────────
+        NAVY        = colors.HexColor('#1A3C5E')
+        BLUE        = colors.HexColor('#2563EB')
+        LIGHT_BLUE  = colors.HexColor('#DBEAFE')
+        INCOME_BG   = colors.HexColor('#D1FAE5')
+        INCOME_TXT  = colors.HexColor('#065F46')
+        EXPENSE_BG  = colors.HexColor('#FEE2E2')
+        EXPENSE_TXT = colors.HexColor('#991B1B')
+        GOLD        = colors.HexColor('#FEF9C3')
+        WHITE       = colors.white
+        GREY        = colors.HexColor('#6B7280')
+        DARK        = colors.HexColor('#111827')
+        DIVIDER     = colors.HexColor('#BFDBFE')
+        ALT_ROW     = colors.HexColor('#F8FAFC')
+
+        bal_bg  = INCOME_BG if net_balance >= 0 else EXPENSE_BG
+        bal_txt = INCOME_TXT if net_balance >= 0 else EXPENSE_TXT
+
+        # ── Page setup (A4 portrait) ────────────────────────────────────────
         buffer = io.BytesIO()
+        PAGE_W, PAGE_H = A4
+        MARGIN = 18 * mm
+        CONTENT_W = PAGE_W - 2 * MARGIN
+
         doc = SimpleDocTemplate(
             buffer,
-            pagesize=landscape(A4),
-            rightMargin=15*mm, leftMargin=15*mm,
-            topMargin=15*mm,   bottomMargin=15*mm,
+            pagesize=A4,
+            rightMargin=MARGIN, leftMargin=MARGIN,
+            topMargin=MARGIN,   bottomMargin=MARGIN,
         )
 
-        styles = getSampleStyleSheet()
-        PAGE_W = landscape(A4)[0] - 30*mm
+        # ── Paragraph styles ───────────────────────────────────────────────
+        def make_style(name, **kw):
+            base = getSampleStyleSheet()['Normal']
+            return ParagraphStyle(name, parent=base, **kw)
 
-        # ── Custom styles ────────────────────────────────
-        title_style = ParagraphStyle(
-            'Title', parent=styles['Title'],
-            fontSize=18, textColor=colors.HexColor('#1F4E79'),
-            spaceAfter=6, alignment=TA_CENTER,
-        )
-        sub_style = ParagraphStyle(
-            'Sub', parent=styles['Normal'],
-            fontSize=10, textColor=colors.grey,
-            spaceAfter=12, alignment=TA_CENTER,
-        )
-        label_style = ParagraphStyle(
-            'Label', parent=styles['Normal'],
-            fontSize=10, textColor=colors.HexColor('#333333'),
-        )
+        header_title  = make_style('HTitle',  fontSize=20, textColor=WHITE,    alignment=TA_CENTER, fontName='Helvetica-Bold', spaceAfter=0, spaceBefore=0, leading=24)
+        header_sub    = make_style('HSub',    fontSize=9,  textColor=colors.HexColor('#93C5FD'), alignment=TA_CENTER, fontName='Helvetica', spaceAfter=0, spaceBefore=0)
+        meta_left     = make_style('MetaL',   fontSize=9,  textColor=NAVY,     fontName='Helvetica-Bold')
+        meta_right    = make_style('MetaR',   fontSize=8,  textColor=GREY,     fontName='Helvetica', alignment=TA_RIGHT)
+        footer_style  = make_style('Footer',  fontSize=7,  textColor=GREY,     fontName='Helvetica', alignment=TA_CENTER, leading=10)
+        sum_label     = make_style('SumLbl',  fontSize=9,  textColor=DARK,     fontName='Helvetica-Bold')
+        sum_val       = make_style('SumVal',  fontSize=9,  textColor=DARK,     fontName='Helvetica',  alignment=TA_RIGHT)
+        tbl_hdr       = make_style('TblHdr',  fontSize=8,  textColor=WHITE,    fontName='Helvetica-Bold', alignment=TA_CENTER)
+        cell_center   = make_style('CellC',   fontSize=7,  textColor=DARK,     fontName='Helvetica', alignment=TA_CENTER)
+        cell_right    = make_style('CellR',   fontSize=8,  textColor=DARK,     fontName='Helvetica-Bold', alignment=TA_RIGHT)
+        cell_left     = make_style('CellL',   fontSize=7,  textColor=DARK,     fontName='Helvetica')
+        cell_grey     = make_style('CellG',   fontSize=7,  textColor=GREY,     fontName='Helvetica', alignment=TA_CENTER)
+        income_type   = make_style('IncT',    fontSize=7,  textColor=INCOME_TXT,  fontName='Helvetica-Bold', alignment=TA_CENTER)
+        expense_type  = make_style('ExpT',    fontSize=7,  textColor=EXPENSE_TXT, fontName='Helvetica-Bold', alignment=TA_CENTER)
 
         story = []
 
-        # ── Title ────────────────────────────────────────
-        story.append(Paragraph("Hotel Lodge — Statement Report", title_style))
-        story.append(Paragraph("Generated automatically", sub_style))
-        story.append(HRFlowable(width=PAGE_W, color=colors.HexColor('#2E75B6'), thickness=2))
-        story.append(Spacer(1, 8*mm))
-
-        # ── Summary table ────────────────────────────────
-        summary_data = [
-            ["Total Income",   f"Rs. {float(total_income):,.2f}"],
-            ["Total Expenses", f"Rs. {float(total_expenses):,.2f}"],
-            ["Net Balance",    f"Rs. {float(net_balance):,.2f}"],
+        # ══════════════════════════════════════════════════════════════════
+        # HEADER BANNER  (navy block with title)
+        # ══════════════════════════════════════════════════════════════════
+        banner_data = [
+            [Paragraph("🏨  HOTEL LODGE", header_title)],
+            [Paragraph("OFFICIAL ACCOUNT STATEMENT", header_sub)],
         ]
-        sum_table = Table(summary_data, colWidths=[80*mm, 60*mm])
-        sum_table.setStyle(TableStyle([
-            ('FONTNAME',    (0, 0), (-1, -1), 'Helvetica'),
-            ('FONTSIZE',    (0, 0), (-1, -1), 10),
-            ('FONTNAME',    (0, 0), (0, -1), 'Helvetica-Bold'),
-            ('BACKGROUND',  (0, 0), (-1, -1), colors.HexColor('#FFF9C4')),
-            ('BACKGROUND',  (0, 2), (-1, 2), colors.HexColor('#E3F2FD')),
-            ('TEXTCOLOR',   (1, 2), (1, 2),
-             colors.HexColor('#1B5E20') if net_balance >= 0 else colors.HexColor('#B71C1C')),
-            ('FONTNAME',    (0, 2), (-1, 2), 'Helvetica-Bold'),
-            ('ALIGN',       (1, 0), (1, -1), 'RIGHT'),
-            ('ROWBACKGROUND', (0, 0), (-1, -1), [colors.HexColor('#FFF9C4'), colors.HexColor('#FFFDE7')]),
-            ('BOX',         (0, 0), (-1, -1), 0.5, colors.grey),
-            ('INNERGRID',   (0, 0), (-1, -1), 0.5, colors.lightgrey),
-            ('TOPPADDING',  (0, 0), (-1, -1), 5),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+        banner = Table(banner_data, colWidths=[CONTENT_W])
+        banner.setStyle(TableStyle([
+            ('BACKGROUND',    (0, 0), (-1, -1), NAVY),
+            ('TOPPADDING',    (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('LEFTPADDING',   (0, 0), (-1, -1), 10),
+            ('RIGHTPADDING',  (0, 0), (-1, -1), 10),
+            ('LINEBELOW',     (0, 1), (-1, 1),  2, BLUE),
         ]))
-        story.append(sum_table)
-        story.append(Spacer(1, 8*mm))
+        story.append(banner)
+        story.append(Spacer(1, 3 * mm))
 
-        # ── Transactions table ───────────────────────────
-        col_headers = ["#", "Date (BS)", "Type", "Category", "Amount (Rs.)", "Remarks"]
-        table_data = [col_headers]
+        # ══════════════════════════════════════════════════════════════════
+        # META ROW  (holder + generated date)
+        # ══════════════════════════════════════════════════════════════════
+        meta_data = [[
+            Paragraph(f"Account Holder: <b>{user_name}</b>", meta_left),
+            Paragraph(f"Generated: {generated_at}", meta_right),
+        ]]
+        meta_tbl = Table(meta_data, colWidths=[CONTENT_W * 0.6, CONTENT_W * 0.4])
+        meta_tbl.setStyle(TableStyle([
+            ('BACKGROUND',    (0, 0), (-1, -1), colors.HexColor('#F0F9FF')),
+            ('TOPPADDING',    (0, 0), (-1, -1), 5),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+            ('LEFTPADDING',   (0, 0), (-1, -1), 8),
+            ('RIGHTPADDING',  (0, 0), (-1, -1), 8),
+            ('LINEBELOW',     (0, 0), (-1, 0), 0.5, DIVIDER),
+        ]))
+        story.append(meta_tbl)
+        story.append(Spacer(1, 4 * mm))
 
-        INCOME_BG  = colors.HexColor('#E8F5E9')
-        EXPENSE_BG = colors.HexColor('#FFEBEE')
-        row_colors = []
+        # ══════════════════════════════════════════════════════════════════
+        # SUMMARY CARDS  (Income | Expenses | Net Balance)
+        # ══════════════════════════════════════════════════════════════════
+        W3 = CONTENT_W / 3
 
-        for idx, r in enumerate(records, start=1):
-            table_data.append([
-                str(idx),
-                r['nepali_date'],
-                r['type'],
-                r['category'],
-                f"{r['amount']:,.2f}",
-                r['remarks'][:60] + ('…' if len(r['remarks']) > 60 else ''),
-            ])
-            row_colors.append(INCOME_BG if r['type'] == 'Income' else EXPENSE_BG)
+        def card_para(label, value, label_color, value_color):
+            return Paragraph(
+                f'<font color="#{label_color}" size="8"><b>{label}</b></font><br/>'
+                f'<font color="#{value_color}" size="11"><b>Rs. {value:,.2f}</b></font>',
+                make_style('Card', alignment=TA_CENTER, leading=16, spaceAfter=0)
+            )
 
-        col_widths = [12*mm, 28*mm, 22*mm, 40*mm, 30*mm, None]
-        tx_table = Table(table_data, colWidths=col_widths, repeatRows=1)
+        bal_sign = "+" if net_balance >= 0 else ""
+        summary_cards = [[
+            card_para("▲  TOTAL INCOME",   float(total_income),   "065F46", "065F46"),
+            card_para("▼  TOTAL EXPENSES", float(total_expenses), "991B1B", "991B1B"),
+            Paragraph(
+                f'<font color="#1D4ED8" size="8"><b>◆  NET BALANCE</b></font><br/>'
+                f'<font color="{"#065F46" if net_balance>=0 else "#991B1B"}" size="11">'
+                f'<b>Rs. {bal_sign}{float(net_balance):,.2f}</b></font>',
+                make_style('CardB', alignment=TA_CENTER, leading=16, spaceAfter=0)
+            ),
+        ]]
+        card_tbl = Table(summary_cards, colWidths=[W3, W3, W3])
+        card_tbl.setStyle(TableStyle([
+            ('BACKGROUND',    (0, 0), (0, 0), INCOME_BG),
+            ('BACKGROUND',    (1, 0), (1, 0), EXPENSE_BG),
+            ('BACKGROUND',    (2, 0), (2, 0), LIGHT_BLUE),
+            ('TOPPADDING',    (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+            ('LEFTPADDING',   (0, 0), (-1, -1), 6),
+            ('RIGHTPADDING',  (0, 0), (-1, -1), 6),
+            ('BOX',           (0, 0), (-1, -1), 0.8, BLUE),
+            ('INNERGRID',     (0, 0), (-1, -1), 0.5, DIVIDER),
+            ('LINEBEFORE',    (2, 0), (2, 0),   1.5, BLUE),
+        ]))
+        story.append(card_tbl)
+        story.append(Spacer(1, 5 * mm))
+
+        # ══════════════════════════════════════════════════════════════════
+        # TRANSACTION TABLE
+        # ══════════════════════════════════════════════════════════════════
+        # Column widths for A4 portrait content width (~174mm)
+        # #(8) | Date(24) | Type(18) | Category(28) | Amount(24) | Recorded(30) | Remarks(42)
+        col_widths = [8*mm, 24*mm, 18*mm, 28*mm, 24*mm, 30*mm, None]
+        # last col fills remaining space
+        used = sum(w for w in col_widths if w)
+        col_widths[-1] = CONTENT_W - used
+
+        headers = ["#", "Date (BS)", "Type", "Category", "Amount (Rs.)", "Recorded At", "Remarks"]
+        tbl_data = [[Paragraph(h, tbl_hdr) for h in headers]]
 
         style_cmds = [
-            # header
-            ('BACKGROUND',   (0, 0), (-1, 0), colors.HexColor('#1F4E79')),
-            ('TEXTCOLOR',    (0, 0), (-1, 0), colors.white),
-            ('FONTNAME',     (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE',     (0, 0), (-1, 0), 9),
-            ('ALIGN',        (0, 0), (-1, 0), 'CENTER'),
-            # data
-            ('FONTNAME',     (0, 1), (-1, -1), 'Helvetica'),
-            ('FONTSIZE',     (0, 1), (-1, -1), 8),
-            ('ALIGN',        (4, 1), (4, -1), 'RIGHT'),
-            ('ALIGN',        (0, 1), (0, -1), 'CENTER'),
-            # grid
-            ('BOX',          (0, 0), (-1, -1), 0.5, colors.grey),
-            ('INNERGRID',    (0, 0), (-1, -1), 0.3, colors.lightgrey),
-            ('TOPPADDING',   (0, 0), (-1, -1), 4),
-            ('BOTTOMPADDING',(0, 0), (-1, -1), 4),
-            ('LEFTPADDING',  (0, 0), (-1, -1), 5),
+            # Header row
+            ('BACKGROUND',    (0, 0), (-1, 0),  NAVY),
+            ('TEXTCOLOR',     (0, 0), (-1, 0),  WHITE),
+            ('FONTNAME',      (0, 0), (-1, 0),  'Helvetica-Bold'),
+            ('FONTSIZE',      (0, 0), (-1, 0),  8),
+            ('ALIGN',         (0, 0), (-1, 0),  'CENTER'),
+            ('VALIGN',        (0, 0), (-1, 0),  'MIDDLE'),
+            ('TOPPADDING',    (0, 0), (-1, 0),  6),
+            ('BOTTOMPADDING', (0, 0), (-1, 0),  6),
+            # All data rows base
+            ('FONTNAME',      (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTSIZE',      (0, 1), (-1, -1), 7),
+            ('VALIGN',        (0, 1), (-1, -1), 'MIDDLE'),
+            ('TOPPADDING',    (0, 1), (-1, -1), 4),
+            ('BOTTOMPADDING', (0, 1), (-1, -1), 4),
+            ('LEFTPADDING',   (0, 0), (-1, -1), 4),
+            ('RIGHTPADDING',  (0, 0), (-1, -1), 4),
+            # Grid
+            ('BOX',           (0, 0), (-1, -1), 0.8, NAVY),
+            ('INNERGRID',     (0, 0), (-1, -1), 0.3, colors.HexColor('#E5E7EB')),
+            # Column alignments
+            ('ALIGN',         (0, 1), (0, -1),  'CENTER'),   # #
+            ('ALIGN',         (1, 1), (1, -1),  'CENTER'),   # date
+            ('ALIGN',         (2, 1), (2, -1),  'CENTER'),   # type
+            ('ALIGN',         (3, 1), (3, -1),  'CENTER'),   # category
+            ('ALIGN',         (4, 1), (4, -1),  'RIGHT'),    # amount
+            ('ALIGN',         (5, 1), (5, -1),  'CENTER'),   # recorded
+            ('ALIGN',         (6, 1), (6, -1),  'LEFT'),     # remarks
+            # Amount column bold
+            ('FONTNAME',      (4, 1), (4, -1),  'Helvetica-Bold'),
+            ('FONTSIZE',      (4, 1), (4, -1),  8),
         ]
-        # per-row colours
-        for i, bg in enumerate(row_colors, start=1):
-            style_cmds.append(('BACKGROUND', (0, i), (-1, i), bg))
 
+        for idx, r in enumerate(records, 1):
+            is_income = r['type'] == 'Income'
+            row_bg    = INCOME_BG  if is_income else EXPENSE_BG
+            alt_bg    = colors.HexColor('#F0FDF4') if is_income else colors.HexColor('#FFF5F5')
+            type_style = income_type if is_income else expense_type
+            txt_color  = INCOME_TXT if is_income else EXPENSE_TXT
+            bg = row_bg if idx % 2 == 1 else alt_bg
+
+            amount_str = f"{r['amount']:,.2f}"
+            recorded   = str(r['created_at'])[:16]
+            remarks_txt = r['remarks'][:55] + ('…' if len(r['remarks']) > 55 else '')
+
+            row_data = [
+                Paragraph(str(idx), cell_grey),
+                Paragraph(r['nepali_date'], cell_center),
+                Paragraph(r['type'], type_style),
+                Paragraph(r['category'], cell_center),
+                Paragraph(amount_str, make_style(f'Amt{idx}', fontSize=8,
+                          textColor=txt_color, fontName='Helvetica-Bold', alignment=TA_RIGHT)),
+                Paragraph(recorded, cell_grey),
+                Paragraph(remarks_txt, cell_left),
+            ]
+            tbl_data.append(row_data)
+            data_row_idx = idx  # 1-based offset from header
+            style_cmds.append(('BACKGROUND', (0, data_row_idx), (-1, data_row_idx), bg))
+            # Bold amount text color
+            style_cmds.append(('TEXTCOLOR', (4, data_row_idx), (4, data_row_idx), txt_color))
+
+        tx_table = Table(tbl_data, colWidths=col_widths, repeatRows=1, splitByRow=True)
         tx_table.setStyle(TableStyle(style_cmds))
         story.append(tx_table)
+        story.append(Spacer(1, 5 * mm))
 
-        doc.build(story)
+        # ══════════════════════════════════════════════════════════════════
+        # FOOTER TOTALS BAR
+        # ══════════════════════════════════════════════════════════════════
+        bal_sign_str = "+" if net_balance >= 0 else ""
+        footer_data = [[
+            Paragraph(f"Total Transactions: <b>{total_records}</b>", meta_left),
+            Paragraph(f"Income: <b>Rs. {float(total_income):,.2f}</b>  &nbsp;&nbsp;  "
+                      f"Expenses: <b>Rs. {float(total_expenses):,.2f}</b>  &nbsp;&nbsp;  "
+                      f"Net: <b>Rs. {bal_sign_str}{float(net_balance):,.2f}</b>",
+                      make_style('FootR', fontSize=9, fontName='Helvetica',
+                                 textColor=NAVY, alignment=TA_RIGHT)),
+        ]]
+        footer_tbl = Table(footer_data, colWidths=[CONTENT_W * 0.4, CONTENT_W * 0.6])
+        footer_tbl.setStyle(TableStyle([
+            ('BACKGROUND',    (0, 0), (-1, -1), LIGHT_BLUE),
+            ('TOPPADDING',    (0, 0), (-1, -1), 7),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 7),
+            ('LEFTPADDING',   (0, 0), (-1, -1), 8),
+            ('RIGHTPADDING',  (0, 0), (-1, -1), 8),
+            ('BOX',           (0, 0), (-1, -1), 1, NAVY),
+        ]))
+        story.append(footer_tbl)
+        story.append(Spacer(1, 4 * mm))
+
+        # ── Disclaimer line ────────────────────────────────────────────────
+        story.append(HRFlowable(width=CONTENT_W, color=DIVIDER, thickness=0.5))
+        story.append(Spacer(1, 2 * mm))
+        story.append(Paragraph(
+            "This is a system-generated statement. No signature is required. "
+            "For queries, contact the hotel management.",
+            footer_style
+        ))
+
+        # ── Page numbering via onFirstPage / onLaterPages canvas callback ──
+        def add_page_number(canvas, doc):
+            canvas.saveState()
+            canvas.setFont('Helvetica', 7)
+            canvas.setFillColor(GREY)
+            page_num  = canvas.getPageNumber()
+            text = f"Page {page_num}  |  Hotel Lodge — Statement"
+            canvas.drawCentredString(PAGE_W / 2, 10 * mm, text)
+            # Top right watermark
+            canvas.setFont('Helvetica', 7)
+            canvas.setFillColor(colors.HexColor('#BFDBFE'))
+            canvas.drawRightString(PAGE_W - MARGIN, PAGE_H - 8 * mm, "CONFIDENTIAL")
+            canvas.restoreState()
+
+        doc.build(story, onFirstPage=add_page_number, onLaterPages=add_page_number)
         buffer.seek(0)
 
         response = HttpResponse(buffer, content_type="application/pdf")
-        response["Content-Disposition"] = 'attachment; filename="statement.pdf"'
+        response["Content-Disposition"] = 'attachment; filename="hotel_lodge_statement.pdf"'
         return response
