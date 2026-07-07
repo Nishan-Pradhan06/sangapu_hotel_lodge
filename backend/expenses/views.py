@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum
+from django.utils import timezone
 from .models import ExpenseEntry
 from .serializers import ExpenseEntrySerializer
 
@@ -18,24 +19,30 @@ class ExpenseEntryViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-        
-        latest_entry = queryset.first()
-        total_daily_expenses = 0
+
+        # ── Daily expenses: entries created today (Gregorian midnight reset) ──
+        today = timezone.localdate()
+        total_daily_expenses = (
+            queryset.filter(created_at__date=today)
+            .aggregate(Sum('amount'))['amount__sum'] or 0
+        )
+
+        # ── Monthly expenses: current Nepali month from latest entry ──────────
         total_monthly_expenses = 0
-        
+        latest_entry = queryset.first()
         if latest_entry:
-            current_date = latest_entry.nepali_date
-            current_month = current_date[:7]
-            
-            total_daily_expenses = queryset.filter(nepali_date=current_date).aggregate(Sum('amount'))['amount__sum'] or 0
-            total_monthly_expenses = queryset.filter(nepali_date__startswith=current_month).aggregate(Sum('amount'))['amount__sum'] or 0
+            current_month = latest_entry.nepali_date[:7]   # e.g. "2083-03"
+            total_monthly_expenses = (
+                queryset.filter(nepali_date__startswith=current_month)
+                .aggregate(Sum('amount'))['amount__sum'] or 0
+            )
 
         serializer = self.get_serializer(queryset, many=True)
         return Response({
             "summary": {
-                "total_daily_expenses": float(total_daily_expenses),
+                "total_daily_expenses":   float(total_daily_expenses),
                 "total_monthly_expenses": float(total_monthly_expenses),
-                "total_records": queryset.count(),
+                "total_records":          queryset.count(),
             },
-            "data": serializer.data
+            "data": serializer.data,
         })
