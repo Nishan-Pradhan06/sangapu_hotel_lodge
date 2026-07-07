@@ -1,3 +1,3 @@
 part of 'get_income_bloc.dart';
 
-typedef GetIncomeState = BaseState<
+typedef GetIncomeState = BaseState<IncomeSummaryResponse>;
