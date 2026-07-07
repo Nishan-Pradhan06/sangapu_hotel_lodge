@@ -1,7 +1,6 @@
 from django.urls import path
-from .views import DailyIncomeView, MonthlyIncomeView
+from .views import IncomeView
 
 urlpatterns = [
-    path('daily/', DailyIncomeView.as_view(), name='daily-income'),
-    path('monthly/', MonthlyIncomeView.as_view(), name='monthly-income'),
+    path('', IncomeView.as_view(), name='income'),
 ]
