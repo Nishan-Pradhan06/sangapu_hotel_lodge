@@ -7,9 +7,14 @@ from .serializers import ExpenseEntrySerializer
 
 
 class ExpenseEntryViewSet(viewsets.ModelViewSet):
-    queryset = ExpenseEntry.objects.all().order_by('-created_at')
     serializer_class = ExpenseEntrySerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return ExpenseEntry.objects.filter(user=self.request.user).order_by('-created_at')
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

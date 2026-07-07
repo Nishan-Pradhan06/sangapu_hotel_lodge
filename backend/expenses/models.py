@@ -1,7 +1,9 @@
 from django.db import models
+from django.conf import settings
 
 
 class ExpenseEntry(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
     CATEGORY_CHOICES = [
         ('electricity', 'Electricity'),
         ('staff_salary', 'Staff Salary'),

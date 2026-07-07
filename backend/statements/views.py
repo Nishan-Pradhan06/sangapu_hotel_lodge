@@ -50,9 +50,8 @@ def get_filtered_records(request):
     filter_date  = request.query_params.get('date', None)
     filter_month = request.query_params.get('month', None)
     ordering     = request.query_params.get('ordering', 'desc')
-
-    income_qs  = RoomEntry.objects.all()
-    expense_qs = ExpenseEntry.objects.all()
+    income_qs  = RoomEntry.objects.filter(user=request.user)
+    expense_qs = ExpenseEntry.objects.filter(user=request.user)
 
     if filter_date:
         income_qs  = income_qs.filter(nepali_date=filter_date)

@@ -6,7 +6,7 @@ class ExpenseEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = ExpenseEntry
         fields = '__all__'
-        read_only_fields = ('created_at', 'updated_at')
+        read_only_fields = ('created_at', 'updated_at', 'user')
 
     def validate(self, data):
         # For partial updates, fall back to existing value if not provided

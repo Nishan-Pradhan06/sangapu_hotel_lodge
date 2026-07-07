@@ -5,7 +5,7 @@ class RoomEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = RoomEntry
         fields = '__all__'
-        read_only_fields = ('created_at', 'updated_at')
+        read_only_fields = ('created_at', 'updated_at', 'user')
 
     def validate(self, data):
         # Allow partial updates to preserve existing values if not provided in the payload

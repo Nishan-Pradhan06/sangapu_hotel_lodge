@@ -9,7 +9,7 @@ class DailyIncomeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        data = list(RoomEntry.objects.annotate(
+        data = list(RoomEntry.objects.filter(user=request.user).annotate(
             date=F('nepali_date')
         ).values('date').annotate(
             total_entries=Count('id'),
@@ -36,7 +36,7 @@ class MonthlyIncomeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        data = list(RoomEntry.objects.annotate(
+        data = list(RoomEntry.objects.filter(user=request.user).annotate(
             month=Substr('nepali_date', 1, 7)
         ).values('month').annotate(
             total_entries=Count('id'),

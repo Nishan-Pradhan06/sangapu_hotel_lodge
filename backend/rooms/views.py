@@ -4,6 +4,11 @@ from .models import RoomEntry
 from .serializers import RoomEntrySerializer
 
 class RoomEntryViewSet(viewsets.ModelViewSet):
-    queryset = RoomEntry.objects.all().order_by('-created_at')
     serializer_class = RoomEntrySerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return RoomEntry.objects.filter(user=self.request.user).order_by('-created_at')
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

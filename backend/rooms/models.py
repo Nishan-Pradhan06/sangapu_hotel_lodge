@@ -1,6 +1,8 @@
 from django.db import models
+from django.conf import settings
 
 class RoomEntry(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
     FIXED_PRICE_CHOICES = [
         (800, '800'),
         (900, '900'),
