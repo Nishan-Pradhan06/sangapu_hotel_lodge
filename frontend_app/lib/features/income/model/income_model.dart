@@ -103,37 +103,49 @@ class Pagination {
 }
 
 class IncomeData {
-  final String date;
-  final int totalEntries;
-  final int fixedPriceEntries;
-  final int customPriceEntries;
-  final int totalIncome;
+  final int id;
+  final String category;
+  final int amount;
+  final String remarks;
+  final String nepaliDate;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int user;
 
   IncomeData({
-    required this.date,
-    required this.totalEntries,
-    required this.fixedPriceEntries,
-    required this.customPriceEntries,
-    required this.totalIncome,
+    required this.id,
+    required this.category,
+    required this.amount,
+    required this.remarks,
+    required this.nepaliDate,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.user,
   });
 
   factory IncomeData.fromJson(Map<String, dynamic> json) {
     return IncomeData(
-      date: json['date'] as String,
-      totalEntries: (json['total_entries'] as num).toInt(),
-      fixedPriceEntries: (json['fixed_price_entries'] as num).toInt(),
-      customPriceEntries: (json['custom_price_entries'] as num).toInt(),
-      totalIncome: (json['total_income'] as num).toInt(),
+      id: (json['id'] as num).toInt(),
+      category: json['category'] as String,
+      amount: (json['amount'] as num).toInt(),
+      remarks: json['remarks'] as String? ?? '',
+      nepaliDate: json['nepali_date'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+      user: (json['user'] as num).toInt(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'date': date,
-      'total_entries': totalEntries,
-      'fixed_price_entries': fixedPriceEntries,
-      'custom_price_entries': customPriceEntries,
-      'total_income': totalIncome,
+      'id': id,
+      'category': category,
+      'amount': amount,
+      'remarks': remarks,
+      'nepali_date': nepaliDate,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+      'user': user,
     };
   }
 }

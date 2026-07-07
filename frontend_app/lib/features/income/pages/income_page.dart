@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/custom_padding.dart';
 import '../../reports/widgets/earning_cards.dart';
+import '../../statements/widgets/transcation_tile.dart';
 import '../blocs/bloc/get_income_bloc.dart';
 
 class IncomePage extends StatelessWidget {
@@ -14,7 +16,6 @@ class IncomePage extends StatelessWidget {
     final textTheme = theme.textTheme;
 
     // Semantic amount colors sourced from AppTheme, not hardcoded here.
-    final positiveColor = colorScheme.primary;
 
     return Scaffold(
       appBar: AppBar(
@@ -87,28 +88,28 @@ class IncomePage extends StatelessWidget {
                             final incomeItem = income.data[index];
                             return Column(
                               children: [
-                                // TransactionTile(
-                                //   title: Text(
-                                //     "${incomeItem.category.} | ${incomeItem.remarks}",
-                                //     style: textTheme.titleSmall,
-                                //   ),
-                                //   dateTime: Text(
-                                //     incomeItem.nepaliDate,
-                                //     style: textTheme.bodySmall,
-                                //   ),
-                                //   amount: Text(
-                                //     " +${incomeItem..toString()}",
-                                //     style: textTheme.titleMedium?.copyWith(
-                                //       color: positiveColor,
-                                //     ),
-                                //   ),
-                                //   balance: Text(
-                                //     "",
-                                //     style: textTheme.bodyMedium?.copyWith(
-                                //       color: colorScheme.onSurfaceVariant,
-                                //     ),
-                                //   ),
-                                // ),
+                                TransactionTile(
+                                  title: Text(
+                                    "${incomeItem.category} | ${incomeItem.remarks}",
+                                    style: textTheme.titleSmall,
+                                  ),
+                                  dateTime: Text(
+                                    incomeItem.nepaliDate,
+                                    style: textTheme.bodySmall,
+                                  ),
+                                  amount: Text(
+                                    " +${incomeItem.amount.toString()}",
+                                    style: textTheme.titleMedium?.copyWith(
+                                      color: AppTheme.success,
+                                    ),
+                                  ),
+                                  balance: Text(
+                                    "",
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
                                 Divider(color: colorScheme.outline, height: 32),
                               ],
                             );
