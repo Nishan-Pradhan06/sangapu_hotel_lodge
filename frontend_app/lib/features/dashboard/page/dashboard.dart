@@ -7,6 +7,7 @@ import '../../../core/widgets/custom_padding.dart';
 import '../../../core/widgets/earnings_card_simmer.dart';
 import '../../../routers/app_routes_names.dart';
 import '../../expenses/blocs/get_expenses/get_expenses_bloc.dart';
+import '../../income/blocs/bloc/get_income_bloc.dart';
 import '../../reports/widgets/earning_cards.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -34,21 +35,50 @@ class DashboardPage extends StatelessWidget {
         child: Column(
           spacing: 20,
           children: [
-            EarningsCard(
-              title: 'Today Earnings',
-              amount: 'Rs 5,600.00',
-              backgroundColor: const Color(0xFF1A237E).withValues(alpha: 0.9),
-              subtitle: '+12% from yesterday',
-              icon: Icons.show_chart_rounded,
+            BlocBuilder<GetIncomeBloc, GetIncomeState>(
+              builder: (context, state) {
+                return state.when(
+                  initial: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  loading: () => EarningsCardShimmer(),
+                  failure: (failure) => Center(
+                    child: Text(
+                      'Failed to load income: ${failure.message}',
+                      style: TextTheme.of(context).bodyMedium,
+                    ),
+                  ),
+                  loaded: (income) {
+                    return Column(
+                      spacing: 20,
+
+                      children: [
+                        EarningsCard(
+                          title: 'Today Earnings',
+                          amount: "Rs ${income.summary.dailyIncome.toString()}",
+                          backgroundColor: const Color(
+                            0xFF1A237E,
+                          ).withValues(alpha: 0.9),
+                          subtitle: 'Total Record of a Day',
+                          icon: Icons.show_chart_rounded,
+                        ),
+
+                        EarningsCard(
+                          title: 'Total Monthly Earnings',
+                          amount:
+                              "Rs ${income.summary.monthlyIncome.toString()}",
+                          backgroundColor: const Color(
+                            0xFFFF9800,
+                          ).withValues(alpha: 0.8),
+                          icon: Icons.calendar_month_rounded,
+                          subtitle: 'On Track for target',
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
             ),
 
-            EarningsCard(
-              title: 'Total Sales',
-              amount: 'Rs 25,600.00',
-              backgroundColor: const Color(0xFFFF9800).withValues(alpha: 0.8),
-              icon: Icons.calendar_month_rounded,
-              subtitle: 'On Track for target',
-            ),
             BlocBuilder<GetExpensesBloc, GetExpensesState>(
               builder: (context, state) {
                 return state.when(

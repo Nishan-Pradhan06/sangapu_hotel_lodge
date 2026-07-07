@@ -6,6 +6,8 @@ import 'package:sangapu/features/expenses/blocs/get_expenses/get_expenses_bloc.d
 import '../../features/auth/blocs/login/log_in_bloc.dart';
 import '../../features/auth/repository/auth_repository.dart';
 import '../../features/expenses/repository/expenses_repository.dart';
+import '../../features/income/blocs/bloc/get_income_bloc.dart';
+import '../../features/income/repository/income_repository.dart';
 import '../../features/rooms/blocs/room_entry/room_entry_bloc.dart';
 import '../../features/rooms/repository/room_entry_repository.dart';
 import '../../features/statements/bloc/statements_bloc.dart';
@@ -25,6 +27,7 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(() => StatementsBloc(repo: sl()));
   sl.registerLazySingleton(() => GetExpensesBloc(repo: sl()));
   sl.registerLazySingleton(() => AddExpensesRecordBloc(repo: sl()));
+  sl.registerLazySingleton(() => GetIncomeBloc(repo: sl()));
 
   //###---------------CUBIT--------------------###
 
@@ -40,6 +43,9 @@ Future<void> setupServiceLocator() async {
   );
   sl.registerLazySingleton<ExpensesRepository>(
     () => ExpensesRepositoryImpl(apiService: sl()),
+  );
+  sl.registerLazySingleton<IncomeRepository>(
+    () => IncomeRepositoryImpl(apiService: sl()),
   );
 
   //###---------------EXTERNAL REPOSITORY SERVICES---------------###

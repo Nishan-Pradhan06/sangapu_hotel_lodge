@@ -5,6 +5,7 @@ import '../../core/widgets/double_press_to_exit.dart';
 import '../expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import '../expenses/page/expenses_page.dart';
 import '../dashboard/page/dashboard.dart';
+import '../income/blocs/bloc/get_income_bloc.dart';
 import '../income/pages/income_page.dart';
 import '../statements/bloc/statements_bloc.dart';
 import '../statements/pages/statements_page.dart';
@@ -29,6 +30,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
   void initState() {
     context.read<StatementsBloc>().add(const StatementsEvent.getStatement());
     context.read<GetExpensesBloc>().add(const GetExpensesEvent.getExpenses());
+    context.read<GetIncomeBloc>().add(const GetIncomeEvent.getIncome());
     super.initState();
   }
 
