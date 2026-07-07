@@ -31,82 +31,95 @@ class DashboardPage extends StatelessWidget {
           ],
         ),
       ),
-      body: CustomPadding(
-        child: Column(
-          spacing: 20,
-          children: [
-            BlocBuilder<GetIncomeBloc, GetIncomeState>(
-              builder: (context, state) {
-                return state.when(
-                  initial: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  loading: () => EarningsCardShimmer(),
-                  failure: (failure) => Center(
-                    child: Text(
-                      'Failed to load income: ${failure.message}',
-                      style: TextTheme.of(context).bodyMedium,
-                    ),
-                  ),
-                  loaded: (income) {
-                    return Column(
-                      spacing: 20,
+      body: RefreshIndicator(
+        onRefresh: () {
+          context.read<GetIncomeBloc>().add(const GetIncomeEvent.getIncome());
+          context.read<GetExpensesBloc>().add(
+            const GetExpensesEvent.getExpenses(),
+          );
+          return Future.value();
+        },
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: CustomPadding(
+            child: Column(
+              spacing: 20,
+              children: [
+                BlocBuilder<GetIncomeBloc, GetIncomeState>(
+                  builder: (context, state) {
+                    return state.when(
+                      initial: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      loading: () => EarningsCardShimmer(),
+                      failure: (failure) => Center(
+                        child: Text(
+                          'Failed to load income: ${failure.message}',
+                          style: TextTheme.of(context).bodyMedium,
+                        ),
+                      ),
+                      loaded: (income) {
+                        return Column(
+                          spacing: 20,
 
-                      children: [
-                        EarningsCard(
-                          title: 'Today Earnings',
-                          amount: "Rs ${income.summary.dailyIncome.toString()}",
+                          children: [
+                            EarningsCard(
+                              title: 'Today Earnings',
+                              amount:
+                                  "Rs ${income.summary.dailyIncome.toString()}",
+                              backgroundColor: const Color(
+                                0xFF1A237E,
+                              ).withValues(alpha: 0.9),
+                              subtitle: 'Total Record of a Day',
+                              icon: Icons.show_chart_rounded,
+                            ),
+
+                            EarningsCard(
+                              title: 'Total Monthly Earnings',
+                              amount:
+                                  "Rs ${income.summary.monthlyIncome.toString()}",
+                              backgroundColor: const Color(
+                                0xFFFF9800,
+                              ).withValues(alpha: 0.8),
+                              icon: Icons.calendar_month_rounded,
+                              subtitle: 'On Track for target',
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+
+                BlocBuilder<GetExpensesBloc, GetExpensesState>(
+                  builder: (context, state) {
+                    return state.when(
+                      initial: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      loading: () => EarningsCardShimmer(),
+                      failure: (failure) => Center(
+                        child: Text(
+                          'Failed to load expenses: ${failure.message}',
+                          style: TextTheme.of(context).bodyMedium,
+                        ),
+                      ),
+                      loaded: (expenses) {
+                        return EarningsCard(
+                          title: 'Total Daily Expenses',
+                          amount:
+                              "Rs ${expenses.summary.totalDailyExpenses.toString()}",
                           backgroundColor: const Color(
-                            0xFF1A237E,
+                            0xFF7e1a44,
                           ).withValues(alpha: 0.9),
                           subtitle: 'Total Record of a Day',
                           icon: Icons.show_chart_rounded,
-                        ),
-
-                        EarningsCard(
-                          title: 'Total Monthly Earnings',
-                          amount:
-                              "Rs ${income.summary.monthlyIncome.toString()}",
-                          backgroundColor: const Color(
-                            0xFFFF9800,
-                          ).withValues(alpha: 0.8),
-                          icon: Icons.calendar_month_rounded,
-                          subtitle: 'On Track for target',
-                        ),
-                      ],
+                        );
+                      },
                     );
                   },
-                );
-              },
+                ),
+              ],
             ),
-
-            BlocBuilder<GetExpensesBloc, GetExpensesState>(
-              builder: (context, state) {
-                return state.when(
-                  initial: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  loading: () => EarningsCardShimmer(),
-                  failure: (failure) => Center(
-                    child: Text(
-                      'Failed to load expenses: ${failure.message}',
-                      style: TextTheme.of(context).bodyMedium,
-                    ),
-                  ),
-                  loaded: (expenses) {
-                    return EarningsCard(
-                      title: 'Total Daily Expenses',
-                      amount:
-                          "Rs ${expenses.summary.totalDailyExpenses.toString()}",
-                      backgroundColor: const Color(
-                        0xFF7e1a44,
-                      ).withValues(alpha: 0.9),
-                      subtitle: 'Total Record of a Day',
-                      icon: Icons.show_chart_rounded,
-                    );
-                  },
-                );
-              },
-            ),
-          ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
