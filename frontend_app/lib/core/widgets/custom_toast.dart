@@ -58,4 +58,44 @@ class CustomToast {
   static void cancel() {
     Fluttertoast.cancel();
   }
+
+  /// Displays a SnackBar that looks similar to a toast but supports an action button.
+  /// Requires a [BuildContext].
+  static void showWithAction(
+    BuildContext context, {
+    required String message,
+    required String actionLabel,
+    required VoidCallback onActionPressed,
+    ToastType type = ToastType.success,
+  }) {
+    Color backgroundColor;
+    switch (type) {
+      case ToastType.success:
+        backgroundColor = Colors.green;
+        break;
+      case ToastType.error:
+        backgroundColor = Colors.red;
+        break;
+      case ToastType.warning:
+        backgroundColor = Colors.orange;
+        break;
+      case ToastType.info:
+        backgroundColor = Colors.blue;
+        break;
+    }
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: const TextStyle(color: Colors.white)),
+        backgroundColor: backgroundColor,
+        behavior: SnackBarBehavior.floating,
+        action: SnackBarAction(
+          label: actionLabel,
+          textColor: Colors.white,
+          onPressed: onActionPressed,
+        ),
+      ),
+    );
+  }
 }

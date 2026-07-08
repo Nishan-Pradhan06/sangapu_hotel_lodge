@@ -12,6 +12,7 @@ import '../../features/rooms/blocs/room_entry/room_entry_bloc.dart';
 import '../../features/rooms/repository/room_entry_repository.dart';
 import '../../features/statements/bloc/statements_bloc.dart';
 import '../../features/export_statements/blocs/export_excel/export_statement_bloc.dart';
+import '../../features/export_statements/blocs/export_pdf/export_pdf_bloc.dart';
 import '../../features/export_statements/repository/export_statement_repository.dart';
 import '../../features/statements/repository/transcation_repository.dart';
 import '../network/api_services.dart';
@@ -31,6 +32,7 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(() => AddExpensesRecordBloc(repo: sl()));
   sl.registerLazySingleton(() => GetIncomeBloc(repo: sl()));
   sl.registerLazySingleton(() => ExportStatementBloc(repo: sl()));
+  sl.registerLazySingleton(() => ExportPdfBloc(repo: sl()));
 
   //###---------------CUBIT--------------------###
 

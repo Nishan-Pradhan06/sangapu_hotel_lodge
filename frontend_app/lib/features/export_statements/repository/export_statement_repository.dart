@@ -13,6 +13,13 @@ abstract interface class ExportStatementRepository {
     String? month,
     String? ordering,
   });
+
+  FutureEither<Uint8List> exportStatementPdf({
+    String? type,
+    String? date,
+    String? month,
+    String? ordering,
+  });
 }
 
 class ExportStatementRepositoryImpl implements ExportStatementRepository {
@@ -37,7 +44,42 @@ class ExportStatementRepositoryImpl implements ExportStatementRepository {
     final response = await _apiService.get<List<int>>(
       'statement/export/excel/',
       queryParameters: queryParams.isNotEmpty ? queryParams : null,
-      options: Options(responseType: ResponseType.bytes),
+      options: Options(
+        responseType: ResponseType.bytes,
+        headers: {
+          'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/octet-stream, */*',
+        },
+      ),
+    );
+
+    return response.fold(
+      (failure) => Left(failure),
+      (bytes) => Right(Uint8List.fromList(bytes)),
+    );
+  }
+
+  @override
+  FutureEither<Uint8List> exportStatementPdf({
+    String? type,
+    String? date,
+    String? month,
+    String? ordering,
+  }) async {
+    final queryParams = <String, dynamic>{};
+    if (type != null) queryParams['type'] = type;
+    if (date != null) queryParams['date'] = date;
+    if (month != null) queryParams['month'] = month;
+    if (ordering != null) queryParams['ordering'] = ordering;
+
+    final response = await _apiService.get<List<int>>(
+      'statement/export/pdf/',
+      queryParameters: queryParams.isNotEmpty ? queryParams : null,
+      options: Options(
+        responseType: ResponseType.bytes,
+        headers: {
+          'Accept': 'application/pdf, application/octet-stream, */*',
+        },
+      ),
     );
 
     return response.fold(
