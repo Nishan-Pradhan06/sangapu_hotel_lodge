@@ -5,6 +5,7 @@ import '../../features/auth/blocs/login/log_in_bloc.dart';
 import '../../features/expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import '../../features/income/blocs/bloc/get_income_bloc.dart';
 import '../../features/rooms/blocs/room_entry/room_entry_bloc.dart';
+import '../../features/export_statements/blocs/export_excel/export_statement_bloc.dart';
 import '../../features/statements/bloc/statements_bloc.dart';
 import '../di/dependency_injection.dart';
 // import '../services/once_cache_service.dart';
@@ -23,6 +24,7 @@ class BlocWrapperWidget extends StatelessWidget {
         BlocProvider(create: (_) => sl<GetExpensesBloc>()),
         BlocProvider(create: (_) => sl<AddExpensesRecordBloc>()),
         BlocProvider(create: (_) => sl<GetIncomeBloc>()),
+        BlocProvider(create: (_) => sl<ExportStatementBloc>()),
 
         //##----------GET------------##//
       ],

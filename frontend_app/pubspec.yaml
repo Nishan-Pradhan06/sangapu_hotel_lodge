@@ -39,6 +39,8 @@ dependencies:
   nepali_utils: ^3.0.8
   intl: ^0.20.3
   shimmer: ^3.0.0
+  path_provider: ^2.1.6
+  open_file: ^3.5.11
 
 dev_dependencies:
   flutter_test:
