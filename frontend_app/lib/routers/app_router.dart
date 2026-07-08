@@ -12,7 +12,7 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>(
 
 final appRoute = GoRouter(
   navigatorKey: rootNavigatorKey,
-  initialLocation: AppRoutesName.loginScreenRoute.path,
+  initialLocation: AppRoutesName.splashScreenRoute.path,
   routes: [
     ...authRoutes.map((r) => _wrapWithTransition(r)),
     ...globalAppRoutes.map((r) => _wrapWithTransition(r)),

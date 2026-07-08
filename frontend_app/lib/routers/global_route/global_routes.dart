@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:sangapu/features/global_page/bottom_nav_bar.dart';
 import '../../common/extension/extension.dart';
+import '../../features/global_page/splash_screen.dart';
 import '../app_routes_names.dart';
 
 List<GoRoute> globalAppRoutes = [
@@ -21,5 +22,10 @@ List<GoRoute> globalAppRoutes = [
     path: AppRoutesName.bottomNavRoutePage.path,
     name: AppRoutesName.bottomNavRoutePage,
     builder: (context, state) => BottomNavBarPage(),
+  ),
+  GoRoute(
+    path: AppRoutesName.splashScreenRoute.path,
+    name: AppRoutesName.splashScreenRoute,
+    builder: (context, state) => SplashScreen(),
   ),
 ];
