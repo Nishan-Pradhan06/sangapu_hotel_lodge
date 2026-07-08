@@ -48,8 +48,7 @@ class DashboardPage extends StatelessWidget {
                 BlocBuilder<GetIncomeBloc, GetIncomeState>(
                   builder: (context, state) {
                     return state.when(
-                      initial: () =>
-                          const Center(child: CircularProgressIndicator()),
+                      initial: () => const EarningsCardShimmer(),
                       loading: () => EarningsCardShimmer(),
                       failure: (failure) => Center(
                         child: Text(
@@ -93,8 +92,7 @@ class DashboardPage extends StatelessWidget {
                 BlocBuilder<GetExpensesBloc, GetExpensesState>(
                   builder: (context, state) {
                     return state.when(
-                      initial: () =>
-                          const Center(child: CircularProgressIndicator()),
+                      initial: () => EarningsCardShimmer(),
                       loading: () => EarningsCardShimmer(),
                       failure: (failure) => Center(
                         child: Text(

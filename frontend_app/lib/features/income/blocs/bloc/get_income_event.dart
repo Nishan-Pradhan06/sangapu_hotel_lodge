@@ -1,6 +1,6 @@
 part of 'get_income_bloc.dart';
 
 @freezed
-class GetIncomeEvent with _$GetIncomeEvent {
-  const factory GetIncomeEvent.getIncome() = _GetIncomeEvent;
+abstract class GetIncomeEvent with _$GetIncomeEvent {
+  const factory GetIncomeEvent.getIncome({@Default(false) bool shouldShowLoadingIndicator}) = _GetIncomeEvent;
 }

@@ -20,7 +20,9 @@ class GetIncomeBloc extends Bloc<GetIncomeEvent, GetIncomeState> {
     _GetIncomeEvent event,
     Emitter<GetIncomeState> emit,
   ) async {
-    emit(const GetIncomeState.loading());
+    if (event.shouldShowLoadingIndicator) {
+      emit(const GetIncomeState.loading());
+    }
     final result = await _incomeRepository.getIncomeSummary();
     result.fold(
       (failure) => emit(GetIncomeState.failure(failure)),

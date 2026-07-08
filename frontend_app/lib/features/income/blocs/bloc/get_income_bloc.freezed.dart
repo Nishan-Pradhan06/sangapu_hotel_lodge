@@ -14,30 +14,61 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$GetIncomeEvent {
 
-
+ bool get shouldShowLoadingIndicator;
+/// Create a copy of GetIncomeEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$GetIncomeEventCopyWith<GetIncomeEvent> get copyWith => _$GetIncomeEventCopyWithImpl<GetIncomeEvent>(this as GetIncomeEvent, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetIncomeEvent);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetIncomeEvent&&(identical(other.shouldShowLoadingIndicator, shouldShowLoadingIndicator) || other.shouldShowLoadingIndicator == shouldShowLoadingIndicator));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,shouldShowLoadingIndicator);
 
 @override
 String toString() {
-  return 'GetIncomeEvent()';
+  return 'GetIncomeEvent(shouldShowLoadingIndicator: $shouldShowLoadingIndicator)';
 }
 
 
 }
 
 /// @nodoc
-class $GetIncomeEventCopyWith<$Res>  {
-$GetIncomeEventCopyWith(GetIncomeEvent _, $Res Function(GetIncomeEvent) __);
+abstract mixin class $GetIncomeEventCopyWith<$Res>  {
+  factory $GetIncomeEventCopyWith(GetIncomeEvent value, $Res Function(GetIncomeEvent) _then) = _$GetIncomeEventCopyWithImpl;
+@useResult
+$Res call({
+ bool shouldShowLoadingIndicator
+});
+
+
+
+
+}
+/// @nodoc
+class _$GetIncomeEventCopyWithImpl<$Res>
+    implements $GetIncomeEventCopyWith<$Res> {
+  _$GetIncomeEventCopyWithImpl(this._self, this._then);
+
+  final GetIncomeEvent _self;
+  final $Res Function(GetIncomeEvent) _then;
+
+/// Create a copy of GetIncomeEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? shouldShowLoadingIndicator = null,}) {
+  return _then(_self.copyWith(
+shouldShowLoadingIndicator: null == shouldShowLoadingIndicator ? _self.shouldShowLoadingIndicator : shouldShowLoadingIndicator // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
 }
 
 
@@ -119,10 +150,10 @@ return getIncome(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  getIncome,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( bool shouldShowLoadingIndicator)?  getIncome,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GetIncomeEvent() when getIncome != null:
-return getIncome();case _:
+return getIncome(_that.shouldShowLoadingIndicator);case _:
   return orElse();
 
 }
@@ -140,10 +171,10 @@ return getIncome();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  getIncome,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( bool shouldShowLoadingIndicator)  getIncome,}) {final _that = this;
 switch (_that) {
 case _GetIncomeEvent():
-return getIncome();case _:
+return getIncome(_that.shouldShowLoadingIndicator);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -160,10 +191,10 @@ return getIncome();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  getIncome,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( bool shouldShowLoadingIndicator)?  getIncome,}) {final _that = this;
 switch (_that) {
 case _GetIncomeEvent() when getIncome != null:
-return getIncome();case _:
+return getIncome(_that.shouldShowLoadingIndicator);case _:
   return null;
 
 }
@@ -175,32 +206,66 @@ return getIncome();case _:
 
 
 class _GetIncomeEvent implements GetIncomeEvent {
-  const _GetIncomeEvent();
+  const _GetIncomeEvent({this.shouldShowLoadingIndicator = false});
   
 
+@override@JsonKey() final  bool shouldShowLoadingIndicator;
 
-
+/// Create a copy of GetIncomeEvent
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$GetIncomeEventCopyWith<_GetIncomeEvent> get copyWith => __$GetIncomeEventCopyWithImpl<_GetIncomeEvent>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetIncomeEvent);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetIncomeEvent&&(identical(other.shouldShowLoadingIndicator, shouldShowLoadingIndicator) || other.shouldShowLoadingIndicator == shouldShowLoadingIndicator));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,shouldShowLoadingIndicator);
 
 @override
 String toString() {
-  return 'GetIncomeEvent.getIncome()';
+  return 'GetIncomeEvent.getIncome(shouldShowLoadingIndicator: $shouldShowLoadingIndicator)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class _$GetIncomeEventCopyWith<$Res> implements $GetIncomeEventCopyWith<$Res> {
+  factory _$GetIncomeEventCopyWith(_GetIncomeEvent value, $Res Function(_GetIncomeEvent) _then) = __$GetIncomeEventCopyWithImpl;
+@override @useResult
+$Res call({
+ bool shouldShowLoadingIndicator
+});
 
 
+
+
+}
+/// @nodoc
+class __$GetIncomeEventCopyWithImpl<$Res>
+    implements _$GetIncomeEventCopyWith<$Res> {
+  __$GetIncomeEventCopyWithImpl(this._self, this._then);
+
+  final _GetIncomeEvent _self;
+  final $Res Function(_GetIncomeEvent) _then;
+
+/// Create a copy of GetIncomeEvent
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? shouldShowLoadingIndicator = null,}) {
+  return _then(_GetIncomeEvent(
+shouldShowLoadingIndicator: null == shouldShowLoadingIndicator ? _self.shouldShowLoadingIndicator : shouldShowLoadingIndicator // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
 
 // dart format on
