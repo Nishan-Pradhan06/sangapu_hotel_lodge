@@ -14,30 +14,61 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$StatementsEvent {
 
-
+ bool get shouldShowLoadingIndicator;
+/// Create a copy of StatementsEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$StatementsEventCopyWith<StatementsEvent> get copyWith => _$StatementsEventCopyWithImpl<StatementsEvent>(this as StatementsEvent, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is StatementsEvent);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is StatementsEvent&&(identical(other.shouldShowLoadingIndicator, shouldShowLoadingIndicator) || other.shouldShowLoadingIndicator == shouldShowLoadingIndicator));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,shouldShowLoadingIndicator);
 
 @override
 String toString() {
-  return 'StatementsEvent()';
+  return 'StatementsEvent(shouldShowLoadingIndicator: $shouldShowLoadingIndicator)';
 }
 
 
 }
 
 /// @nodoc
-class $StatementsEventCopyWith<$Res>  {
-$StatementsEventCopyWith(StatementsEvent _, $Res Function(StatementsEvent) __);
+abstract mixin class $StatementsEventCopyWith<$Res>  {
+  factory $StatementsEventCopyWith(StatementsEvent value, $Res Function(StatementsEvent) _then) = _$StatementsEventCopyWithImpl;
+@useResult
+$Res call({
+ bool shouldShowLoadingIndicator
+});
+
+
+
+
+}
+/// @nodoc
+class _$StatementsEventCopyWithImpl<$Res>
+    implements $StatementsEventCopyWith<$Res> {
+  _$StatementsEventCopyWithImpl(this._self, this._then);
+
+  final StatementsEvent _self;
+  final $Res Function(StatementsEvent) _then;
+
+/// Create a copy of StatementsEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? shouldShowLoadingIndicator = null,}) {
+  return _then(_self.copyWith(
+shouldShowLoadingIndicator: null == shouldShowLoadingIndicator ? _self.shouldShowLoadingIndicator : shouldShowLoadingIndicator // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
 }
 
 
@@ -119,10 +150,10 @@ return getStatement(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  getStatement,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( bool shouldShowLoadingIndicator)?  getStatement,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _StatementEvent() when getStatement != null:
-return getStatement();case _:
+return getStatement(_that.shouldShowLoadingIndicator);case _:
   return orElse();
 
 }
@@ -140,10 +171,10 @@ return getStatement();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  getStatement,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( bool shouldShowLoadingIndicator)  getStatement,}) {final _that = this;
 switch (_that) {
 case _StatementEvent():
-return getStatement();case _:
+return getStatement(_that.shouldShowLoadingIndicator);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -160,10 +191,10 @@ return getStatement();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  getStatement,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( bool shouldShowLoadingIndicator)?  getStatement,}) {final _that = this;
 switch (_that) {
 case _StatementEvent() when getStatement != null:
-return getStatement();case _:
+return getStatement(_that.shouldShowLoadingIndicator);case _:
   return null;
 
 }
@@ -175,32 +206,66 @@ return getStatement();case _:
 
 
 class _StatementEvent implements StatementsEvent {
-  const _StatementEvent();
+  const _StatementEvent({this.shouldShowLoadingIndicator = false});
   
 
+@override@JsonKey() final  bool shouldShowLoadingIndicator;
 
-
+/// Create a copy of StatementsEvent
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$StatementEventCopyWith<_StatementEvent> get copyWith => __$StatementEventCopyWithImpl<_StatementEvent>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StatementEvent);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StatementEvent&&(identical(other.shouldShowLoadingIndicator, shouldShowLoadingIndicator) || other.shouldShowLoadingIndicator == shouldShowLoadingIndicator));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,shouldShowLoadingIndicator);
 
 @override
 String toString() {
-  return 'StatementsEvent.getStatement()';
+  return 'StatementsEvent.getStatement(shouldShowLoadingIndicator: $shouldShowLoadingIndicator)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class _$StatementEventCopyWith<$Res> implements $StatementsEventCopyWith<$Res> {
+  factory _$StatementEventCopyWith(_StatementEvent value, $Res Function(_StatementEvent) _then) = __$StatementEventCopyWithImpl;
+@override @useResult
+$Res call({
+ bool shouldShowLoadingIndicator
+});
 
 
+
+
+}
+/// @nodoc
+class __$StatementEventCopyWithImpl<$Res>
+    implements _$StatementEventCopyWith<$Res> {
+  __$StatementEventCopyWithImpl(this._self, this._then);
+
+  final _StatementEvent _self;
+  final $Res Function(_StatementEvent) _then;
+
+/// Create a copy of StatementsEvent
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? shouldShowLoadingIndicator = null,}) {
+  return _then(_StatementEvent(
+shouldShowLoadingIndicator: null == shouldShowLoadingIndicator ? _self.shouldShowLoadingIndicator : shouldShowLoadingIndicator // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
 
 // dart format on

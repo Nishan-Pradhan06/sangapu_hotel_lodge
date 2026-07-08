@@ -5,10 +5,12 @@ import 'package:sangapu/core/widgets/custom_button.dart';
 import 'package:sangapu/core/widgets/custom_container.dart';
 import 'package:sangapu/core/widgets/custom_padding.dart';
 import 'package:sangapu/core/widgets/custom_text_form_field.dart';
+import 'package:sangapu/features/income/blocs/bloc/get_income_bloc.dart';
 import 'package:sangapu/features/rooms/blocs/room_entry/room_entry_bloc.dart';
 import 'package:sangapu/features/statements/bloc/statements_bloc.dart';
 import '../../../core/helpers/nepali_date_helper.dart';
 import '../../../core/widgets/custom_toast.dart';
+import '../../expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import '../models/room_entry_model.dart';
 
 class CreateRoomEntryPage extends StatefulWidget {
@@ -110,6 +112,12 @@ class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
               CustomToast.showSuccess("Room entry successful");
               context.read<StatementsBloc>().add(
                 const StatementsEvent.getStatement(),
+              );
+              context.read<GetIncomeBloc>().add(
+                const GetIncomeEvent.getIncome(),
+              );
+              context.read<GetExpensesBloc>().add(
+                const GetExpensesEvent.getExpenses(),
               );
               context.pop();
             },

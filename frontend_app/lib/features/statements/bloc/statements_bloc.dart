@@ -20,7 +20,9 @@ class StatementsBloc extends Bloc<StatementsEvent, StatementsState> {
     StatementsEvent event,
     Emitter<StatementsState> emit,
   ) async {
-    emit(StatementsState.loading());
+    if (event.shouldShowLoadingIndicator) {
+      emit(StatementsState.loading());
+    }
     final result = await _transactionRepository.getTransactions();
     result.fold(
       (failure) => emit(StatementsState.failure(failure)),
