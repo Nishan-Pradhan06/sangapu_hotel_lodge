@@ -1,0 +1,9 @@
+{
+  "app_name": "Sangapu",
+  "package_name": "com.goat_tech.sangapu",
+  "icon_path": "assets/logo/logo.png",
+  "splash_config": {
+    "color": "#FFFFFF",
+    "image": "assets/logo/logo.png"
+  }
+}
