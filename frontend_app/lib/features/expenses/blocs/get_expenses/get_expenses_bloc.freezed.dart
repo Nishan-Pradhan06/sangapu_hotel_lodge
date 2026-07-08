@@ -14,30 +14,61 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$GetExpensesEvent {
 
-
+ bool get shouldShowLoadingIndicator;
+/// Create a copy of GetExpensesEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$GetExpensesEventCopyWith<GetExpensesEvent> get copyWith => _$GetExpensesEventCopyWithImpl<GetExpensesEvent>(this as GetExpensesEvent, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetExpensesEvent);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetExpensesEvent&&(identical(other.shouldShowLoadingIndicator, shouldShowLoadingIndicator) || other.shouldShowLoadingIndicator == shouldShowLoadingIndicator));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,shouldShowLoadingIndicator);
 
 @override
 String toString() {
-  return 'GetExpensesEvent()';
+  return 'GetExpensesEvent(shouldShowLoadingIndicator: $shouldShowLoadingIndicator)';
 }
 
 
 }
 
 /// @nodoc
-class $GetExpensesEventCopyWith<$Res>  {
-$GetExpensesEventCopyWith(GetExpensesEvent _, $Res Function(GetExpensesEvent) __);
+abstract mixin class $GetExpensesEventCopyWith<$Res>  {
+  factory $GetExpensesEventCopyWith(GetExpensesEvent value, $Res Function(GetExpensesEvent) _then) = _$GetExpensesEventCopyWithImpl;
+@useResult
+$Res call({
+ bool shouldShowLoadingIndicator
+});
+
+
+
+
+}
+/// @nodoc
+class _$GetExpensesEventCopyWithImpl<$Res>
+    implements $GetExpensesEventCopyWith<$Res> {
+  _$GetExpensesEventCopyWithImpl(this._self, this._then);
+
+  final GetExpensesEvent _self;
+  final $Res Function(GetExpensesEvent) _then;
+
+/// Create a copy of GetExpensesEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? shouldShowLoadingIndicator = null,}) {
+  return _then(_self.copyWith(
+shouldShowLoadingIndicator: null == shouldShowLoadingIndicator ? _self.shouldShowLoadingIndicator : shouldShowLoadingIndicator // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
 }
 
 
@@ -119,10 +150,10 @@ return getExpenses(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  getExpenses,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( bool shouldShowLoadingIndicator)?  getExpenses,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ExpensesEvent() when getExpenses != null:
-return getExpenses();case _:
+return getExpenses(_that.shouldShowLoadingIndicator);case _:
   return orElse();
 
 }
@@ -140,10 +171,10 @@ return getExpenses();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  getExpenses,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( bool shouldShowLoadingIndicator)  getExpenses,}) {final _that = this;
 switch (_that) {
 case _ExpensesEvent():
-return getExpenses();case _:
+return getExpenses(_that.shouldShowLoadingIndicator);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -160,10 +191,10 @@ return getExpenses();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  getExpenses,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( bool shouldShowLoadingIndicator)?  getExpenses,}) {final _that = this;
 switch (_that) {
 case _ExpensesEvent() when getExpenses != null:
-return getExpenses();case _:
+return getExpenses(_that.shouldShowLoadingIndicator);case _:
   return null;
 
 }
@@ -175,32 +206,66 @@ return getExpenses();case _:
 
 
 class _ExpensesEvent implements GetExpensesEvent {
-  const _ExpensesEvent();
+  const _ExpensesEvent({this.shouldShowLoadingIndicator = false});
   
 
+@override@JsonKey() final  bool shouldShowLoadingIndicator;
 
-
+/// Create a copy of GetExpensesEvent
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ExpensesEventCopyWith<_ExpensesEvent> get copyWith => __$ExpensesEventCopyWithImpl<_ExpensesEvent>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExpensesEvent);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExpensesEvent&&(identical(other.shouldShowLoadingIndicator, shouldShowLoadingIndicator) || other.shouldShowLoadingIndicator == shouldShowLoadingIndicator));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,shouldShowLoadingIndicator);
 
 @override
 String toString() {
-  return 'GetExpensesEvent.getExpenses()';
+  return 'GetExpensesEvent.getExpenses(shouldShowLoadingIndicator: $shouldShowLoadingIndicator)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class _$ExpensesEventCopyWith<$Res> implements $GetExpensesEventCopyWith<$Res> {
+  factory _$ExpensesEventCopyWith(_ExpensesEvent value, $Res Function(_ExpensesEvent) _then) = __$ExpensesEventCopyWithImpl;
+@override @useResult
+$Res call({
+ bool shouldShowLoadingIndicator
+});
 
 
+
+
+}
+/// @nodoc
+class __$ExpensesEventCopyWithImpl<$Res>
+    implements _$ExpensesEventCopyWith<$Res> {
+  __$ExpensesEventCopyWithImpl(this._self, this._then);
+
+  final _ExpensesEvent _self;
+  final $Res Function(_ExpensesEvent) _then;
+
+/// Create a copy of GetExpensesEvent
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? shouldShowLoadingIndicator = null,}) {
+  return _then(_ExpensesEvent(
+shouldShowLoadingIndicator: null == shouldShowLoadingIndicator ? _self.shouldShowLoadingIndicator : shouldShowLoadingIndicator // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
 
 // dart format on

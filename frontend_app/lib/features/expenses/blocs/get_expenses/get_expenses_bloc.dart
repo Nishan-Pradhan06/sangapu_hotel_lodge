@@ -20,7 +20,9 @@ class GetExpensesBloc extends Bloc<GetExpensesEvent, GetExpensesState> {
     _ExpensesEvent event,
     Emitter<GetExpensesState> emit,
   ) async {
-    emit(GetExpensesState.loading());
+    if (event.shouldShowLoadingIndicator) {
+      emit(GetExpensesState.loading());
+    }
     final result = await _expensesRepository.getExpenses();
     result.fold(
       (failure) => emit(GetExpensesState.failure(failure)),
