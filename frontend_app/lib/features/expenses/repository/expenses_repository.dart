@@ -8,6 +8,7 @@ import '../models/expenses_response.dart';
 abstract interface class ExpensesRepository {
   FutureEither<ExpenseResponse> getExpenses();
   FutureEither<String> createExpense(ExpensesRecordModel expensesRecordModel);
+  FutureEither<String> editExpense(int expensesId);
 }
 
 class ExpensesRepositoryImpl implements ExpensesRepository {
@@ -40,6 +41,17 @@ class ExpensesRepositoryImpl implements ExpensesRepository {
     return response.fold(
       (failure) => Left(failure),
       (_) => const Right('Expense created successfully'),
+    );
+  }
+
+  @override
+  FutureEither<String> editExpense(int expensesId) async {
+    final response = await _apiService.put<Map<String, dynamic>>(
+      'expenses/entries/$expensesId/',
+    );
+    return response.fold(
+      (failure) => Left(failure),
+      (_) => const Right('Expense updated successfully'),
     );
   }
 }

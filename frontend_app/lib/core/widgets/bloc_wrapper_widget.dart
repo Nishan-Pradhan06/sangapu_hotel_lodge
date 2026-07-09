@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sangapu/features/expenses/blocs/bloc/add_expenses_record_bloc.dart';
+import 'package:sangapu/features/expenses/blocs/add_expenses/add_expenses_record_bloc.dart';
 import '../../features/auth/blocs/login/log_in_bloc.dart';
 import '../../features/expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import '../../features/income/blocs/bloc/get_income_bloc.dart';

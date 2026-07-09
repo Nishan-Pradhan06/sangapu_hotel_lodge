@@ -9,7 +9,7 @@ import '../../../core/widgets/custom_padding.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
 import '../../../core/widgets/custom_toast.dart';
 import '../../statements/bloc/statements_bloc.dart';
-import '../blocs/bloc/add_expenses_record_bloc.dart';
+import '../blocs/add_expenses/add_expenses_record_bloc.dart';
 import '../blocs/get_expenses/get_expenses_bloc.dart';
 import '../models/create_expenses.dart';
 
