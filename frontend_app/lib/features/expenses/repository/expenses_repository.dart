@@ -46,7 +46,7 @@ class ExpensesRepositoryImpl implements ExpensesRepository {
 
   @override
   FutureEither<String> editExpense(int expensesId) async {
-    final response = await _apiService.put<Map<String, dynamic>>(
+    final response = await _apiService.patch<Map<String, dynamic>>(
       'expenses/entries/$expensesId/',
     );
     return response.fold(
