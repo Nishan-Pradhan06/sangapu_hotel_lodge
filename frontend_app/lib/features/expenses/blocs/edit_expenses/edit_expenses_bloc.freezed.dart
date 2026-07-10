@@ -14,8 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EditExpensesEvent {
 
- int get expensesId;
- ExpensesRecordModel get expensesRecordModel;
+ int get expensesId; ExpensesRecordModel get expensesRecordModel;
 /// Create a copy of EditExpensesEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -46,8 +45,7 @@ abstract mixin class $EditExpensesEventCopyWith<$Res>  {
   factory $EditExpensesEventCopyWith(EditExpensesEvent value, $Res Function(EditExpensesEvent) _then) = _$EditExpensesEventCopyWithImpl;
 @useResult
 $Res call({
- int expensesId,
- ExpensesRecordModel expensesRecordModel
+ int expensesId, ExpensesRecordModel expensesRecordModel
 });
 
 
@@ -153,10 +151,10 @@ return editExpense(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int expensesId, ExpensesRecordModel expensesRecordModel)?  editExpense,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int expensesId,  ExpensesRecordModel expensesRecordModel)?  editExpense,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EditExpenseEvent() when editExpense != null:
-return editExpense(_that.expensesId, _that.expensesRecordModel);case _:
+return editExpense(_that.expensesId,_that.expensesRecordModel);case _:
   return orElse();
 
 }
@@ -174,10 +172,10 @@ return editExpense(_that.expensesId, _that.expensesRecordModel);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int expensesId, ExpensesRecordModel expensesRecordModel)  editExpense,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int expensesId,  ExpensesRecordModel expensesRecordModel)  editExpense,}) {final _that = this;
 switch (_that) {
 case _EditExpenseEvent():
-return editExpense(_that.expensesId, _that.expensesRecordModel);case _:
+return editExpense(_that.expensesId,_that.expensesRecordModel);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +192,10 @@ return editExpense(_that.expensesId, _that.expensesRecordModel);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int expensesId, ExpensesRecordModel expensesRecordModel)?  editExpense,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int expensesId,  ExpensesRecordModel expensesRecordModel)?  editExpense,}) {final _that = this;
 switch (_that) {
 case _EditExpenseEvent() when editExpense != null:
-return editExpense(_that.expensesId, _that.expensesRecordModel);case _:
+return editExpense(_that.expensesId,_that.expensesRecordModel);case _:
   return null;
 
 }
@@ -245,8 +243,7 @@ abstract mixin class _$EditExpenseEventCopyWith<$Res> implements $EditExpensesEv
   factory _$EditExpenseEventCopyWith(_EditExpenseEvent value, $Res Function(_EditExpenseEvent) _then) = __$EditExpenseEventCopyWithImpl;
 @override @useResult
 $Res call({
- int expensesId,
- ExpensesRecordModel expensesRecordModel
+ int expensesId, ExpensesRecordModel expensesRecordModel
 });
 
 

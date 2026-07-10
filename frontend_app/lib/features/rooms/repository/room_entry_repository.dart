@@ -6,6 +6,10 @@ import '../models/room_entry_model.dart';
 
 abstract interface class RoomEntryRepository {
   FutureEither<RoomEntryModel> roomEntries({required RoomEntryModel roomEntry});
+  FutureEither<String> editRoomEntries(
+    int roomEntryId,
+    RoomEntryModel roomEntry,
+  );
 }
 
 class RoomEntryRepositoryImpl implements RoomEntryRepository {
@@ -25,6 +29,21 @@ class RoomEntryRepositoryImpl implements RoomEntryRepository {
 
     return response.fold((failure) => Left(failure), (success) async {
       return Right(RoomEntryModel.fromMap(success));
+    });
+  }
+
+  @override
+  FutureEither<String> editRoomEntries(
+    int roomEntryId,
+    RoomEntryModel roomEntry,
+  ) async {
+    final response = await _apiService.patch<Map<String, dynamic>>(
+      'rooms/entries/$roomEntryId/',
+      data: roomEntry.toMap(),
+    );
+
+    return response.fold((failure) => Left(failure), (success) {
+      return Right("Entry Updated Successfully");
     });
   }
 }

@@ -4,6 +4,7 @@ import 'package:retry/retry.dart';
 import 'package:sangapu/features/expenses/blocs/add_expenses/add_expenses_record_bloc.dart';
 import 'package:sangapu/features/expenses/blocs/edit_expenses/edit_expenses_bloc.dart';
 import 'package:sangapu/features/expenses/blocs/get_expenses/get_expenses_bloc.dart';
+import 'package:sangapu/features/rooms/blocs/edit_room_entry/edit_room_entry_bloc.dart';
 import '../../features/auth/blocs/login/log_in_bloc.dart';
 import '../../features/auth/repository/auth_repository.dart';
 import '../../features/expenses/repository/expenses_repository.dart';
@@ -35,6 +36,7 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(() => ExportStatementBloc(repo: sl()));
   sl.registerLazySingleton(() => ExportPdfBloc(repo: sl()));
   sl.registerLazySingleton(() => EditExpensesBloc(repo: sl()));
+  sl.registerLazySingleton(() => EditRoomEntryBloc(repo: sl()));
 
   //###---------------CUBIT--------------------###
 
