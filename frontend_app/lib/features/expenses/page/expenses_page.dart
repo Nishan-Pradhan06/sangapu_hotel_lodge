@@ -92,6 +92,16 @@ class ExpensesPage extends StatelessWidget {
                             ),
                           ),
                         ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'To Edit expenses press and hold on list until edit page appear.',
+                            style: textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.normal,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
                         SizedBox(height: 16),
                         ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
@@ -122,6 +132,12 @@ class ExpensesPage extends StatelessWidget {
                                       color: colorScheme.onSurfaceVariant,
                                     ),
                                   ),
+                                  onLongPress: () {
+                                    context.pushNamed(
+                                      AppRoutesName.editExpense,
+                                      extra: expense,
+                                    );
+                                  },
                                 ),
                                 Divider(color: colorScheme.outline, height: 32),
                               ],

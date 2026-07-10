@@ -1,7 +1,9 @@
 import 'package:go_router/go_router.dart';
+import 'package:sangapu/features/expenses/page/edit_expenses.dart';
 import '../../common/extension/extension.dart';
 import '../../features/dashboard/page/dashboard.dart';
 import '../../features/expenses/page/add_expenses.dart';
+import '../../features/expenses/models/expenses_response.dart';
 import '../../features/rooms/page/create_room_page.dart';
 import '../app_routes_names.dart';
 
@@ -20,5 +22,13 @@ List<GoRoute> pageAppRoutes = [
     path: AppRoutesName.addExpense.path,
     name: AppRoutesName.addExpense,
     builder: (context, state) => AddExpenses(),
+  ),
+  GoRoute(
+    path: AppRoutesName.editExpense.path,
+    name: AppRoutesName.editExpense,
+    builder: (context, state) {
+      final expense = state.extra as Expense;
+      return EditExpenses(expense: expense);
+    },
   ),
 ];

@@ -11,4 +11,5 @@ class AppRoutesName {
   static const String dashboardPage = 'dashboardPage';
   static const String createRoomEntryPage = 'createRoomEntryPage';
   static const String addExpense = 'addExpense';
+  static const String editExpense = 'editExpense';
 }

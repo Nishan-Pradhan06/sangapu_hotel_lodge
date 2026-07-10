@@ -15,6 +15,7 @@ T _$identity<T>(T value) => value;
 mixin _$EditExpensesEvent {
 
  int get expensesId;
+ ExpensesRecordModel get expensesRecordModel;
 /// Create a copy of EditExpensesEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +26,16 @@ $EditExpensesEventCopyWith<EditExpensesEvent> get copyWith => _$EditExpensesEven
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EditExpensesEvent&&(identical(other.expensesId, expensesId) || other.expensesId == expensesId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EditExpensesEvent&&(identical(other.expensesId, expensesId) || other.expensesId == expensesId)&&(identical(other.expensesRecordModel, expensesRecordModel) || other.expensesRecordModel == expensesRecordModel));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,expensesId);
+int get hashCode => Object.hash(runtimeType,expensesId,expensesRecordModel);
 
 @override
 String toString() {
-  return 'EditExpensesEvent(expensesId: $expensesId)';
+  return 'EditExpensesEvent(expensesId: $expensesId, expensesRecordModel: $expensesRecordModel)';
 }
 
 
@@ -45,7 +46,8 @@ abstract mixin class $EditExpensesEventCopyWith<$Res>  {
   factory $EditExpensesEventCopyWith(EditExpensesEvent value, $Res Function(EditExpensesEvent) _then) = _$EditExpensesEventCopyWithImpl;
 @useResult
 $Res call({
- int expensesId
+ int expensesId,
+ ExpensesRecordModel expensesRecordModel
 });
 
 
@@ -62,10 +64,11 @@ class _$EditExpensesEventCopyWithImpl<$Res>
 
 /// Create a copy of EditExpensesEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? expensesId = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? expensesId = null,Object? expensesRecordModel = null,}) {
   return _then(_self.copyWith(
 expensesId: null == expensesId ? _self.expensesId : expensesId // ignore: cast_nullable_to_non_nullable
-as int,
+as int,expensesRecordModel: null == expensesRecordModel ? _self.expensesRecordModel : expensesRecordModel // ignore: cast_nullable_to_non_nullable
+as ExpensesRecordModel,
   ));
 }
 
@@ -150,10 +153,10 @@ return editExpense(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int expensesId)?  editExpense,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int expensesId, ExpensesRecordModel expensesRecordModel)?  editExpense,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EditExpenseEvent() when editExpense != null:
-return editExpense(_that.expensesId);case _:
+return editExpense(_that.expensesId, _that.expensesRecordModel);case _:
   return orElse();
 
 }
@@ -171,10 +174,10 @@ return editExpense(_that.expensesId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int expensesId)  editExpense,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int expensesId, ExpensesRecordModel expensesRecordModel)  editExpense,}) {final _that = this;
 switch (_that) {
 case _EditExpenseEvent():
-return editExpense(_that.expensesId);case _:
+return editExpense(_that.expensesId, _that.expensesRecordModel);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -191,10 +194,10 @@ return editExpense(_that.expensesId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int expensesId)?  editExpense,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int expensesId, ExpensesRecordModel expensesRecordModel)?  editExpense,}) {final _that = this;
 switch (_that) {
 case _EditExpenseEvent() when editExpense != null:
-return editExpense(_that.expensesId);case _:
+return editExpense(_that.expensesId, _that.expensesRecordModel);case _:
   return null;
 
 }
@@ -206,10 +209,11 @@ return editExpense(_that.expensesId);case _:
 
 
 class _EditExpenseEvent implements EditExpensesEvent {
-  const _EditExpenseEvent(this.expensesId);
+  const _EditExpenseEvent(this.expensesId, this.expensesRecordModel);
   
 
 @override final  int expensesId;
+@override final  ExpensesRecordModel expensesRecordModel;
 
 /// Create a copy of EditExpensesEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -221,16 +225,16 @@ _$EditExpenseEventCopyWith<_EditExpenseEvent> get copyWith => __$EditExpenseEven
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EditExpenseEvent&&(identical(other.expensesId, expensesId) || other.expensesId == expensesId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EditExpenseEvent&&(identical(other.expensesId, expensesId) || other.expensesId == expensesId)&&(identical(other.expensesRecordModel, expensesRecordModel) || other.expensesRecordModel == expensesRecordModel));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,expensesId);
+int get hashCode => Object.hash(runtimeType,expensesId,expensesRecordModel);
 
 @override
 String toString() {
-  return 'EditExpensesEvent.editExpense(expensesId: $expensesId)';
+  return 'EditExpensesEvent.editExpense(expensesId: $expensesId, expensesRecordModel: $expensesRecordModel)';
 }
 
 
@@ -241,7 +245,8 @@ abstract mixin class _$EditExpenseEventCopyWith<$Res> implements $EditExpensesEv
   factory _$EditExpenseEventCopyWith(_EditExpenseEvent value, $Res Function(_EditExpenseEvent) _then) = __$EditExpenseEventCopyWithImpl;
 @override @useResult
 $Res call({
- int expensesId
+ int expensesId,
+ ExpensesRecordModel expensesRecordModel
 });
 
 
@@ -258,10 +263,11 @@ class __$EditExpenseEventCopyWithImpl<$Res>
 
 /// Create a copy of EditExpensesEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? expensesId = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? expensesId = null,Object? expensesRecordModel = null,}) {
   return _then(_EditExpenseEvent(
 null == expensesId ? _self.expensesId : expensesId // ignore: cast_nullable_to_non_nullable
-as int,
+as int,null == expensesRecordModel ? _self.expensesRecordModel : expensesRecordModel // ignore: cast_nullable_to_non_nullable
+as ExpensesRecordModel,
   ));
 }
 

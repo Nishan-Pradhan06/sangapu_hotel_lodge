@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/state/bloc_base_state.dart';
+import '../../models/create_expenses.dart';
 import '../../repository/expenses_repository.dart';
 
 part 'edit_expenses_event.dart';
@@ -13,15 +14,15 @@ class EditExpensesBloc extends Bloc<EditExpensesEvent, EditExpensesState> {
   EditExpensesBloc({required ExpensesRepository repo})
     : _expensesRepository = repo,
       super(EditExpensesState.initial()) {
-    on<EditExpensesEvent>(_onEditExpense);
+    on<_EditExpenseEvent>(_onEditExpense);
   }
 
   Future<void> _onEditExpense(
-    EditExpensesEvent event,
+    _EditExpenseEvent event,
     Emitter<EditExpensesState> emit,
   ) async {
     emit(EditExpensesState.loading());
-    final result = await _expensesRepository.editExpense(event.expensesId);
+    final result = await _expensesRepository.editExpense(event.expensesId, event.expensesRecordModel);
     result.fold(
       (failure) => emit(EditExpensesState.failure(failure)),
       (success) => emit(EditExpensesState.loaded(success)),
