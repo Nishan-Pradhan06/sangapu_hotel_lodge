@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:sangapu/features/expenses/page/edit_expenses.dart';
-import 'package:sangapu/features/rooms/models/room_entry_model.dart';
+import 'package:sangapu/features/income/model/income_model.dart';
 import 'package:sangapu/features/rooms/page/edit_room_entry_page.dart';
 import '../../common/extension/extension.dart';
 import '../../features/dashboard/page/dashboard.dart';
@@ -37,8 +37,8 @@ List<GoRoute> pageAppRoutes = [
     path: AppRoutesName.editRoomEntry.path,
     name: AppRoutesName.editRoomEntry,
     builder: (context, state) {
-      final roomEntry = state.extra as RoomEntryModel;
-      return EditRoomEntryPage();
+      final incomeData = state.extra as IncomeData;
+      return EditRoomEntryPage(incomeData: incomeData);
     },
   ),
 ];

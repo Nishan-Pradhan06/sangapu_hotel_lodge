@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/custom_padding.dart';
+import '../../../routers/app_routes_names.dart';
 import '../../reports/widgets/earning_cards.dart';
 import '../../statements/widgets/transcation_tile.dart';
 import '../blocs/bloc/get_income_bloc.dart';
@@ -79,6 +81,16 @@ class IncomePage extends StatelessWidget {
                             ),
                           ),
                         ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'To Edit expenses press and hold on list until edit page appear.',
+                            style: textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.normal,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
                         SizedBox(height: 16),
                         ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
@@ -109,6 +121,12 @@ class IncomePage extends StatelessWidget {
                                       color: colorScheme.onSurfaceVariant,
                                     ),
                                   ),
+                                  onLongPress: () {
+                                    context.pushNamed(
+                                      AppRoutesName.editRoomEntry,
+                                      extra: incomeItem,
+                                    );
+                                  },
                                 ),
                                 Divider(color: colorScheme.outline, height: 32),
                               ],
