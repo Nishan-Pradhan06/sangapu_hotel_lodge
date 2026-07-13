@@ -16,6 +16,7 @@ class StatementsBloc extends Bloc<StatementsEvent, StatementsState> {
       super(StatementsState.initial()) {
     on<StatementsEvent>(_onGetStatements);
   }
+
   Future<void> _onGetStatements(
     StatementsEvent event,
     Emitter<StatementsState> emit,
@@ -23,7 +24,9 @@ class StatementsBloc extends Bloc<StatementsEvent, StatementsState> {
     if (event.shouldShowLoadingIndicator) {
       emit(StatementsState.loading());
     }
-    final result = await _transactionRepository.getTransactions();
+    final result = await _transactionRepository.getTransactions(
+      filter: event.filter,
+    );
     result.fold(
       (failure) => emit(StatementsState.failure(failure)),
       (success) => emit(StatementsState.loaded(success)),
