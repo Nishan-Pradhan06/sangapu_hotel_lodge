@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$StatementsEvent {
 
- bool get shouldShowLoadingIndicator;
+ bool get shouldShowLoadingIndicator; StatementFilter? get filter;
 /// Create a copy of StatementsEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $StatementsEventCopyWith<StatementsEvent> get copyWith => _$StatementsEventCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is StatementsEvent&&(identical(other.shouldShowLoadingIndicator, shouldShowLoadingIndicator) || other.shouldShowLoadingIndicator == shouldShowLoadingIndicator));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is StatementsEvent&&(identical(other.shouldShowLoadingIndicator, shouldShowLoadingIndicator) || other.shouldShowLoadingIndicator == shouldShowLoadingIndicator)&&(identical(other.filter, filter) || other.filter == filter));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,shouldShowLoadingIndicator);
+int get hashCode => Object.hash(runtimeType,shouldShowLoadingIndicator,filter);
 
 @override
 String toString() {
-  return 'StatementsEvent(shouldShowLoadingIndicator: $shouldShowLoadingIndicator)';
+  return 'StatementsEvent(shouldShowLoadingIndicator: $shouldShowLoadingIndicator, filter: $filter)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $StatementsEventCopyWith<$Res>  {
   factory $StatementsEventCopyWith(StatementsEvent value, $Res Function(StatementsEvent) _then) = _$StatementsEventCopyWithImpl;
 @useResult
 $Res call({
- bool shouldShowLoadingIndicator
+ bool shouldShowLoadingIndicator, StatementFilter? filter
 });
 
 
@@ -62,10 +62,11 @@ class _$StatementsEventCopyWithImpl<$Res>
 
 /// Create a copy of StatementsEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? shouldShowLoadingIndicator = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? shouldShowLoadingIndicator = null,Object? filter = freezed,}) {
   return _then(_self.copyWith(
 shouldShowLoadingIndicator: null == shouldShowLoadingIndicator ? _self.shouldShowLoadingIndicator : shouldShowLoadingIndicator // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,filter: freezed == filter ? _self.filter : filter // ignore: cast_nullable_to_non_nullable
+as StatementFilter?,
   ));
 }
 
@@ -150,10 +151,10 @@ return getStatement(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( bool shouldShowLoadingIndicator)?  getStatement,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( bool shouldShowLoadingIndicator,  StatementFilter? filter)?  getStatement,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _StatementEvent() when getStatement != null:
-return getStatement(_that.shouldShowLoadingIndicator);case _:
+return getStatement(_that.shouldShowLoadingIndicator,_that.filter);case _:
   return orElse();
 
 }
@@ -171,10 +172,10 @@ return getStatement(_that.shouldShowLoadingIndicator);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( bool shouldShowLoadingIndicator)  getStatement,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( bool shouldShowLoadingIndicator,  StatementFilter? filter)  getStatement,}) {final _that = this;
 switch (_that) {
 case _StatementEvent():
-return getStatement(_that.shouldShowLoadingIndicator);case _:
+return getStatement(_that.shouldShowLoadingIndicator,_that.filter);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -191,10 +192,10 @@ return getStatement(_that.shouldShowLoadingIndicator);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( bool shouldShowLoadingIndicator)?  getStatement,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( bool shouldShowLoadingIndicator,  StatementFilter? filter)?  getStatement,}) {final _that = this;
 switch (_that) {
 case _StatementEvent() when getStatement != null:
-return getStatement(_that.shouldShowLoadingIndicator);case _:
+return getStatement(_that.shouldShowLoadingIndicator,_that.filter);case _:
   return null;
 
 }
@@ -206,10 +207,11 @@ return getStatement(_that.shouldShowLoadingIndicator);case _:
 
 
 class _StatementEvent implements StatementsEvent {
-  const _StatementEvent({this.shouldShowLoadingIndicator = false});
+  const _StatementEvent({this.shouldShowLoadingIndicator = false, this.filter});
   
 
 @override@JsonKey() final  bool shouldShowLoadingIndicator;
+@override final  StatementFilter? filter;
 
 /// Create a copy of StatementsEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -221,16 +223,16 @@ _$StatementEventCopyWith<_StatementEvent> get copyWith => __$StatementEventCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StatementEvent&&(identical(other.shouldShowLoadingIndicator, shouldShowLoadingIndicator) || other.shouldShowLoadingIndicator == shouldShowLoadingIndicator));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StatementEvent&&(identical(other.shouldShowLoadingIndicator, shouldShowLoadingIndicator) || other.shouldShowLoadingIndicator == shouldShowLoadingIndicator)&&(identical(other.filter, filter) || other.filter == filter));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,shouldShowLoadingIndicator);
+int get hashCode => Object.hash(runtimeType,shouldShowLoadingIndicator,filter);
 
 @override
 String toString() {
-  return 'StatementsEvent.getStatement(shouldShowLoadingIndicator: $shouldShowLoadingIndicator)';
+  return 'StatementsEvent.getStatement(shouldShowLoadingIndicator: $shouldShowLoadingIndicator, filter: $filter)';
 }
 
 
@@ -241,7 +243,7 @@ abstract mixin class _$StatementEventCopyWith<$Res> implements $StatementsEventC
   factory _$StatementEventCopyWith(_StatementEvent value, $Res Function(_StatementEvent) _then) = __$StatementEventCopyWithImpl;
 @override @useResult
 $Res call({
- bool shouldShowLoadingIndicator
+ bool shouldShowLoadingIndicator, StatementFilter? filter
 });
 
 
@@ -258,10 +260,11 @@ class __$StatementEventCopyWithImpl<$Res>
 
 /// Create a copy of StatementsEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? shouldShowLoadingIndicator = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? shouldShowLoadingIndicator = null,Object? filter = freezed,}) {
   return _then(_StatementEvent(
 shouldShowLoadingIndicator: null == shouldShowLoadingIndicator ? _self.shouldShowLoadingIndicator : shouldShowLoadingIndicator // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,filter: freezed == filter ? _self.filter : filter // ignore: cast_nullable_to_non_nullable
+as StatementFilter?,
   ));
 }
 
