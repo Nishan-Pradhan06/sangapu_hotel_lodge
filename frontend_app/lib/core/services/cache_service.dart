@@ -21,9 +21,10 @@ class CacheServices {
   }
   // ===== Secure Storage methods =====
 
-  Future<void> setAuthToken(String token) async {
+  Future<void> setAuthToken({required String access, required String refresh}) async {
     try {
-      await _secureStorage.write(key: 'token', value: token);
+      await _secureStorage.write(key: 'token', value: access);
+      await _secureStorage.write(key: 'refresh', value: refresh);
     } catch (e) {
       dLog.d('Error saving auth token: $e');
     }
@@ -38,10 +39,20 @@ class CacheServices {
     }
   }
 
+    Future<String?> getAuthRefreshToken() async {
+    try {
+      return await _secureStorage.read(key: 'refresh');
+    } catch (e) {
+      dLog.d('Error reading auth token: $e');
+      return null;
+    }
+  }
+
   /// Clears the stored auth token from secure storage
   Future<void> clearAuthToken() async {
     try {
       await _secureStorage.delete(key: 'token');
+      await _secureStorage.delete(key: 'refresh');
       dLog.d('Auth token cleared');
     } catch (e) {
       dLog.d('Error deleting auth token: $e');

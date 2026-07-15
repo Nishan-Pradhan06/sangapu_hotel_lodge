@@ -22,10 +22,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
     return response.fold((failure) => Left(failure), (success) async {
       final accessToken = success['access'] as String;
+      final refreshToken = success['refresh'] as String;
       // final refreshToken = success['refresh'] as String;
       // final email = success['email'] as String;
 
-      await CacheServices.instance.setAuthToken(accessToken);
+      await CacheServices.instance.setAuthToken(access: accessToken, refresh:refreshToken );
       // await CacheServices.instance.setRefreshToken(refreshToken);
       // await CacheServices.instance.setEmail(email);
 

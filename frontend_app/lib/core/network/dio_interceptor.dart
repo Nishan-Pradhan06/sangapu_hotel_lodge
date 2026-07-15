@@ -1,4 +1,8 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
+import 'package:sangapu/core/config/env_config.dart';
 import '../widgets/custom_toast.dart';
 import '../../common/logger.dart';
 import '../../routers/app_routes_names.dart';
@@ -11,6 +15,8 @@ class AppDioInterceptor extends Interceptor {
     "auth/signup/",
     "auth/forgot-password/",
   ];
+
+  Completer<String?>? _refreshCompleter;
 
   @override
   void onRequest(
@@ -40,16 +46,31 @@ class AppDioInterceptor extends Interceptor {
 
     dLog.d("[Error] ${statusCode ?? 'Unknown Status'} on $path");
 
-    if (statusCode == 401) {
-      // Token expired → logout user
+    if (statusCode == 401 && _refreshCompleter == null) {
+      final Dio _newDio = Dio();
 
-      await CacheServices.instance.clearAll();
+      _refreshCompleter = Completer<String?>();
+      final refreshToken = await CacheServices.instance.getAuthRefreshToken();
 
-      CustomToast.showError("Session Expired !!! Please Login again.");
+      try {
+        final response = await _newDio.post(
+          "${EnvConfig.instance.apiBaseUrl}auth/refresh/",
+          data: {"refresh": refreshToken},
+        );
 
-      NavigationService().goNamed(AppRoutesName.loginScreenRoute);
+        final accessToken = response.data['access'];
+        await CacheServices.instance.setAuthToken(
+          access: accessToken,
+          refresh: refreshToken!,
+        );
+        _refreshCompleter?.complete(accessToken);
+      } catch (e) {
+        _refreshCompleter?.complete(null);
+      }
     }
 
-    return handler.next(err);
+    log("Hello thi si serror ${err.message}");
+
+    return handler.reject(err);
   }
 }

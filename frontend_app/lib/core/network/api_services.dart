@@ -63,7 +63,7 @@ class ApiService {
       );
     } catch (e) {
       return Left(ErrorHandler.handleException(e));
-    }
+    } 
   }
 
   Future<Either<Failure, T>> put<T>(
