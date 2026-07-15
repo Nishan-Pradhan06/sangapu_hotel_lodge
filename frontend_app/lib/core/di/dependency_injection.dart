@@ -16,6 +16,7 @@ import '../../features/statements/bloc/statements_bloc.dart';
 import '../../features/export_statements/blocs/export_excel/export_statement_bloc.dart';
 import '../../features/export_statements/blocs/export_pdf/export_pdf_bloc.dart';
 import '../../features/export_statements/repository/export_statement_repository.dart';
+import '../../features/statements/cubits/statement_filter_cubit.dart';
 import '../../features/statements/repository/transcation_repository.dart';
 import '../network/api_services.dart';
 import '../network/dio_client.dart';
@@ -37,6 +38,7 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(() => ExportPdfBloc(repo: sl()));
   sl.registerLazySingleton(() => EditExpensesBloc(repo: sl()));
   sl.registerLazySingleton(() => EditRoomEntryBloc(repo: sl()));
+  sl.registerLazySingleton(() => StatementFilterCubit());
 
   //###---------------CUBIT--------------------###
 

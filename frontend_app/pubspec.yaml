@@ -43,6 +43,7 @@ dependencies:
   open_file: ^3.5.11
   file_saver: ^0.3.1
   rebrand_cli: ^3.3.0
+  nepali_date_picker: ^6.0.2
 
 dev_dependencies:
   flutter_test:

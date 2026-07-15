@@ -3,7 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/custom_padding.dart';
 import '../bloc/statements_bloc.dart';
+import '../cubits/statement_filter_cubit.dart';
 import '../widgets/filter_chip.dart';
+import '../widgets/date_filter_bottom_sheet.dart';
+import '../widgets/money_movement_bottom_sheet.dart';
 import '../widgets/transcation_tile.dart';
 import 'export_page.dart';
 import '../../export_statements/blocs/export_pdf/export_pdf_bloc.dart';
@@ -140,21 +143,34 @@ class _StatementPageState extends State<StatementPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        const SizedBox(width: 8),
-                        FilterChipWidget(
-                          label: "Date",
-                          color: colorScheme.outline,
-                          textColor: colorScheme.onSurface,
-                        ),
-                        const SizedBox(width: 8),
-                        FilterChipWidget(
-                          label: "Money Movement",
-                          color: colorScheme.outline,
-                          textColor: colorScheme.onSurface,
-                        ),
-                      ],
+                    BlocBuilder<StatementFilterCubit, StatementFilterState>(
+                      builder: (context, filterState) {
+                        final hasDateFilter = filterState.dateFrom != null || filterState.dateTo != null;
+                        final hasTypeFilter = filterState.type != null;
+
+                        return Row(
+                          children: [
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () => DateFilterBottomSheet.show(context),
+                              child: FilterChipWidget(
+                                label: "Date",
+                                color: hasDateFilter ? colorScheme.primary : colorScheme.outline,
+                                textColor: hasDateFilter ? colorScheme.primary : colorScheme.onSurface,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () => MoneyMovementBottomSheet.show(context),
+                              child: FilterChipWidget(
+                                label: "Money Movement",
+                                color: hasTypeFilter ? colorScheme.primary : colorScheme.outline,
+                                textColor: hasTypeFilter ? colorScheme.primary : colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                     const SizedBox(height: 16),
                     BlocBuilder<StatementsBloc, StatementsState>(
@@ -221,10 +237,19 @@ class _StatementPageState extends State<StatementPage> {
         ),
 
         // FAB automatically picks up AppTheme.floatingActionButtonTheme
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {},
-          icon: const Icon(Icons.filter_alt),
-          label: const Text("All Filters"),
+        floatingActionButton: BlocBuilder<StatementFilterCubit, StatementFilterState>(
+          builder: (context, filterState) {
+            final hasActiveFilter = context.read<StatementFilterCubit>().hasActiveFilter;
+            return FloatingActionButton.extended(
+              onPressed: () {},
+              icon: Icon(
+                hasActiveFilter ? Icons.filter_alt : Icons.filter_alt_outlined,
+              ),
+              label: Text(hasActiveFilter ? "Filters Applied" : "All Filters"),
+              backgroundColor: hasActiveFilter ? colorScheme.primary : null,
+              foregroundColor: hasActiveFilter ? colorScheme.onPrimary : null,
+            );
+          },
         ),
       ),
     );

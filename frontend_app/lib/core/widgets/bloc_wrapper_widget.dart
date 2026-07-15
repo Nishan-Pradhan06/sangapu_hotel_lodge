@@ -10,6 +10,7 @@ import '../../features/rooms/blocs/room_entry/room_entry_bloc.dart';
 import '../../features/export_statements/blocs/export_excel/export_statement_bloc.dart';
 import '../../features/export_statements/blocs/export_pdf/export_pdf_bloc.dart';
 import '../../features/statements/bloc/statements_bloc.dart';
+import '../../features/statements/cubits/statement_filter_cubit.dart';
 import '../di/dependency_injection.dart';
 // import '../services/once_cache_service.dart';
 
@@ -31,6 +32,7 @@ class BlocWrapperWidget extends StatelessWidget {
         BlocProvider(create: (_) => sl<ExportPdfBloc>()),
         BlocProvider(create: (_) => sl<EditExpensesBloc>()),
         BlocProvider(create: (_) => sl<EditRoomEntryBloc>()),
+        BlocProvider(create: (_) => sl<StatementFilterCubit>()),
 
         //##----------GET------------##//
       ],
