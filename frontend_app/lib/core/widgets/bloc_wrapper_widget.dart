@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sangapu/features/auth/cubits/cubit/logout_cubit.dart';
+import 'package:sangapu/features/auth/cubits/logout/logout_cubit.dart';
 import 'package:sangapu/features/expenses/blocs/add_expenses/add_expenses_record_bloc.dart';
 import 'package:sangapu/features/expenses/blocs/edit_expenses/edit_expenses_bloc.dart';
 import 'package:sangapu/features/rooms/blocs/edit_room_entry/edit_room_entry_bloc.dart';

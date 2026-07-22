@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sangapu/features/auth/cubits/cubit/logout_cubit.dart';
+import 'package:sangapu/features/auth/cubits/logout/logout_cubit.dart';
 
 import '../../../core/helpers/nepali_date_helper.dart';
 import '../../../core/widgets/custom_padding.dart';
