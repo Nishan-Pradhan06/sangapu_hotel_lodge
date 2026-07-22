@@ -43,7 +43,7 @@ class DioClient {
         ),
       );
     }
-    _dio.interceptors.add(AppDioInterceptor());
     _dio.interceptors.add(DioCacheInterceptor(options: cacheOptions));
+    _dio.interceptors.add(AppDioInterceptor());
   }
 }

@@ -15,11 +15,13 @@ class AppInitializer {
 
     log(EnvConfig.instance.apiBaseUrl);
 
-    await setupServiceLocator();
-
+    // 1. Initialize cache store FIRST
     await initializeCache();
 
-    //Global SharedPreferences
+    // 2. Register global services (SharedPreferences, etc.)
     await CacheServices.instance.init();
+
+    // 3. Register DI (Now DioClient can safely use initialized cacheOptions)
+    await setupServiceLocator();
   }
 }
