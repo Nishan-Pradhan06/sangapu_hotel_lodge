@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:retry/retry.dart';
 import 'package:sangapu/features/auth/cubits/logout/logout_cubit.dart';
+import 'package:sangapu/features/auth/cubits/remember_me/remember_me_cubit.dart';
 import 'package:sangapu/features/expenses/blocs/add_expenses/add_expenses_record_bloc.dart';
 import 'package:sangapu/features/expenses/blocs/edit_expenses/edit_expenses_bloc.dart';
 import 'package:sangapu/features/expenses/blocs/get_expenses/get_expenses_bloc.dart';
@@ -42,7 +43,8 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(() => StatementFilterCubit());
 
   //###---------------CUBIT--------------------###
-  sl.registerLazySingleton(() => LogoutCubit(repo: sl()));
+  sl.registerFactory(() => LogoutCubit(repo: sl()));
+  sl.registerFactory(() => RememberMeCubit());
 
   //###---------------REPOSITORY---------------###
   sl.registerLazySingleton<AuthRepository>(
