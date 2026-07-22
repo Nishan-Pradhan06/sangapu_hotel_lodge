@@ -102,7 +102,7 @@ class IncomePage extends StatelessWidget {
                               children: [
                                 TransactionTile(
                                   title: Text(
-                                    "${incomeItem.category} | ${incomeItem.remarks}",
+                                    "Room | ${incomeItem.category} | ${incomeItem.remarks}",
                                     style: textTheme.titleSmall,
                                   ),
                                   dateTime: Text(

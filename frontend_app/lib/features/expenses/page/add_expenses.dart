@@ -58,7 +58,7 @@ class _AddExpensesState extends State<AddExpenses> {
                         style: TextTheme.of(context).titleMedium,
                       ),
                       Text(
-                        DateHelper.nepaliDate(),
+                        DateHelper.nepaliDateDash(),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ],
@@ -145,7 +145,7 @@ class _AddExpensesState extends State<AddExpenses> {
                                   ) ??
                                   0.0,
                               remarks: _remarkController.text,
-                              nepaliDate: DateHelper.nepaliDate(),
+                              nepaliDate: DateHelper.nepaliDateDash(),
                             ),
                           ),
                         );

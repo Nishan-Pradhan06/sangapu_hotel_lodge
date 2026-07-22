@@ -22,9 +22,9 @@ class DateHelper {
     return '${nepaliMonths[bs.month - 1]} ${bs.day}, ${bs.year}';
   }
 
-  static String nepaliDateSlash([DateTime? date]) {
+  static String nepaliDateDash([DateTime? date]) {
     final bs = (date ?? DateTime.now()).toNepaliDateTime();
 
-    return '${bs.year}/${bs.month.toString().padLeft(2, '0')}/${bs.day.toString().padLeft(2, '0')}';
+    return '${bs.year}-${bs.month.toString().padLeft(2, '0')}-${bs.day.toString().padLeft(2, '0')}';
   }
 }

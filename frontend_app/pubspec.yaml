@@ -5,7 +5,7 @@ description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 1.0.0+1
+version: 1.0.0+3
 
 environment:
   sdk: ^3.10.4
@@ -44,6 +44,8 @@ dependencies:
   file_saver: ^0.3.1
   rebrand_cli: ^3.3.0
   nepali_date_picker: ^6.0.2
+  dio_cache_interceptor: ^4.0.7
+  http_cache_hive_store: ^5.1.1
 
 dev_dependencies:
   flutter_test:

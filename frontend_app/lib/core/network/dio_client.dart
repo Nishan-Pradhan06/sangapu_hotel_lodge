@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import '../config/env_config.dart';
+import '../services/cache_policy_service.dart';
 import 'dio_interceptor.dart';
 
 class DioClient {
@@ -8,9 +10,9 @@ class DioClient {
 
   final BaseOptions _baseOptions = BaseOptions(
     baseUrl: EnvConfig.instance.apiBaseUrl,
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
-    sendTimeout: const Duration(seconds: 10),
+    connectTimeout: const Duration(seconds: 120),
+    receiveTimeout: const Duration(seconds: 120),
+    sendTimeout: const Duration(seconds: 120),
     headers: <String, dynamic>{
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -42,5 +44,6 @@ class DioClient {
       );
     }
     _dio.interceptors.add(AppDioInterceptor());
+    _dio.interceptors.add(DioCacheInterceptor(options: cacheOptions));
   }
 }

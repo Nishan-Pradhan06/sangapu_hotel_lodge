@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import '../config/env_config.dart';
 import '../di/dependency_injection.dart';
+import '../services/cache_policy_service.dart';
 import '../services/cache_service.dart';
 
 class AppInitializer {
@@ -15,6 +16,8 @@ class AppInitializer {
     log(EnvConfig.instance.apiBaseUrl);
 
     await setupServiceLocator();
+
+    await initializeCache();
 
     //Global SharedPreferences
     await CacheServices.instance.init();

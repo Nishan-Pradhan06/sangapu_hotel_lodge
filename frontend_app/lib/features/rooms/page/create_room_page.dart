@@ -49,7 +49,7 @@ class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
                         style: TextTheme.of(context).titleMedium,
                       ),
                       Text(
-                        DateHelper.nepaliDate(),
+                        DateHelper.nepaliDateDash(),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ],
@@ -153,7 +153,7 @@ class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
                       fixedPrice: parsedFixedPrice,
                       customPrice: _customPriceController.text,
                       additionalNotes: _additionalNotesController.text,
-                      nepaliDate: DateHelper.nepaliDate(),
+                      nepaliDate: DateHelper.nepaliDateDash(),
                     );
                     context.read<RoomEntryBloc>().add(
                       RoomEntryEvent.roomEntry(roomEntryModel),

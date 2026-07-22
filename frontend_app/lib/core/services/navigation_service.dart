@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../routers/app_router.dart';
+import '../../../../routers/app_router.dart';
 
 class NavigationService {
   // Get the GoRouter instance from AppRouter

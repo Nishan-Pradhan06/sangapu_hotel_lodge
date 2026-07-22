@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../common/error/failure.dart';
+import '../../../../common/error/failure.dart';
 part 'bloc_base_state.old_freezed.dart';
 
 @freezed

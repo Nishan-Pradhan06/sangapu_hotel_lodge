@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../core/widgets/custom_container.dart';
+import '../../../../../core/widgets/custom_container.dart';
 
 class EarningsCardShimmer extends StatelessWidget {
   const EarningsCardShimmer({super.key});

@@ -3,11 +3,8 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:sangapu/core/config/env_config.dart';
-import '../widgets/custom_toast.dart';
-import '../../common/logger.dart';
-import '../../routers/app_routes_names.dart';
+import '../../../../common/logger.dart';
 import '../services/cache_service.dart';
-import '../services/navigation_service.dart';
 
 class AppDioInterceptor extends Interceptor {
   final List<String> _noAuthPaths = [
