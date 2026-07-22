@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sangapu/features/auth/cubits/cubit/logout_cubit.dart';
 
 import '../../../core/helpers/nepali_date_helper.dart';
 import '../../../core/widgets/custom_padding.dart';
+import '../../../core/widgets/custom_toast.dart';
 import '../../../core/widgets/earnings_card_simmer.dart';
 import '../../../routers/app_routes_names.dart';
 import '../../expenses/blocs/get_expenses/get_expenses_bloc.dart';
@@ -17,6 +19,7 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Image.asset('assets/logo/logo.png'),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -30,6 +33,52 @@ class DashboardPage extends StatelessWidget {
             ),
           ],
         ),
+        actions: [
+          BlocConsumer<LogoutCubit, LogoutState>(
+            listener: (context, state) {
+              state.whenOrNull(
+                failure: (failure) {
+                  CustomToast.showError(failure.message);
+                },
+                loaded: (data) {
+                  context.pushNamed(AppRoutesName.loginScreenRoute);
+                  CustomToast.showSuccess(data);
+                },
+              );
+            },
+            builder: (context, state) {
+              return IconButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (dialogContext) => AlertDialog(
+                      title: const Text('Logout'),
+                      content: const Text('Are you sure you want to log out?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(dialogContext),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(dialogContext);
+                            // Call the logout action in your Cubit
+                            context.read<LogoutCubit>().logout();
+                          },
+                          child: const Text(
+                            'Logout',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                icon: Icon(Icons.logout_outlined),
+              );
+            },
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () {

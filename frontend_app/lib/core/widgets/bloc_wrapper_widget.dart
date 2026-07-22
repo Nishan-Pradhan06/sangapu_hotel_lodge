@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sangapu/features/auth/cubits/cubit/logout_cubit.dart';
 import 'package:sangapu/features/expenses/blocs/add_expenses/add_expenses_record_bloc.dart';
 import 'package:sangapu/features/expenses/blocs/edit_expenses/edit_expenses_bloc.dart';
 import 'package:sangapu/features/rooms/blocs/edit_room_entry/edit_room_entry_bloc.dart';
@@ -23,6 +24,7 @@ class BlocWrapperWidget extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => sl<LogInBloc>()),
+        BlocProvider(create: (_) => sl<LogoutCubit>()),
         BlocProvider(create: (_) => sl<RoomEntryBloc>()),
         BlocProvider(create: (_) => sl<StatementsBloc>()),
         BlocProvider(create: (_) => sl<GetExpensesBloc>()),

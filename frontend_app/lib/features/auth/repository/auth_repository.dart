@@ -6,6 +6,7 @@ import '../models/login_model.dart';
 
 abstract interface class AuthRepository {
   FutureEither<String> logIn({required LogInModel logIn});
+  FutureEither<String> logOut();
 }
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -26,11 +27,21 @@ class AuthRepositoryImpl implements AuthRepository {
       // final refreshToken = success['refresh'] as String;
       // final email = success['email'] as String;
 
-      await CacheServices.instance.setAuthToken(access: accessToken, refresh:refreshToken );
+      await CacheServices.instance.setAuthToken(
+        access: accessToken,
+        refresh: refreshToken,
+      );
       // await CacheServices.instance.setRefreshToken(refreshToken);
       // await CacheServices.instance.setEmail(email);
 
       return const Right('Login successful');
     });
+  }
+
+  @override
+  FutureEither<String> logOut() async {
+    await CacheServices.instance.clearAuthToken();
+    // await CacheServices.instance.clearAll();
+    return const Right('Logout successful');
   }
 }
