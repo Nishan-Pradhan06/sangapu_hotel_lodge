@@ -19,3 +19,11 @@ Future<void> initializeCache() async {
     priority: CachePriority.high,
   );
 }
+
+Future<void> clearApiCache() async {
+  try {
+    await cacheOptions.store?.clean();
+  } catch (e) {
+    // Ignore error on cache clear
+  }
+}

@@ -29,17 +29,17 @@ Future<void> setupServiceLocator() async {
   //###---------------GLOBAL BLOC--------------###
 
   //###---------------AUTH BLOC---------------------###
-  sl.registerLazySingleton(() => LogInBloc(repo: sl()));
-  sl.registerLazySingleton(() => IncomeEntryBloc(repo: sl()));
-  sl.registerLazySingleton(() => StatementsBloc(repo: sl()));
-  sl.registerLazySingleton(() => GetExpensesBloc(repo: sl()));
-  sl.registerLazySingleton(() => AddExpensesRecordBloc(repo: sl()));
-  sl.registerLazySingleton(() => GetIncomeBloc(repo: sl()));
-  sl.registerLazySingleton(() => ExportStatementBloc(repo: sl()));
-  sl.registerLazySingleton(() => ExportPdfBloc(repo: sl()));
-  sl.registerLazySingleton(() => EditExpensesBloc(repo: sl()));
-  sl.registerLazySingleton(() => EditIncomeEntryBloc(repo: sl()));
-  sl.registerLazySingleton(() => StatementFilterCubit());
+  sl.registerFactory(() => LogInBloc(repo: sl()));
+  sl.registerFactory(() => IncomeEntryBloc(repo: sl()));
+  sl.registerFactory(() => StatementsBloc(repo: sl()));
+  sl.registerFactory(() => GetExpensesBloc(repo: sl()));
+  sl.registerFactory(() => AddExpensesRecordBloc(repo: sl()));
+  sl.registerFactory(() => GetIncomeBloc(repo: sl()));
+  sl.registerFactory(() => ExportStatementBloc(repo: sl()));
+  sl.registerFactory(() => ExportPdfBloc(repo: sl()));
+  sl.registerFactory(() => EditExpensesBloc(repo: sl()));
+  sl.registerFactory(() => EditIncomeEntryBloc(repo: sl()));
+  sl.registerFactory(() => StatementFilterCubit());
 
   //###---------------CUBIT--------------------###
   sl.registerFactory(() => LogoutCubit(repo: sl()));

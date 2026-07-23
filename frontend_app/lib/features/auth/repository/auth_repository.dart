@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import '../../../common/typedef/either_type.dart';
 import '../../../core/network/api_services.dart';
 import '../../../core/services/cache_service.dart';
+import '../../../core/services/cache_policy_service.dart';
 import '../models/login_model.dart';
 
 abstract interface class AuthRepository {
@@ -41,7 +42,8 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   FutureEither<String> logOut() async {
     await CacheServices.instance.clearAuthToken();
-    // await CacheServices.instance.clearAll();
+    await CacheServices.instance.clearAll();
+    await clearApiCache();
     return const Right('Logout successful');
   }
 }

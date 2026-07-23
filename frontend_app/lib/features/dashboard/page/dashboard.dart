@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sangapu/core/widgets/custom_toast.dart';
 import 'package:sangapu/features/auth/cubits/logout/logout_cubit.dart';
+import 'package:sangapu/main.dart';
 
 import '../../../core/helpers/nepali_date_helper.dart';
 import '../../../core/widgets/custom_padding.dart';
-import '../../../core/widgets/custom_toast.dart';
 import '../../../core/widgets/earnings_card_simmer.dart';
 import '../../../routers/app_routes_names.dart';
 import '../../expenses/blocs/get_expenses/get_expenses_bloc.dart';
@@ -41,7 +42,8 @@ class DashboardPage extends StatelessWidget {
                   CustomToast.showError(failure.message);
                 },
                 loaded: (data) {
-                  context.pushNamed(AppRoutesName.loginScreenRoute);
+                  context.goNamed(AppRoutesName.loginScreenRoute);
+                  RestartWidget.restartApp(context);
                   CustomToast.showSuccess(data);
                 },
               );
