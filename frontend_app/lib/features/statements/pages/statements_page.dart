@@ -120,7 +120,10 @@ class _StatementPageState extends State<StatementPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: GestureDetector(
-                onTap: () => ExportBottomSheet.show(context),
+                onTap: () {
+                  final filter = context.read<StatementFilterCubit>().toFilter();
+                  ExportBottomSheet.show(context, filter: filter);
+                },
                 child: Icon(
                   Icons.download_outlined,
                   color: colorScheme.onSurface,

@@ -4,18 +4,22 @@ import '../../export_statements/blocs/export_pdf/export_pdf_bloc.dart';
 import '../../export_statements/blocs/export_excel/export_statement_bloc.dart';
 import '../widgets/export_option_tile.dart';
 
+import '../../statements/repository/transcation_repository.dart';
+
 /// A modal bottom sheet that presents export options (PDF / Excel) for
 /// the statement list. Call [ExportBottomSheet.show] to display it.
 class ExportBottomSheet extends StatelessWidget {
-  const ExportBottomSheet({super.key});
+  final StatementFilter? filter;
+
+  const ExportBottomSheet({super.key, this.filter});
 
   /// Convenience method to push the bottom sheet onto the navigator stack.
-  static Future<void> show(BuildContext context) {
+  static Future<void> show(BuildContext context, {StatementFilter? filter}) {
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const ExportBottomSheet(),
+      builder: (_) => ExportBottomSheet(filter: filter),
     );
   }
 
@@ -72,7 +76,13 @@ class ExportBottomSheet extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               context.read<ExportPdfBloc>().add(
-                const ExportPdfEvent.exportPdf(),
+                ExportPdfEvent.exportPdf(
+                  type: filter?.type,
+                  date: filter?.date,
+                  ordering: filter?.ordering,
+                  startDate: filter?.dateFrom,
+                  endDate: filter?.dateTo,
+                ),
               );
             },
           ),
@@ -88,7 +98,13 @@ class ExportBottomSheet extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               context.read<ExportStatementBloc>().add(
-                const ExportStatementEvent.exportExcel(),
+                ExportStatementEvent.exportExcel(
+                  type: filter?.type,
+                  date: filter?.date,
+                  ordering: filter?.ordering,
+                  startDate: filter?.dateFrom,
+                  endDate: filter?.dateTo,
+                ),
               );
             },
           ),

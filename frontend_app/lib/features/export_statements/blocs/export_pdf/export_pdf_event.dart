@@ -7,5 +7,7 @@ abstract class ExportPdfEvent with _$ExportPdfEvent {
     String? date,
     String? month,
     String? ordering,
+    String? startDate,
+    String? endDate,
   }) = _ExportPdf;
 }

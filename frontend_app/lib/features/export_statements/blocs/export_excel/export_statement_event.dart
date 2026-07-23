@@ -7,5 +7,7 @@ abstract class ExportStatementEvent with _$ExportStatementEvent {
     String? date,
     String? month,
     String? ordering,
+    String? startDate,
+    String? endDate,
   }) = _ExportExcel;
 }

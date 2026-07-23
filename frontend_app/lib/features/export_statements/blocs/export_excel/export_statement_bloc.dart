@@ -30,6 +30,8 @@ class ExportStatementBloc
       date: event.date,
       month: event.month,
       ordering: event.ordering,
+      startDate: event.startDate,
+      endDate: event.endDate,
     );
     result.fold(
       (failure) => emit(ExportStatementState.failure(failure)),

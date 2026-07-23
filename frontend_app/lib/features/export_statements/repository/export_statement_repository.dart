@@ -12,6 +12,8 @@ abstract interface class ExportStatementRepository {
     String? date,
     String? month,
     String? ordering,
+    String? startDate,
+    String? endDate,
   });
 
   FutureEither<Uint8List> exportStatementPdf({
@@ -19,6 +21,8 @@ abstract interface class ExportStatementRepository {
     String? date,
     String? month,
     String? ordering,
+    String? startDate,
+    String? endDate,
   });
 }
 
@@ -34,12 +38,16 @@ class ExportStatementRepositoryImpl implements ExportStatementRepository {
     String? date,
     String? month,
     String? ordering,
+    String? startDate,
+    String? endDate,
   }) async {
     final queryParams = <String, dynamic>{};
     if (type != null) queryParams['type'] = type;
     if (date != null) queryParams['date'] = date;
     if (month != null) queryParams['month'] = month;
     if (ordering != null) queryParams['ordering'] = ordering;
+    if (startDate != null) queryParams['start_date'] = startDate;
+    if (endDate != null) queryParams['end_date'] = endDate;
 
     final response = await _apiService.get<List<int>>(
       'statement/export/excel/',
@@ -64,12 +72,16 @@ class ExportStatementRepositoryImpl implements ExportStatementRepository {
     String? date,
     String? month,
     String? ordering,
+    String? startDate,
+    String? endDate,
   }) async {
     final queryParams = <String, dynamic>{};
     if (type != null) queryParams['type'] = type;
     if (date != null) queryParams['date'] = date;
     if (month != null) queryParams['month'] = month;
     if (ordering != null) queryParams['ordering'] = ordering;
+    if (startDate != null) queryParams['start_date'] = startDate;
+    if (endDate != null) queryParams['end_date'] = endDate;
 
     final response = await _apiService.get<List<int>>(
       'statement/export/pdf/',

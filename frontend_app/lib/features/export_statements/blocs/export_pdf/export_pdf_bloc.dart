@@ -29,6 +29,8 @@ class ExportPdfBloc extends Bloc<ExportPdfEvent, ExportPdfState> {
       date: event.date,
       month: event.month,
       ordering: event.ordering,
+      startDate: event.startDate,
+      endDate: event.endDate,
     );
     result.fold(
       (failure) => emit(ExportPdfState.failure(failure)),

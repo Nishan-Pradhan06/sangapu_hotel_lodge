@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ExportStatementEvent {
 
- String? get type; String? get date; String? get month; String? get ordering;
+ String? get type; String? get date; String? get month; String? get ordering; String? get startDate; String? get endDate;
 /// Create a copy of ExportStatementEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ExportStatementEventCopyWith<ExportStatementEvent> get copyWith => _$ExportStat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExportStatementEvent&&(identical(other.type, type) || other.type == type)&&(identical(other.date, date) || other.date == date)&&(identical(other.month, month) || other.month == month)&&(identical(other.ordering, ordering) || other.ordering == ordering));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExportStatementEvent&&(identical(other.type, type) || other.type == type)&&(identical(other.date, date) || other.date == date)&&(identical(other.month, month) || other.month == month)&&(identical(other.ordering, ordering) || other.ordering == ordering)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,type,date,month,ordering);
+int get hashCode => Object.hash(runtimeType,type,date,month,ordering,startDate,endDate);
 
 @override
 String toString() {
-  return 'ExportStatementEvent(type: $type, date: $date, month: $month, ordering: $ordering)';
+  return 'ExportStatementEvent(type: $type, date: $date, month: $month, ordering: $ordering, startDate: $startDate, endDate: $endDate)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ExportStatementEventCopyWith<$Res>  {
   factory $ExportStatementEventCopyWith(ExportStatementEvent value, $Res Function(ExportStatementEvent) _then) = _$ExportStatementEventCopyWithImpl;
 @useResult
 $Res call({
- String? type, String? date, String? month, String? ordering
+ String? type, String? date, String? month, String? ordering, String? startDate, String? endDate
 });
 
 
@@ -62,12 +62,14 @@ class _$ExportStatementEventCopyWithImpl<$Res>
 
 /// Create a copy of ExportStatementEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? type = freezed,Object? date = freezed,Object? month = freezed,Object? ordering = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? type = freezed,Object? date = freezed,Object? month = freezed,Object? ordering = freezed,Object? startDate = freezed,Object? endDate = freezed,}) {
   return _then(_self.copyWith(
 type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as String?,month: freezed == month ? _self.month : month // ignore: cast_nullable_to_non_nullable
 as String?,ordering: freezed == ordering ? _self.ordering : ordering // ignore: cast_nullable_to_non_nullable
+as String?,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
+as String?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -153,10 +155,10 @@ return exportExcel(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String? type,  String? date,  String? month,  String? ordering)?  exportExcel,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String? type,  String? date,  String? month,  String? ordering,  String? startDate,  String? endDate)?  exportExcel,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ExportExcel() when exportExcel != null:
-return exportExcel(_that.type,_that.date,_that.month,_that.ordering);case _:
+return exportExcel(_that.type,_that.date,_that.month,_that.ordering,_that.startDate,_that.endDate);case _:
   return orElse();
 
 }
@@ -174,10 +176,10 @@ return exportExcel(_that.type,_that.date,_that.month,_that.ordering);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String? type,  String? date,  String? month,  String? ordering)  exportExcel,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String? type,  String? date,  String? month,  String? ordering,  String? startDate,  String? endDate)  exportExcel,}) {final _that = this;
 switch (_that) {
 case _ExportExcel():
-return exportExcel(_that.type,_that.date,_that.month,_that.ordering);case _:
+return exportExcel(_that.type,_that.date,_that.month,_that.ordering,_that.startDate,_that.endDate);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +196,10 @@ return exportExcel(_that.type,_that.date,_that.month,_that.ordering);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String? type,  String? date,  String? month,  String? ordering)?  exportExcel,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String? type,  String? date,  String? month,  String? ordering,  String? startDate,  String? endDate)?  exportExcel,}) {final _that = this;
 switch (_that) {
 case _ExportExcel() when exportExcel != null:
-return exportExcel(_that.type,_that.date,_that.month,_that.ordering);case _:
+return exportExcel(_that.type,_that.date,_that.month,_that.ordering,_that.startDate,_that.endDate);case _:
   return null;
 
 }
@@ -209,13 +211,15 @@ return exportExcel(_that.type,_that.date,_that.month,_that.ordering);case _:
 
 
 class _ExportExcel implements ExportStatementEvent {
-  const _ExportExcel({this.type, this.date, this.month, this.ordering});
+  const _ExportExcel({this.type, this.date, this.month, this.ordering, this.startDate, this.endDate});
   
 
 @override final  String? type;
 @override final  String? date;
 @override final  String? month;
 @override final  String? ordering;
+@override final  String? startDate;
+@override final  String? endDate;
 
 /// Create a copy of ExportStatementEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -227,16 +231,16 @@ _$ExportExcelCopyWith<_ExportExcel> get copyWith => __$ExportExcelCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExportExcel&&(identical(other.type, type) || other.type == type)&&(identical(other.date, date) || other.date == date)&&(identical(other.month, month) || other.month == month)&&(identical(other.ordering, ordering) || other.ordering == ordering));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExportExcel&&(identical(other.type, type) || other.type == type)&&(identical(other.date, date) || other.date == date)&&(identical(other.month, month) || other.month == month)&&(identical(other.ordering, ordering) || other.ordering == ordering)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,type,date,month,ordering);
+int get hashCode => Object.hash(runtimeType,type,date,month,ordering,startDate,endDate);
 
 @override
 String toString() {
-  return 'ExportStatementEvent.exportExcel(type: $type, date: $date, month: $month, ordering: $ordering)';
+  return 'ExportStatementEvent.exportExcel(type: $type, date: $date, month: $month, ordering: $ordering, startDate: $startDate, endDate: $endDate)';
 }
 
 
@@ -247,7 +251,7 @@ abstract mixin class _$ExportExcelCopyWith<$Res> implements $ExportStatementEven
   factory _$ExportExcelCopyWith(_ExportExcel value, $Res Function(_ExportExcel) _then) = __$ExportExcelCopyWithImpl;
 @override @useResult
 $Res call({
- String? type, String? date, String? month, String? ordering
+ String? type, String? date, String? month, String? ordering, String? startDate, String? endDate
 });
 
 
@@ -264,12 +268,14 @@ class __$ExportExcelCopyWithImpl<$Res>
 
 /// Create a copy of ExportStatementEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? type = freezed,Object? date = freezed,Object? month = freezed,Object? ordering = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? type = freezed,Object? date = freezed,Object? month = freezed,Object? ordering = freezed,Object? startDate = freezed,Object? endDate = freezed,}) {
   return _then(_ExportExcel(
 type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as String?,month: freezed == month ? _self.month : month // ignore: cast_nullable_to_non_nullable
 as String?,ordering: freezed == ordering ? _self.ordering : ordering // ignore: cast_nullable_to_non_nullable
+as String?,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
+as String?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

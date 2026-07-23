@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ExportPdfEvent {
 
- String? get type; String? get date; String? get month; String? get ordering;
+ String? get type; String? get date; String? get month; String? get ordering; String? get startDate; String? get endDate;
 /// Create a copy of ExportPdfEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ExportPdfEventCopyWith<ExportPdfEvent> get copyWith => _$ExportPdfEventCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExportPdfEvent&&(identical(other.type, type) || other.type == type)&&(identical(other.date, date) || other.date == date)&&(identical(other.month, month) || other.month == month)&&(identical(other.ordering, ordering) || other.ordering == ordering));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExportPdfEvent&&(identical(other.type, type) || other.type == type)&&(identical(other.date, date) || other.date == date)&&(identical(other.month, month) || other.month == month)&&(identical(other.ordering, ordering) || other.ordering == ordering)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,type,date,month,ordering);
+int get hashCode => Object.hash(runtimeType,type,date,month,ordering,startDate,endDate);
 
 @override
 String toString() {
-  return 'ExportPdfEvent(type: $type, date: $date, month: $month, ordering: $ordering)';
+  return 'ExportPdfEvent(type: $type, date: $date, month: $month, ordering: $ordering, startDate: $startDate, endDate: $endDate)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ExportPdfEventCopyWith<$Res>  {
   factory $ExportPdfEventCopyWith(ExportPdfEvent value, $Res Function(ExportPdfEvent) _then) = _$ExportPdfEventCopyWithImpl;
 @useResult
 $Res call({
- String? type, String? date, String? month, String? ordering
+ String? type, String? date, String? month, String? ordering, String? startDate, String? endDate
 });
 
 
@@ -62,12 +62,14 @@ class _$ExportPdfEventCopyWithImpl<$Res>
 
 /// Create a copy of ExportPdfEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? type = freezed,Object? date = freezed,Object? month = freezed,Object? ordering = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? type = freezed,Object? date = freezed,Object? month = freezed,Object? ordering = freezed,Object? startDate = freezed,Object? endDate = freezed,}) {
   return _then(_self.copyWith(
 type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as String?,month: freezed == month ? _self.month : month // ignore: cast_nullable_to_non_nullable
 as String?,ordering: freezed == ordering ? _self.ordering : ordering // ignore: cast_nullable_to_non_nullable
+as String?,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
+as String?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -153,10 +155,10 @@ return exportPdf(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String? type,  String? date,  String? month,  String? ordering)?  exportPdf,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String? type,  String? date,  String? month,  String? ordering,  String? startDate,  String? endDate)?  exportPdf,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ExportPdf() when exportPdf != null:
-return exportPdf(_that.type,_that.date,_that.month,_that.ordering);case _:
+return exportPdf(_that.type,_that.date,_that.month,_that.ordering,_that.startDate,_that.endDate);case _:
   return orElse();
 
 }
@@ -174,10 +176,10 @@ return exportPdf(_that.type,_that.date,_that.month,_that.ordering);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String? type,  String? date,  String? month,  String? ordering)  exportPdf,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String? type,  String? date,  String? month,  String? ordering,  String? startDate,  String? endDate)  exportPdf,}) {final _that = this;
 switch (_that) {
 case _ExportPdf():
-return exportPdf(_that.type,_that.date,_that.month,_that.ordering);case _:
+return exportPdf(_that.type,_that.date,_that.month,_that.ordering,_that.startDate,_that.endDate);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +196,10 @@ return exportPdf(_that.type,_that.date,_that.month,_that.ordering);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String? type,  String? date,  String? month,  String? ordering)?  exportPdf,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String? type,  String? date,  String? month,  String? ordering,  String? startDate,  String? endDate)?  exportPdf,}) {final _that = this;
 switch (_that) {
 case _ExportPdf() when exportPdf != null:
-return exportPdf(_that.type,_that.date,_that.month,_that.ordering);case _:
+return exportPdf(_that.type,_that.date,_that.month,_that.ordering,_that.startDate,_that.endDate);case _:
   return null;
 
 }
@@ -209,13 +211,15 @@ return exportPdf(_that.type,_that.date,_that.month,_that.ordering);case _:
 
 
 class _ExportPdf implements ExportPdfEvent {
-  const _ExportPdf({this.type, this.date, this.month, this.ordering});
+  const _ExportPdf({this.type, this.date, this.month, this.ordering, this.startDate, this.endDate});
   
 
 @override final  String? type;
 @override final  String? date;
 @override final  String? month;
 @override final  String? ordering;
+@override final  String? startDate;
+@override final  String? endDate;
 
 /// Create a copy of ExportPdfEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -227,16 +231,16 @@ _$ExportPdfCopyWith<_ExportPdf> get copyWith => __$ExportPdfCopyWithImpl<_Export
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExportPdf&&(identical(other.type, type) || other.type == type)&&(identical(other.date, date) || other.date == date)&&(identical(other.month, month) || other.month == month)&&(identical(other.ordering, ordering) || other.ordering == ordering));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExportPdf&&(identical(other.type, type) || other.type == type)&&(identical(other.date, date) || other.date == date)&&(identical(other.month, month) || other.month == month)&&(identical(other.ordering, ordering) || other.ordering == ordering)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,type,date,month,ordering);
+int get hashCode => Object.hash(runtimeType,type,date,month,ordering,startDate,endDate);
 
 @override
 String toString() {
-  return 'ExportPdfEvent.exportPdf(type: $type, date: $date, month: $month, ordering: $ordering)';
+  return 'ExportPdfEvent.exportPdf(type: $type, date: $date, month: $month, ordering: $ordering, startDate: $startDate, endDate: $endDate)';
 }
 
 
@@ -247,7 +251,7 @@ abstract mixin class _$ExportPdfCopyWith<$Res> implements $ExportPdfEventCopyWit
   factory _$ExportPdfCopyWith(_ExportPdf value, $Res Function(_ExportPdf) _then) = __$ExportPdfCopyWithImpl;
 @override @useResult
 $Res call({
- String? type, String? date, String? month, String? ordering
+ String? type, String? date, String? month, String? ordering, String? startDate, String? endDate
 });
 
 
@@ -264,12 +268,14 @@ class __$ExportPdfCopyWithImpl<$Res>
 
 /// Create a copy of ExportPdfEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? type = freezed,Object? date = freezed,Object? month = freezed,Object? ordering = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? type = freezed,Object? date = freezed,Object? month = freezed,Object? ordering = freezed,Object? startDate = freezed,Object? endDate = freezed,}) {
   return _then(_ExportPdf(
 type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as String?,month: freezed == month ? _self.month : month // ignore: cast_nullable_to_non_nullable
 as String?,ordering: freezed == ordering ? _self.ordering : ordering // ignore: cast_nullable_to_non_nullable
+as String?,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
+as String?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
