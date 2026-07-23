@@ -35,6 +35,14 @@ class _AddExpensesState extends State<AddExpenses> {
   };
 
   @override
+  void dispose() {
+    _expensesTypeController.dispose();
+    _expensesAmountController.dispose();
+    _remarkController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

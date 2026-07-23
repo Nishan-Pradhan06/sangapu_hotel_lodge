@@ -9,8 +9,8 @@ class AppRoutesName {
 
   //#---------------PAGE ROUTES ROUTES NANE--------------##
   static const String dashboardPage = 'dashboardPage';
-  static const String createRoomEntryPage = 'createRoomEntryPage';
+  static const String incomeEntry = 'createRoomEntryPage';
   static const String addExpense = 'addExpense';
   static const String editExpense = 'editExpense';
-  static const String editRoomEntry = 'editRoomEntry';
+  static const String editIncomeEntry = 'editRoomEntry';
 }

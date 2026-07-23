@@ -4,11 +4,10 @@ import 'package:sangapu/features/auth/cubits/logout/logout_cubit.dart';
 import 'package:sangapu/features/auth/cubits/remember_me/remember_me_cubit.dart';
 import 'package:sangapu/features/expenses/blocs/add_expenses/add_expenses_record_bloc.dart';
 import 'package:sangapu/features/expenses/blocs/edit_expenses/edit_expenses_bloc.dart';
-import 'package:sangapu/features/rooms/blocs/edit_room_entry/edit_room_entry_bloc.dart';
+import 'package:sangapu/features/income/blocs/income_entry/income_entry_bloc.dart';
 import '../../../../features/auth/blocs/login/log_in_bloc.dart';
 import '../../../../features/expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import '../../../../features/income/blocs/bloc/get_income_bloc.dart';
-import '../../../../features/rooms/blocs/room_entry/room_entry_bloc.dart';
 import '../../../../features/export_statements/blocs/export_excel/export_statement_bloc.dart';
 import '../../../../features/export_statements/blocs/export_pdf/export_pdf_bloc.dart';
 import '../../../../features/statements/bloc/statements_bloc.dart';
@@ -27,7 +26,7 @@ class BlocWrapperWidget extends StatelessWidget {
         BlocProvider(create: (_) => sl<LogInBloc>()),
         BlocProvider(create: (_) => sl<LogoutCubit>()),
         BlocProvider(create: (_) => sl<RememberMeCubit>()),
-        BlocProvider(create: (_) => sl<RoomEntryBloc>()),
+        BlocProvider(create: (_) => sl<IncomeEntryBloc>()),
         BlocProvider(create: (_) => sl<StatementsBloc>()),
         BlocProvider(create: (_) => sl<GetExpensesBloc>()),
         BlocProvider(create: (_) => sl<AddExpensesRecordBloc>()),
@@ -35,7 +34,7 @@ class BlocWrapperWidget extends StatelessWidget {
         BlocProvider(create: (_) => sl<ExportStatementBloc>()),
         BlocProvider(create: (_) => sl<ExportPdfBloc>()),
         BlocProvider(create: (_) => sl<EditExpensesBloc>()),
-        BlocProvider(create: (_) => sl<EditRoomEntryBloc>()),
+        // BlocProvider(create: (_) => sl<EditRoomEntryBloc>()),
         BlocProvider(create: (_) => sl<StatementFilterCubit>()),
 
         //##----------GET------------##//

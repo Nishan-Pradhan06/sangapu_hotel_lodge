@@ -6,31 +6,47 @@ import 'package:sangapu/core/widgets/custom_container.dart';
 import 'package:sangapu/core/widgets/custom_padding.dart';
 import 'package:sangapu/core/widgets/custom_text_form_field.dart';
 import 'package:sangapu/features/income/blocs/bloc/get_income_bloc.dart';
-import 'package:sangapu/features/rooms/blocs/room_entry/room_entry_bloc.dart';
+import 'package:sangapu/features/income/blocs/income_entry/income_entry_bloc.dart';
+import 'package:sangapu/features/income/model/income_entry_model.dart';
 import 'package:sangapu/features/statements/bloc/statements_bloc.dart';
 import '../../../core/helpers/nepali_date_helper.dart';
 import '../../../core/widgets/custom_toast.dart';
 import '../../expenses/blocs/get_expenses/get_expenses_bloc.dart';
-import '../models/room_entry_model.dart';
 
-class CreateRoomEntryPage extends StatefulWidget {
-  const CreateRoomEntryPage({super.key});
+class IncomeEntryPage extends StatefulWidget {
+  const IncomeEntryPage({super.key});
 
   @override
-  State<CreateRoomEntryPage> createState() => _CreateRoomEntryPageState();
+  State<IncomeEntryPage> createState() => _IncomeEntryPageState();
 }
 
-class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
+class _IncomeEntryPageState extends State<IncomeEntryPage> {
   final _formKey = GlobalKey<FormState>();
 
+  final _incomeTypeController = TextEditingController();
   final _regularPriceController = TextEditingController();
   final _customPriceController = TextEditingController();
   final _additionalNotesController = TextEditingController();
 
   @override
+  void dispose() {
+    _incomeTypeController.dispose();
+    _regularPriceController.dispose();
+    _customPriceController.dispose();
+    _additionalNotesController.dispose();
+    super.dispose();
+  }
+
+  Map<String, String> incomeTypeMap = {
+    'Room': 'room',
+    'Food': 'food',
+    'Others': 'others',
+  };
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Create Room Entry')),
+      appBar: AppBar(title: Text('Income Entry')),
       body: SingleChildScrollView(
         child: CustomPadding(
           child: Form(
@@ -57,7 +73,23 @@ class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
                 ),
                 CustomTextField(
                   key: ValueKey(
-                    'dropdown_${_customPriceController.text.isNotEmpty}_${_regularPriceController.text}',
+                    'income_type_${_incomeTypeController.text.isNotEmpty}_${_incomeTypeController.text}',
+                  ),
+                  label: 'Income Type',
+                  type: CustomTextFieldType.dropdown,
+                  controller: _incomeTypeController,
+                  enabled: _incomeTypeController.text.isEmpty,
+                  dropdownItems: const [
+                    'Select a Income Type',
+                    'Room',
+                    'Food',
+                    'Others',
+                  ],
+                  hint: 'Select a Income Type',
+                ),
+                CustomTextField(
+                  key: ValueKey(
+                    'regular_price_${_customPriceController.text.isNotEmpty}_${_regularPriceController.text}',
                   ),
                   label: 'Regular Price',
                   type: CustomTextFieldType.dropdown,
@@ -102,14 +134,14 @@ class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
           ),
         ),
       ),
-      bottomNavigationBar: BlocConsumer<RoomEntryBloc, RoomEntryState>(
+      bottomNavigationBar: BlocConsumer<IncomeEntryBloc, IncomeEntryState>(
         listener: (context, state) {
           state.whenOrNull(
             failure: (failure) {
               CustomToast.showError(failure.message);
             },
             loaded: (data) {
-              CustomToast.showSuccess("Room entry successful");
+              CustomToast.showSuccess("Income entry successful");
               context.read<StatementsBloc>().add(
                 const StatementsEvent.getStatement(),
               );
@@ -149,14 +181,16 @@ class _CreateRoomEntryPageState extends State<CreateRoomEntryPage> {
                       }
                     }
 
-                    final roomEntryModel = RoomEntryModel(
-                      fixedPrice: parsedFixedPrice,
+                    final incomeEntryModel = IncomeEntryModel(
+                      incomeType:
+                          incomeTypeMap[_incomeTypeController.text] ?? '',
+                      regularPrice: parsedFixedPrice,
                       customPrice: _customPriceController.text,
                       additionalNotes: _additionalNotesController.text,
                       nepaliDate: DateHelper.nepaliDateDash(),
                     );
-                    context.read<RoomEntryBloc>().add(
-                      RoomEntryEvent.roomEntry(roomEntryModel),
+                    context.read<IncomeEntryBloc>().add(
+                      IncomeEntryEvent.incomeEntry(incomeEntryModel),
                     );
                   }
                 },

@@ -111,6 +111,7 @@ class IncomeData {
   final DateTime createdAt;
   final DateTime updatedAt;
   final int user;
+  final String incomeType;
 
   IncomeData({
     required this.id,
@@ -121,6 +122,7 @@ class IncomeData {
     required this.createdAt,
     required this.updatedAt,
     required this.user,
+    required this.incomeType,
   });
 
   factory IncomeData.fromJson(Map<String, dynamic> json) {
@@ -133,6 +135,7 @@ class IncomeData {
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       user: (json['user'] as num).toInt(),
+      incomeType: json['income_type'] as String? ?? '',
     );
   }
 
@@ -146,6 +149,31 @@ class IncomeData {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'user': user,
+      'income_type': incomeType,
     };
+  }
+
+  IncomeData copyWith({
+    int? id,
+    String? category,
+    int? amount,
+    String? remarks,
+    String? nepaliDate,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    int? user,
+    String? incomeType,
+  }) {
+    return IncomeData(
+      id: id ?? this.id,
+      category: category ?? this.category,
+      amount: amount ?? this.amount,
+      remarks: remarks ?? this.remarks,
+      nepaliDate: nepaliDate ?? this.nepaliDate,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      user: user ?? this.user,
+      incomeType: incomeType ?? this.incomeType,
+    );
   }
 }

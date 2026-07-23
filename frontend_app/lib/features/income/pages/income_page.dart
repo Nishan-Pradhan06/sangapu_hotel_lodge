@@ -102,7 +102,7 @@ class IncomePage extends StatelessWidget {
                               children: [
                                 TransactionTile(
                                   title: Text(
-                                    "Room | ${incomeItem.category} | ${incomeItem.remarks}",
+                                    "${incomeItem.incomeType} | ${incomeItem.category} | ${incomeItem.remarks}",
                                     style: textTheme.titleSmall,
                                   ),
                                   dateTime: Text(
@@ -123,7 +123,7 @@ class IncomePage extends StatelessWidget {
                                   ),
                                   onLongPress: () {
                                     context.pushNamed(
-                                      AppRoutesName.editRoomEntry,
+                                      AppRoutesName.editIncomeEntry,
                                       extra: incomeItem,
                                     );
                                   },

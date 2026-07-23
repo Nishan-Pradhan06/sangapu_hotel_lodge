@@ -172,7 +172,7 @@ class DashboardPage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         heroTag: 'bottom_nav_fab',
         onPressed: () {
-          context.pushNamed(AppRoutesName.createRoomEntryPage);
+          context.pushNamed(AppRoutesName.incomeEntry);
         },
         child: Icon(Icons.add),
       ),

@@ -6,23 +6,26 @@ import 'package:sangapu/core/widgets/custom_container.dart';
 import 'package:sangapu/core/widgets/custom_padding.dart';
 import 'package:sangapu/core/widgets/custom_text_form_field.dart';
 import 'package:sangapu/features/income/blocs/bloc/get_income_bloc.dart';
+import 'package:sangapu/features/income/blocs/edit_room_entry/edit_income_entry_bloc.dart';
+import 'package:sangapu/features/income/model/income_entry_model.dart';
 import 'package:sangapu/features/income/model/income_model.dart';
-import 'package:sangapu/features/rooms/blocs/edit_room_entry/edit_room_entry_bloc.dart';
-import 'package:sangapu/features/rooms/models/room_entry_model.dart';
 import 'package:sangapu/features/statements/bloc/statements_bloc.dart';
+import '../../../core/helpers/nepali_date_helper.dart';
 import '../../../core/widgets/custom_toast.dart';
 import '../../expenses/blocs/get_expenses/get_expenses_bloc.dart';
 
-class EditRoomEntryPage extends StatefulWidget {
+class EditIncomeEntryPage extends StatefulWidget {
   final IncomeData incomeData;
-  const EditRoomEntryPage({super.key, required this.incomeData});
+  const EditIncomeEntryPage({super.key, required this.incomeData});
 
   @override
-  State<EditRoomEntryPage> createState() => _EditRoomEntryPageState();
+  State<EditIncomeEntryPage> createState() => _EditIncomeEntryPageState();
 }
 
-class _EditRoomEntryPageState extends State<EditRoomEntryPage> {
+class _EditIncomeEntryPageState extends State<EditIncomeEntryPage> {
   final _formKey = GlobalKey<FormState>();
+  
+ late final _incomeTypeController = TextEditingController();
 
   late final TextEditingController _regularPriceController;
   late final TextEditingController _customPriceController;
@@ -53,13 +56,21 @@ class _EditRoomEntryPageState extends State<EditRoomEntryPage> {
     );
   }
 
+
   @override
   void dispose() {
+    _incomeTypeController.dispose();
     _regularPriceController.dispose();
     _customPriceController.dispose();
     _additionalNotesController.dispose();
     super.dispose();
   }
+
+  Map<String, String> incomeTypeMap = {
+    'Room': 'room',
+    'Food': 'food',
+    'Others': 'others',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +96,7 @@ class _EditRoomEntryPageState extends State<EditRoomEntryPage> {
                         style: TextTheme.of(context).titleMedium,
                       ),
                       Text(
-                        widget.incomeData.nepaliDate,
+                        DateHelper.nepaliDateDash(),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ],
@@ -93,7 +104,23 @@ class _EditRoomEntryPageState extends State<EditRoomEntryPage> {
                 ),
                 CustomTextField(
                   key: ValueKey(
-                    'dropdown_${_customPriceController.text.isNotEmpty}_${_regularPriceController.text}',
+                    'income_type_${_incomeTypeController.text.isNotEmpty}_${_incomeTypeController.text}',
+                  ),
+                  label: 'Income Type',
+                  type: CustomTextFieldType.dropdown,
+                  controller: _incomeTypeController,
+                  enabled: _incomeTypeController.text.isEmpty,
+                  dropdownItems: const [
+                    'Select a Income Type',
+                    'Room',
+                    'Food',
+                    'Others',
+                  ],
+                  hint: 'Select a Income Type',
+                ),
+                CustomTextField(
+                  key: ValueKey(
+                    'regular_price_${_customPriceController.text.isNotEmpty}_${_regularPriceController.text}',
                   ),
                   label: 'Regular Price',
                   type: CustomTextFieldType.dropdown,
@@ -138,73 +165,76 @@ class _EditRoomEntryPageState extends State<EditRoomEntryPage> {
           ),
         ),
       ),
-      bottomNavigationBar: BlocConsumer<EditRoomEntryBloc, EditRoomEntryState>(
-        listener: (context, state) {
-          state.whenOrNull(
-            failure: (failure) {
-              CustomToast.showError(failure.message);
-            },
-            loaded: (data) {
-              CustomToast.showSuccess('Room entry updated successfully');
-              context.read<StatementsBloc>().add(
-                const StatementsEvent.getStatement(),
-              );
-              context.read<GetIncomeBloc>().add(
-                const GetIncomeEvent.getIncome(),
-              );
-              context.read<GetExpensesBloc>().add(
-                const GetExpensesEvent.getExpenses(),
-              );
-              context.pop();
-            },
-          );
-        },
-        builder: (context, state) {
-          final bool isLoading = state.maybeWhen(
-            loading: () => true,
-            orElse: () => false,
-          );
-          return CustomPadding(
-            child: SizedBox(
-              height: MediaQuery.heightOf(context) / 14,
-              child: CustomButton(
-                isLoading: isLoading,
-                isDisabled: isLoading,
-                text: 'Save',
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    int? parsedFixedPrice;
-                    if (_regularPriceController.text !=
-                            'Select a standard rate' &&
-                        _regularPriceController.text.isNotEmpty) {
-                      final match = RegExp(
-                        r'\d+',
-                      ).firstMatch(_regularPriceController.text);
-                      if (match != null) {
-                        parsedFixedPrice = int.tryParse(match.group(0)!);
-                      }
-                    }
-
-                    final roomEntryModel = RoomEntryModel(
-                      fixedPrice: parsedFixedPrice,
-                      customPrice: _customPriceController.text,
-                      additionalNotes: _additionalNotesController.text,
-                      nepaliDate: widget.incomeData.nepaliDate,
-                    );
-
-                    context.read<EditRoomEntryBloc>().add(
-                      EditRoomEntryEvent.editRoomEntry(
-                        widget.incomeData.id,
-                        roomEntryModel,
-                      ),
-                    );
-                  }
+      bottomNavigationBar:
+          BlocConsumer<EditIncomeEntryBloc, EditIncomeEntryState>(
+            listener: (context, state) {
+              state.whenOrNull(
+                failure: (failure) {
+                  CustomToast.showError(failure.message);
                 },
-              ),
-            ),
-          );
-        },
-      ),
+                loaded: (data) {
+                  CustomToast.showSuccess('Income entry updated successfully');
+                  context.read<StatementsBloc>().add(
+                    const StatementsEvent.getStatement(),
+                  );
+                  context.read<GetIncomeBloc>().add(
+                    const GetIncomeEvent.getIncome(),
+                  );
+                  context.read<GetExpensesBloc>().add(
+                    const GetExpensesEvent.getExpenses(),
+                  );
+                  context.pop();
+                },
+              );
+            },
+            builder: (context, state) {
+              final bool isLoading = state.maybeWhen(
+                loading: () => true,
+                orElse: () => false,
+              );
+              return CustomPadding(
+                child: SizedBox(
+                  height: MediaQuery.heightOf(context) / 14,
+                  child: CustomButton(
+                    isLoading: isLoading,
+                    isDisabled: isLoading,
+                    text: 'Save',
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        int? parsedFixedPrice;
+                        if (_regularPriceController.text !=
+                                'Select a standard rate' &&
+                            _regularPriceController.text.isNotEmpty) {
+                          final match = RegExp(
+                            r'\d+',
+                          ).firstMatch(_regularPriceController.text);
+                          if (match != null) {
+                            parsedFixedPrice = int.tryParse(match.group(0)!);
+                          }
+                        }
+
+                        final roomEntryModel = IncomeEntryModel(
+                          incomeType:
+                              incomeTypeMap[_incomeTypeController.text] ?? '',
+                          regularPrice: parsedFixedPrice,
+                          customPrice: _customPriceController.text,
+                          additionalNotes: _additionalNotesController.text,
+                          nepaliDate: widget.incomeData.nepaliDate,
+                        );
+
+                        context.read<EditIncomeEntryBloc>().add(
+                          EditIncomeEntryEvent.editIncomeEntry(
+                            widget.incomeData.id,
+                            roomEntryModel,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
     );
   }
 }
