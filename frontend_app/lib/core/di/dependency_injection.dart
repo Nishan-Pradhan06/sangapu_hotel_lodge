@@ -6,6 +6,7 @@ import 'package:sangapu/features/auth/cubits/remember_me/remember_me_cubit.dart'
 import 'package:sangapu/features/expenses/blocs/add_expenses/add_expenses_record_bloc.dart';
 import 'package:sangapu/features/expenses/blocs/edit_expenses/edit_expenses_bloc.dart';
 import 'package:sangapu/features/expenses/blocs/get_expenses/get_expenses_bloc.dart';
+import 'package:sangapu/features/income/blocs/edit_room_entry/edit_income_entry_bloc.dart';
 import 'package:sangapu/features/income/blocs/income_entry/income_entry_bloc.dart';
 import '../../../../features/auth/blocs/login/log_in_bloc.dart';
 import '../../../../features/auth/repository/auth_repository.dart';
@@ -37,7 +38,7 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(() => ExportStatementBloc(repo: sl()));
   sl.registerLazySingleton(() => ExportPdfBloc(repo: sl()));
   sl.registerLazySingleton(() => EditExpensesBloc(repo: sl()));
-  // sl.registerLazySingleton(() => EditRoomEntryBloc(repo: sl()));
+  sl.registerLazySingleton(() => EditIncomeEntryBloc(repo: sl()));
   sl.registerLazySingleton(() => StatementFilterCubit());
 
   //###---------------CUBIT--------------------###

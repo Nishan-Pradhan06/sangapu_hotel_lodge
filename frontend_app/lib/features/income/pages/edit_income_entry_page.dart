@@ -25,20 +25,34 @@ class EditIncomeEntryPage extends StatefulWidget {
 class _EditIncomeEntryPageState extends State<EditIncomeEntryPage> {
   final _formKey = GlobalKey<FormState>();
   
- late final _incomeTypeController = TextEditingController();
-
+  late final TextEditingController _incomeTypeController;
   late final TextEditingController _regularPriceController;
   late final TextEditingController _customPriceController;
   late final TextEditingController _additionalNotesController;
+
+  Map<String, String> incomeTypeMap = {
+    'Room': 'room',
+    'Food': 'food',
+    'Others': 'others',
+  };
 
   @override
   void initState() {
     super.initState();
     // Pre-fill from the incoming IncomeData.
-    // If the amount matches one of the fixed rates, show it in the dropdown;
+    
+    String initialIncomeType = '';
+    incomeTypeMap.forEach((key, value) {
+      if (value == widget.incomeData.incomeType) {
+        initialIncomeType = key;
+      }
+    });
+    _incomeTypeController = TextEditingController(text: initialIncomeType);
+
+    // If the amount matches one of the fixed rates AND type is Room, show it in the dropdown;
     // otherwise fall back to the custom price field.
     final fixedRates = [800, 900, 1000, 1100, 1200];
-    if (fixedRates.contains(widget.incomeData.amount)) {
+    if (fixedRates.contains(widget.incomeData.amount) && widget.incomeData.incomeType == 'room') {
       _regularPriceController = TextEditingController(
         text: 'Rs. ${widget.incomeData.amount}',
       );
@@ -66,17 +80,11 @@ class _EditIncomeEntryPageState extends State<EditIncomeEntryPage> {
     super.dispose();
   }
 
-  Map<String, String> incomeTypeMap = {
-    'Room': 'room',
-    'Food': 'food',
-    'Others': 'others',
-  };
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Room Entry', style: TextTheme.of(context).titleLarge),
+        title: Text('Edit Income Entry', style: TextTheme.of(context).titleLarge),
       ),
       body: SingleChildScrollView(
         child: CustomPadding(
@@ -109,7 +117,6 @@ class _EditIncomeEntryPageState extends State<EditIncomeEntryPage> {
                   label: 'Income Type',
                   type: CustomTextFieldType.dropdown,
                   controller: _incomeTypeController,
-                  enabled: _incomeTypeController.text.isEmpty,
                   dropdownItems: const [
                     'Select a Income Type',
                     'Room',
@@ -117,6 +124,18 @@ class _EditIncomeEntryPageState extends State<EditIncomeEntryPage> {
                     'Others',
                   ],
                   hint: 'Select a Income Type',
+                  onDropdownChanged: (value) {
+                    if (value != 'Room') {
+                      _regularPriceController.text = 'Select a standard rate';
+                    }
+                    setState(() {});
+                  },
+                  onChanged: (value) {
+                    if (value != 'Room') {
+                      _regularPriceController.text = 'Select a standard rate';
+                    }
+                    setState(() {});
+                  },
                 ),
                 CustomTextField(
                   key: ValueKey(
@@ -125,7 +144,9 @@ class _EditIncomeEntryPageState extends State<EditIncomeEntryPage> {
                   label: 'Regular Price',
                   type: CustomTextFieldType.dropdown,
                   controller: _regularPriceController,
-                  enabled: _customPriceController.text.isEmpty,
+                  enabled:
+                      _incomeTypeController.text == 'Room' &&
+                      _customPriceController.text.isEmpty,
                   dropdownItems: const [
                     'Select a standard rate',
                     'Rs. 800',
@@ -213,7 +234,7 @@ class _EditIncomeEntryPageState extends State<EditIncomeEntryPage> {
                           }
                         }
 
-                        final roomEntryModel = IncomeEntryModel(
+                        final incomeEntryModel = IncomeEntryModel(
                           incomeType:
                               incomeTypeMap[_incomeTypeController.text] ?? '',
                           regularPrice: parsedFixedPrice,
@@ -225,7 +246,7 @@ class _EditIncomeEntryPageState extends State<EditIncomeEntryPage> {
                         context.read<EditIncomeEntryBloc>().add(
                           EditIncomeEntryEvent.editIncomeEntry(
                             widget.incomeData.id,
-                            roomEntryModel,
+                            incomeEntryModel,
                           ),
                         );
                       }
