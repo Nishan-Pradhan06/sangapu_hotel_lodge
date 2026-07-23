@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
-import 'package:nepali_utils/nepali_utils.dart';
 import '../cubits/statement_filter_cubit.dart';
 import '../bloc/statements_bloc.dart';
 import '../../../core/widgets/custom_button.dart';
@@ -41,11 +40,11 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
     final filterState = context.read<StatementFilterCubit>().state;
     _startDate = filterState.dateFrom;
     _endDate = filterState.dateTo;
-    
+
     if (_startDate == null && _endDate == null) {
       _selectedOption = 'Custom Date Range';
     } else {
-      _selectedOption = 'Custom Date Range'; 
+      _selectedOption = 'Custom Date Range';
     }
   }
 
@@ -54,9 +53,11 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
       _selectedOption = option;
       final now = DateTime.now();
       final nowBS = NepaliDateTime.now();
-      
+
       if (option == 'This Week') {
-        _startDate = now.subtract(Duration(days: now.weekday == 7 ? 0 : now.weekday));
+        _startDate = now.subtract(
+          Duration(days: now.weekday == 7 ? 0 : now.weekday),
+        );
         _endDate = now;
       } else if (option == 'This Month') {
         final startBS = NepaliDateTime(nowBS.year, nowBS.month, 1);
@@ -80,10 +81,12 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
   }
 
   Future<void> _pickDate(BuildContext context, bool isStart) async {
-    final initialDate = isStart 
+    final initialDate = isStart
         ? (_startDate?.toNepaliDateTime() ?? NepaliDateTime.now())
-        : (_endDate?.toNepaliDateTime() ?? _startDate?.toNepaliDateTime() ?? NepaliDateTime.now());
-        
+        : (_endDate?.toNepaliDateTime() ??
+              _startDate?.toNepaliDateTime() ??
+              NepaliDateTime.now());
+
     final pickedDate = await showMaterialDatePicker(
       context: context,
       initialDate: initialDate,
@@ -131,7 +134,9 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
             children: [
               Text(
                 'Date',
-                style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+                style: textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               IconButton(
                 onPressed: () => Navigator.pop(context),
@@ -140,17 +145,33 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
             ],
           ),
           const SizedBox(height: 16),
-          _buildRadioOption('This Week', _formatRange(
-            DateTime.now().subtract(Duration(days: DateTime.now().weekday == 7 ? 0 : DateTime.now().weekday)),
-            DateTime.now(),
-          )),
-          _buildRadioOption('This Month', _formatRange(
-            NepaliDateTime(NepaliDateTime.now().year, NepaliDateTime.now().month, 1).toDateTime(),
-            DateTime.now(),
-          )),
+          _buildRadioOption(
+            'This Week',
+            _formatRange(
+              DateTime.now().subtract(
+                Duration(
+                  days: DateTime.now().weekday == 7
+                      ? 0
+                      : DateTime.now().weekday,
+                ),
+              ),
+              DateTime.now(),
+            ),
+          ),
+          _buildRadioOption(
+            'This Month',
+            _formatRange(
+              NepaliDateTime(
+                NepaliDateTime.now().year,
+                NepaliDateTime.now().month,
+                1,
+              ).toDateTime(),
+              DateTime.now(),
+            ),
+          ),
           _buildRadioOption('Last Quarter', _getLastQuarterString()),
           _buildRadioOption('Custom Date Range', null),
-          
+
           if (_selectedOption == 'Custom Date Range') ...[
             const SizedBox(height: 16),
             Row(
@@ -159,13 +180,11 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
                   child: _buildDateField('Start Date', _startDate, true),
                 ),
                 const SizedBox(width: 16),
-                Expanded(
-                  child: _buildDateField('End Date', _endDate, false),
-                ),
+                Expanded(child: _buildDateField('End Date', _endDate, false)),
               ],
             ),
           ],
-          
+
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
@@ -174,13 +193,13 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
               onPressed: () {
                 if (_startDate != null || _endDate != null) {
                   context.read<StatementFilterCubit>().setDateRange(
-                    _startDate ?? DateTime(2000), 
-                    _endDate ?? DateTime.now()
+                    _startDate ?? DateTime(2000),
+                    _endDate ?? DateTime.now(),
                   );
                 } else {
                   context.read<StatementFilterCubit>().clearDateRange();
                 }
-                
+
                 final filter = context.read<StatementFilterCubit>().toFilter();
                 context.read<StatementsBloc>().add(
                   StatementsEvent.getStatement(filter: filter),
@@ -223,6 +242,14 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
               value: title,
               groupValue: _selectedOption,
               activeColor: theme.colorScheme.primary,
+              fillColor: WidgetStateProperty.resolveWith<Color>((
+                Set<WidgetState> states,
+              ) {
+                if (states.contains(WidgetState.selected)) {
+                  return theme.colorScheme.primary;
+                }
+                return theme.colorScheme.outline;
+              }),
               onChanged: (val) {
                 if (val != null) _selectOption(val);
               },
@@ -236,7 +263,7 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
   Widget _buildDateField(String label, DateTime? date, bool isStart) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -260,10 +287,18 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  date != null ? NepaliDateFormat('dd MMM yyyy').format(date.toNepaliDateTime()) : 'Select',
+                  date != null
+                      ? NepaliDateFormat(
+                          'dd MMM yyyy',
+                        ).format(date.toNepaliDateTime())
+                      : 'Select',
                   style: theme.textTheme.bodyMedium,
                 ),
-                Icon(Icons.calendar_today, size: 18, color: colorScheme.onSurfaceVariant),
+                Icon(
+                  Icons.calendar_today,
+                  size: 18,
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ],
             ),
           ),

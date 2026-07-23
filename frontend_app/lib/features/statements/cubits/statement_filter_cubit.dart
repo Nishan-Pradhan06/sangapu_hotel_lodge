@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:nepali_utils/nepali_utils.dart';
 import 'package:sangapu/features/statements/repository/transcation_repository.dart';
-
 part 'statement_filter_state.dart';
 part 'statement_filter_cubit.freezed.dart';
 
@@ -33,6 +33,15 @@ class StatementFilterCubit extends Cubit<StatementFilterState> {
 
   /// Convert current state → a StatementFilter for the Bloc
   StatementFilter toFilter() {
+    String? apiType;
+    if (state.type?.toLowerCase() == 'expense') {
+      apiType = 'expenses';
+    } else if (state.type?.toLowerCase() == 'income') {
+      apiType = 'income';
+    } else {
+      apiType = 'all';
+    }
+
     return StatementFilter(
       dateFrom: state.dateFrom != null
           ? _formatDate(state.dateFrom!)
@@ -40,15 +49,17 @@ class StatementFilterCubit extends Cubit<StatementFilterState> {
       dateTo: state.dateTo != null
           ? _formatDate(state.dateTo!)
           : null,
-      type: state.type,
-      ordering: '-created_at',
+      type: apiType,
+      ordering: 'desc',
+      date: (state.dateFrom != null || state.dateTo != null) ? 'custom' : null,
     );
   }
 
   String _formatDate(DateTime date) {
-    final y = date.year.toString().padLeft(4, '0');
-    final m = date.month.toString().padLeft(2, '0');
-    final d = date.day.toString().padLeft(2, '0');
+    final nepaliDate = date.toNepaliDateTime();
+    final y = nepaliDate.year.toString().padLeft(4, '0');
+    final m = nepaliDate.month.toString().padLeft(2, '0');
+    final d = nepaliDate.day.toString().padLeft(2, '0');
     return '$y-$m-$d';
   }
 }

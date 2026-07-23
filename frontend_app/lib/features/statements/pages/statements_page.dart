@@ -11,6 +11,8 @@ import '../widgets/transcation_tile.dart';
 import 'export_page.dart';
 import '../../export_statements/blocs/export_pdf/export_pdf_bloc.dart';
 import '../../export_statements/blocs/export_excel/export_statement_bloc.dart';
+import 'package:nepali_date_picker/nepali_date_picker.dart';
+import 'package:nepali_utils/nepali_utils.dart';
 import 'package:open_file/open_file.dart';
 import '../../../core/widgets/custom_toast.dart';
 import '../../../core/utils/download_helper.dart';
@@ -145,8 +147,30 @@ class _StatementPageState extends State<StatementPage> {
                   children: [
                     BlocBuilder<StatementFilterCubit, StatementFilterState>(
                       builder: (context, filterState) {
-                        final hasDateFilter = filterState.dateFrom != null || filterState.dateTo != null;
+                        final hasDateFilter =
+                            filterState.dateFrom != null ||
+                            filterState.dateTo != null;
                         final hasTypeFilter = filterState.type != null;
+
+                        String dateLabel = "Date";
+                        if (hasDateFilter) {
+                          try {
+                            final format = NepaliDateFormat('MMM dd');
+                            final startBS = filterState.dateFrom!
+                                .toNepaliDateTime();
+                            final endBS = filterState.dateTo!
+                                .toNepaliDateTime();
+                            dateLabel =
+                                '${format.format(startBS)} - ${format.format(endBS)}';
+                          } catch (_) {
+                            dateLabel = "Custom Date";
+                          }
+                        }
+
+                        String typeLabel = "Money Movement";
+                        if (hasTypeFilter) {
+                          typeLabel = filterState.type ?? "Money Movement";
+                        }
 
                         return Row(
                           children: [
@@ -154,18 +178,27 @@ class _StatementPageState extends State<StatementPage> {
                             GestureDetector(
                               onTap: () => DateFilterBottomSheet.show(context),
                               child: FilterChipWidget(
-                                label: "Date",
-                                color: hasDateFilter ? colorScheme.primary : colorScheme.outline,
-                                textColor: hasDateFilter ? colorScheme.primary : colorScheme.onSurface,
+                                label: dateLabel,
+                                color: hasDateFilter
+                                    ? colorScheme.primary
+                                    : colorScheme.outline,
+                                textColor: hasDateFilter
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurface,
                               ),
                             ),
                             const SizedBox(width: 8),
                             GestureDetector(
-                              onTap: () => MoneyMovementBottomSheet.show(context),
+                              onTap: () =>
+                                  MoneyMovementBottomSheet.show(context),
                               child: FilterChipWidget(
-                                label: "Money Movement",
-                                color: hasTypeFilter ? colorScheme.primary : colorScheme.outline,
-                                textColor: hasTypeFilter ? colorScheme.primary : colorScheme.onSurface,
+                                label: typeLabel,
+                                color: hasTypeFilter
+                                    ? colorScheme.primary
+                                    : colorScheme.outline,
+                                textColor: hasTypeFilter
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurface,
                               ),
                             ),
                           ],
@@ -237,20 +270,32 @@ class _StatementPageState extends State<StatementPage> {
         ),
 
         // FAB automatically picks up AppTheme.floatingActionButtonTheme
-        floatingActionButton: BlocBuilder<StatementFilterCubit, StatementFilterState>(
-          builder: (context, filterState) {
-            final hasActiveFilter = context.read<StatementFilterCubit>().hasActiveFilter;
-            return FloatingActionButton.extended(
-              onPressed: () {},
-              icon: Icon(
-                hasActiveFilter ? Icons.filter_alt : Icons.filter_alt_outlined,
-              ),
-              label: Text(hasActiveFilter ? "Filters Applied" : "All Filters"),
-              backgroundColor: hasActiveFilter ? colorScheme.primary : null,
-              foregroundColor: hasActiveFilter ? colorScheme.onPrimary : null,
-            );
-          },
-        ),
+        floatingActionButton:
+            BlocBuilder<StatementFilterCubit, StatementFilterState>(
+              builder: (context, filterState) {
+                final hasActiveFilter = context
+                    .read<StatementFilterCubit>()
+                    .hasActiveFilter;
+                return FloatingActionButton.extended(
+                  onPressed: () {
+                    if (hasActiveFilter) {
+                      context.read<StatementFilterCubit>().clearAll();
+                      context.read<StatementsBloc>().add(
+                        const StatementsEvent.getStatement(),
+                      );
+                    }
+                  },
+                  icon: Icon(
+                    hasActiveFilter ? Icons.clear : Icons.filter_alt_outlined,
+                  ),
+                  label: Text(
+                    hasActiveFilter ? "Clear Filters" : "All Filters",
+                  ),
+                  backgroundColor: hasActiveFilter ? colorScheme.error : null,
+                  foregroundColor: hasActiveFilter ? colorScheme.onError : null,
+                );
+              },
+            ),
       ),
     );
   }

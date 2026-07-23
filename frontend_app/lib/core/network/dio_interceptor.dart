@@ -44,13 +44,13 @@ class AppDioInterceptor extends Interceptor {
     dLog.d("[Error] ${statusCode ?? 'Unknown Status'} on $path");
 
     if (statusCode == 401 && _refreshCompleter == null) {
-      final Dio _newDio = Dio();
+      final Dio newDio = Dio();
 
       _refreshCompleter = Completer<String?>();
       final refreshToken = await CacheServices.instance.getAuthRefreshToken();
 
       try {
-        final response = await _newDio.post(
+        final response = await newDio.post(
           "${EnvConfig.instance.apiBaseUrl}auth/refresh/",
           data: {"refresh": refreshToken},
         );

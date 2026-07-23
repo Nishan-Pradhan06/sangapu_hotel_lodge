@@ -18,25 +18,29 @@ class StatementFilter {
   /// 'Income' | 'Expense' | null (= all)
   final String? type;
 
-  /// API ordering value, e.g. '-created_at' (newest first)
+  /// API ordering value, e.g. 'desc' (newest first)
   final String? ordering;
+
+  final String? date;
 
   const StatementFilter({
     this.dateFrom,
     this.dateTo,
     this.type,
     this.ordering,
+    this.date,
   });
 
   bool get isEmpty =>
-      dateFrom == null && dateTo == null && type == null && ordering == null;
+      dateFrom == null && dateTo == null && type == null && ordering == null && date == null;
 
   Map<String, dynamic> toQueryParams() {
     final params = <String, dynamic>{};
-    if (dateFrom != null) params['date_from'] = dateFrom;
-    if (dateTo != null) params['date_to'] = dateTo;
+    if (dateFrom != null) params['start_date'] = dateFrom;
+    if (dateTo != null) params['end_date'] = dateTo;
     if (type != null) params['type'] = type;
     if (ordering != null) params['ordering'] = ordering;
+    if (date != null) params['date'] = date;
     return params;
   }
 }
