@@ -78,7 +78,6 @@ class _IncomeEntryPageState extends State<IncomeEntryPage> {
                   label: 'Income Type',
                   type: CustomTextFieldType.dropdown,
                   controller: _incomeTypeController,
-                  enabled: _incomeTypeController.text.isEmpty,
                   dropdownItems: const [
                     'Select a Income Type',
                     'Room',
@@ -86,6 +85,19 @@ class _IncomeEntryPageState extends State<IncomeEntryPage> {
                     'Others',
                   ],
                   hint: 'Select a Income Type',
+                  onDropdownChanged: (value) {
+                    if (value != 'Room') {
+                      // Clear regular price selection if user switches away from 'Room'
+                      _regularPriceController.text = 'Select a standard rate';
+                    }
+                    setState(() {});
+                  },
+                  onChanged: (value) {
+                    if (value != 'Room') {
+                      _regularPriceController.text = 'Select a standard rate';
+                    }
+                    setState(() {});
+                  },
                 ),
                 CustomTextField(
                   key: ValueKey(
@@ -94,7 +106,10 @@ class _IncomeEntryPageState extends State<IncomeEntryPage> {
                   label: 'Regular Price',
                   type: CustomTextFieldType.dropdown,
                   controller: _regularPriceController,
-                  enabled: _customPriceController.text.isEmpty,
+                  // Enabled ONLY when 'Room' is selected AND Custom Amount is empty
+                  enabled:
+                      _incomeTypeController.text == 'Room' &&
+                      _customPriceController.text.isEmpty,
                   dropdownItems: const [
                     'Select a standard rate',
                     'Rs. 800',
@@ -127,6 +142,7 @@ class _IncomeEntryPageState extends State<IncomeEntryPage> {
                 CustomTextField(
                   label: 'Additional Notes',
                   controller: _additionalNotesController,
+                  hint: 'Enter any additional details or notes here...',
                   maxLines: 8,
                 ),
               ],
