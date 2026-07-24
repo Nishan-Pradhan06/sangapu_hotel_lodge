@@ -3,8 +3,8 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../../../core/widgets/custom_container.dart';
 
-class EarningsCardShimmer extends StatelessWidget {
-  const EarningsCardShimmer({super.key});
+class CardShimmer extends StatelessWidget {
+  const CardShimmer({super.key});
 
   @override
   Widget build(BuildContext context) {

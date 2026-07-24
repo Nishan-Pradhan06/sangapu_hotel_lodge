@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sangapu/features/banners/blocs/get_banner/get_banner_bloc.dart';
 
 import '../../core/widgets/double_press_to_exit.dart';
 import '../expenses/blocs/get_expenses/get_expenses_bloc.dart';
@@ -31,6 +32,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
     context.read<StatementsBloc>().add(const StatementsEvent.getStatement());
     context.read<GetExpensesBloc>().add(const GetExpensesEvent.getExpenses());
     context.read<GetIncomeBloc>().add(const GetIncomeEvent.getIncome());
+    context.read<GetBannerBloc>().add(const GetBannerEvent.getBanner());
     super.initState();
   }
 

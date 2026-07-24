@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sangapu/core/widgets/custom_toast.dart';
 import 'package:sangapu/features/auth/cubits/logout/logout_cubit.dart';
+import 'package:sangapu/features/banners/blocs/get_banner/get_banner_bloc.dart';
 import 'package:sangapu/main.dart';
 
 import '../../../core/helpers/nepali_date_helper.dart';
@@ -86,6 +87,7 @@ class DashboardPage extends StatelessWidget {
       body: RefreshIndicator(
         onRefresh: () {
           context.read<GetIncomeBloc>().add(const GetIncomeEvent.getIncome());
+          context.read<GetBannerBloc>().add(const GetBannerEvent.getBanner());
           context.read<GetExpensesBloc>().add(
             const GetExpensesEvent.getExpenses(),
           );
@@ -101,8 +103,8 @@ class DashboardPage extends StatelessWidget {
                 BlocBuilder<GetIncomeBloc, GetIncomeState>(
                   builder: (context, state) {
                     return state.when(
-                      initial: () => const EarningsCardShimmer(),
-                      loading: () => EarningsCardShimmer(),
+                      initial: () => const CardShimmer(),
+                      loading: () => CardShimmer(),
                       failure: (failure) => Center(
                         child: Text(
                           'Failed to load income: ${failure.message}',
@@ -145,8 +147,8 @@ class DashboardPage extends StatelessWidget {
                 BlocBuilder<GetExpensesBloc, GetExpensesState>(
                   builder: (context, state) {
                     return state.when(
-                      initial: () => EarningsCardShimmer(),
-                      loading: () => EarningsCardShimmer(),
+                      initial: () => CardShimmer(),
+                      loading: () => CardShimmer(),
                       failure: (failure) => Center(
                         child: Text(
                           'Failed to load expenses: ${failure.message}',

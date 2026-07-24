@@ -3,6 +3,8 @@ import 'package:get_it/get_it.dart';
 import 'package:retry/retry.dart';
 import 'package:sangapu/features/auth/cubits/logout/logout_cubit.dart';
 import 'package:sangapu/features/auth/cubits/remember_me/remember_me_cubit.dart';
+import 'package:sangapu/features/banners/blocs/get_banner/get_banner_bloc.dart';
+import 'package:sangapu/features/banners/repository/banner_repository.dart';
 import 'package:sangapu/features/expenses/blocs/add_expenses/add_expenses_record_bloc.dart';
 import 'package:sangapu/features/expenses/blocs/edit_expenses/edit_expenses_bloc.dart';
 import 'package:sangapu/features/expenses/blocs/get_expenses/get_expenses_bloc.dart';
@@ -40,6 +42,7 @@ Future<void> setupServiceLocator() async {
   sl.registerFactory(() => EditExpensesBloc(repo: sl()));
   sl.registerFactory(() => EditIncomeEntryBloc(repo: sl()));
   sl.registerFactory(() => StatementFilterCubit());
+  sl.registerFactory(() => GetBannerBloc(repo: sl()));
 
   //###---------------CUBIT--------------------###
   sl.registerFactory(() => LogoutCubit(repo: sl()));
@@ -52,6 +55,9 @@ Future<void> setupServiceLocator() async {
 
   sl.registerLazySingleton<TransactionRepository>(
     () => TransactionRepositoryImpl(apiService: sl()),
+  );
+  sl.registerLazySingleton<BannerRepository>(
+    () => BannerRepositoryImpl(apiService: sl()),
   );
   sl.registerLazySingleton<ExpensesRepository>(
     () => ExpensesRepositoryImpl(apiService: sl()),
