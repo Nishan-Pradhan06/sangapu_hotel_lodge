@@ -10,7 +10,7 @@ Future<void> initializeCache() async {
   cacheOptions = CacheOptions(
     store: HiveCacheStore("${dir.path}/api_cache"),
 
-    policy: CachePolicy.refresh,
+    policy: CachePolicy.refreshForceCache,
 
     hitCacheOnNetworkFailure: true,
 
