@@ -9,6 +9,7 @@ import '../../../core/helpers/nepali_date_helper.dart';
 import '../../../core/widgets/custom_padding.dart';
 import '../../../core/widgets/earnings_card_simmer.dart';
 import '../../../routers/app_routes_names.dart';
+import '../../banners/widgets/banner_widget.dart';
 import '../../expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import '../../income/blocs/bloc/get_income_bloc.dart';
 import '../../reports/widgets/earning_cards.dart';
@@ -96,6 +97,7 @@ class DashboardPage extends StatelessWidget {
             child: Column(
               spacing: 20,
               children: [
+                BannerWidget(),
                 BlocBuilder<GetIncomeBloc, GetIncomeState>(
                   builder: (context, state) {
                     return state.when(
