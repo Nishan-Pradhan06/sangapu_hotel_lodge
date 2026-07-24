@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1000442405072",
+    "project_id": "sangapu-e49d8",
+    "storage_bucket": "sangapu-e49d8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000442405072:android:77e44438e95b548cacfed5",
+        "android_client_info": {
+          "package_name": "com.goat_tech.sangapu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBi0y2MNres3kQChZCglm8cDFaSN3Ao7cs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

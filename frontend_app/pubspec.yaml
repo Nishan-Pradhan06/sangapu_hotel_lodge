@@ -46,6 +46,8 @@ dependencies:
   nepali_date_picker: ^6.0.2
   dio_cache_interceptor: ^4.0.7
   http_cache_hive_store: ^5.1.1
+  firebase_core: ^4.12.1
+  firebase_analytics: ^12.4.5
 
 dev_dependencies:
   flutter_test:
