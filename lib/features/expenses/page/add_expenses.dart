@@ -28,6 +28,7 @@ class _AddExpensesState extends State<AddExpenses> {
 
   Map<String, String> expenseCategoryMap = {
     'Electricity Bill': 'electricity',
+    'Beverage': 'beverage',
     'Staff Salary': 'staff_salary',
     'Water Bill': 'water',
     'Maintenance': 'maintenance',
@@ -83,6 +84,7 @@ class _AddExpensesState extends State<AddExpenses> {
                   dropdownItems: const [
                     'Select a Expense Type',
                     'Electricity Bill',
+                    'Beverage',
                     'Staff Salary',
                     'Water Bill',
                     'Maintenance',

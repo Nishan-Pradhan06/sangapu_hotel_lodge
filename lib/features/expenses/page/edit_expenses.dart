@@ -29,6 +29,7 @@ class _EditExpensesState extends State<EditExpenses> {
 
   Map<String, String> expenseCategoryMap = {
     'Electricity Bill': 'electricity',
+    'Beverage': 'beverage',
     'Staff Salary': 'staff_salary',
     'Water Bill': 'water',
     'Maintenance': 'maintenance',
@@ -37,16 +38,22 @@ class _EditExpensesState extends State<EditExpenses> {
 
   String _getCategoryKey(String value) {
     return expenseCategoryMap.entries
-        .firstWhere((element) => element.value == value,
-            orElse: () => const MapEntry('Others', 'others'))
+        .firstWhere(
+          (element) => element.value == value,
+          orElse: () => const MapEntry('Others', 'others'),
+        )
         .key;
   }
 
   @override
   void initState() {
     super.initState();
-    _expensesTypeController = TextEditingController(text: _getCategoryKey(widget.expense.category));
-    _expensesAmountController = TextEditingController(text: widget.expense.amount.toString());
+    _expensesTypeController = TextEditingController(
+      text: _getCategoryKey(widget.expense.category),
+    );
+    _expensesAmountController = TextEditingController(
+      text: widget.expense.amount.toString(),
+    );
     _remarkController = TextEditingController(text: widget.expense.remarks);
   }
 
@@ -99,6 +106,7 @@ class _EditExpensesState extends State<EditExpenses> {
                   dropdownItems: const [
                     'Select a Expense Type',
                     'Electricity Bill',
+                    'Beverage',
                     'Staff Salary',
                     'Water Bill',
                     'Maintenance',
@@ -123,64 +131,61 @@ class _EditExpensesState extends State<EditExpenses> {
           ),
         ),
       ),
-      bottomNavigationBar:
-          BlocConsumer<EditExpensesBloc, EditExpensesState>(
-            listener: (context, state) {
-              state.whenOrNull(
-                failure: (failure) {
-                  CustomToast.showError(failure.message);
-                },
-                loaded: (data) {
-                  CustomToast.showSuccess("Edit Expenses Successfully");
-                  context.read<GetExpensesBloc>().add(
-                    const GetExpensesEvent.getExpenses(),
-                  );
-                  context.read<StatementsBloc>().add(
-                    const StatementsEvent.getStatement(),
-                  );
-                  context.pop();
-                },
-              );
+      bottomNavigationBar: BlocConsumer<EditExpensesBloc, EditExpensesState>(
+        listener: (context, state) {
+          state.whenOrNull(
+            failure: (failure) {
+              CustomToast.showError(failure.message);
             },
-            builder: (context, state) {
-              final bool isLoading = state.maybeWhen(
-                loading: () => true,
-                orElse: () => false,
+            loaded: (data) {
+              CustomToast.showSuccess("Edit Expenses Successfully");
+              context.read<GetExpensesBloc>().add(
+                const GetExpensesEvent.getExpenses(),
               );
-              return CustomPadding(
-                child: SizedBox(
-                  height: MediaQuery.heightOf(context) / 14,
-                  child: CustomButton(
-                    isLoading: isLoading,
-                    isDisabled: isLoading,
-                    text: 'Save',
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        context.read<EditExpensesBloc>().add(
-                          EditExpensesEvent.editExpense(
-                            widget.expense.id,
-                            ExpensesRecordModel(
-                              category:
-                                  expenseCategoryMap[_expensesTypeController
-                                      .text] ??
-                                  '',
-                              amount:
-                                  double.tryParse(
-                                    _expensesAmountController.text,
-                                  ) ??
-                                  0.0,
-                              remarks: _remarkController.text,
-                              nepaliDate: widget.expense.nepaliDate,
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ),
+              context.read<StatementsBloc>().add(
+                const StatementsEvent.getStatement(),
               );
+              context.pop();
             },
-          ),
+          );
+        },
+        builder: (context, state) {
+          final bool isLoading = state.maybeWhen(
+            loading: () => true,
+            orElse: () => false,
+          );
+          return CustomPadding(
+            child: SizedBox(
+              height: MediaQuery.heightOf(context) / 14,
+              child: CustomButton(
+                isLoading: isLoading,
+                isDisabled: isLoading,
+                text: 'Save',
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    context.read<EditExpensesBloc>().add(
+                      EditExpensesEvent.editExpense(
+                        widget.expense.id,
+                        ExpensesRecordModel(
+                          category:
+                              expenseCategoryMap[_expensesTypeController
+                                  .text] ??
+                              '',
+                          amount:
+                              double.tryParse(_expensesAmountController.text) ??
+                              0.0,
+                          remarks: _remarkController.text,
+                          nepaliDate: widget.expense.nepaliDate,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
