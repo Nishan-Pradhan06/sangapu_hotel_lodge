@@ -28,7 +28,7 @@ class _IncomeEntryPageState extends State<IncomeEntryPage> {
   final _additionalNotesController = TextEditingController();
 
   static const Map<String, String> _incomeTypeMap = {
-    'Room': 'room',
+    'Room': 'rooms',
     'Beverage': 'beverage',
     'Others': 'others',
   };

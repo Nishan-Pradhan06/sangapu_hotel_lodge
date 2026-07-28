@@ -27,8 +27,9 @@ class _AddExpensesState extends State<AddExpenses> {
   final _remarkController = TextEditingController();
 
   Map<String, String> expenseCategoryMap = {
-    'Electricity Bill': 'electricity',
+    'Room': 'rooms',
     'Beverage': 'beverage',
+    'Electricity Bill': 'electricity',
     'Staff Salary': 'staff_salary',
     'Water Bill': 'water',
     'Maintenance': 'maintenance',
@@ -83,8 +84,9 @@ class _AddExpensesState extends State<AddExpenses> {
                   enabled: _expensesAmountController.text.isEmpty,
                   dropdownItems: const [
                     'Select a Expense Type',
-                    'Electricity Bill',
+                    'Room',
                     'Beverage',
+                    'Electricity Bill',
                     'Staff Salary',
                     'Water Bill',
                     'Maintenance',

@@ -28,8 +28,9 @@ class _EditExpensesState extends State<EditExpenses> {
   late TextEditingController _remarkController;
 
   Map<String, String> expenseCategoryMap = {
-    'Electricity Bill': 'electricity',
+    'Room': 'rooms',
     'Beverage': 'beverage',
+    'Electricity Bill': 'electricity',
     'Staff Salary': 'staff_salary',
     'Water Bill': 'water',
     'Maintenance': 'maintenance',

@@ -15,6 +15,8 @@ import '../../expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import '../../income/blocs/bloc/get_income_bloc.dart';
 import '../../reports/widgets/earning_cards.dart';
 import '../../statements/bloc/statements_bloc.dart';
+import '../widgets/chart.dart';
+import '../widgets/room_bevereage.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -96,26 +98,27 @@ class DashboardPage extends StatelessWidget {
         onRefresh: () => _handleRefresh(context),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          child: CustomPadding(
-            child: Column(
-              spacing: 20,
-              children: [
-                const BannerWidget(),
-
-                // 1. INCOME BLOC
-                BlocBuilder<GetIncomeBloc, GetIncomeState>(
-                  builder: (context, state) {
-                    return state.when(
-                      initial: () => const CardShimmer(),
-                      loading: () => const CardShimmer(),
-                      failure: (failure) => Center(
-                        child: Text(
-                          'Failed to load income: ${failure.message}',
-                          style: TextTheme.of(context).bodyMedium,
-                        ),
+          child: Column(
+            spacing: 20,
+            children: [
+              CustomPadding(child: const BannerWidget()),
+              BankingSummaryChartDemo(),
+              SummaryTableDemo(),
+              // 1. INCOME BLOC
+              BlocBuilder<GetIncomeBloc, GetIncomeState>(
+                builder: (context, state) {
+                  return state.when(
+                    initial: () => const CardShimmer(),
+                    loading: () => const CardShimmer(),
+                    failure: (failure) => Center(
+                      child: Text(
+                        'Failed to load income: ${failure.message}',
+                        style: TextTheme.of(context).bodyMedium,
                       ),
-                      loaded: (income) {
-                        return Column(
+                    ),
+                    loaded: (income) {
+                      return CustomPadding(
+                        child: Column(
                           spacing: 20,
                           children: [
                             EarningsCard(
@@ -133,82 +136,88 @@ class DashboardPage extends StatelessWidget {
                               subtitle: 'On Track for target',
                             ),
                           ],
-                        );
-                      },
-                    );
-                  },
-                ),
-
-                // 2. EXPENSES BLOC
-                BlocBuilder<GetExpensesBloc, GetExpensesState>(
-                  builder: (context, state) {
-                    return state.when(
-                      initial: () => const CardShimmer(),
-                      loading: () => const CardShimmer(),
-                      failure: (failure) => Center(
-                        child: Text(
-                          'Failed to load expenses: ${failure.message}',
-                          style: TextTheme.of(context).bodyMedium,
                         ),
+                      );
+                    },
+                  );
+                },
+              ),
+
+              // 2. EXPENSES BLOC
+              BlocBuilder<GetExpensesBloc, GetExpensesState>(
+                builder: (context, state) {
+                  return state.when(
+                    initial: () => const CardShimmer(),
+                    loading: () => const CardShimmer(),
+                    failure: (failure) => Center(
+                      child: Text(
+                        'Failed to load expenses: ${failure.message}',
+                        style: TextTheme.of(context).bodyMedium,
                       ),
-                      loaded: (expenses) {
-                        return EarningsCard(
+                    ),
+                    loaded: (expenses) {
+                      return CustomPadding(
+                        vertical: 0,
+                        child: EarningsCard(
                           title: 'Total Daily Expenses',
                           amount: "Rs ${expenses.summary.totalDailyExpenses}",
                           backgroundColor: const Color(0xFFE11D48),
                           subtitle: 'Total Record of a Day',
                           icon: Icons.trending_down_rounded,
-                        );
-                      },
-                    );
-                  },
-                ),
-
-                // --- SECTION DIVIDER ---
-                Row(
-                  children: [
-                    const Expanded(child: Divider(thickness: 1)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        'NET SUMMARY',
-                        style: TextTheme.of(context).labelSmall?.copyWith(
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
                         ),
+                      );
+                    },
+                  );
+                },
+              ),
+
+              // --- SECTION DIVIDER ---
+              Row(
+                children: [
+                  const Expanded(child: Divider(thickness: 1)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      'NET SUMMARY',
+                      style: TextTheme.of(context).labelSmall?.copyWith(
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
                       ),
                     ),
-                    const Expanded(child: Divider(thickness: 1)),
-                  ],
-                ),
+                  ),
+                  const Expanded(child: Divider(thickness: 1)),
+                ],
+              ),
 
-                // 3. STATEMENTS / NET INCOME BLOC
-                BlocBuilder<StatementsBloc, StatementsState>(
-                  builder: (context, state) {
-                    return state.when(
-                      initial: () => const CardShimmer(),
-                      loading: () => const CardShimmer(),
-                      failure: (failure) => Center(
-                        child: Text(
-                          'Failed to load statements: ${failure.message}',
-                          style: TextTheme.of(context).bodyMedium,
-                        ),
+              // 3. STATEMENTS / NET INCOME BLOC
+              BlocBuilder<StatementsBloc, StatementsState>(
+                builder: (context, state) {
+                  return state.when(
+                    initial: () => const CardShimmer(),
+                    loading: () => const CardShimmer(),
+                    failure: (failure) => Center(
+                      child: Text(
+                        'Failed to load statements: ${failure.message}',
+                        style: TextTheme.of(context).bodyMedium,
                       ),
-                      loaded: (netIncome) {
-                        return EarningsCard(
+                    ),
+                    loaded: (netIncome) {
+                      return CustomPadding(
+                        vertical: 0,
+                        child: EarningsCard(
                           title: 'Total Net Earnings after Expenses',
                           amount: "Rs ${netIncome.summary.netBalance}",
                           backgroundColor: const Color(0xFF059669),
                           icon: Icons.account_balance_wallet_rounded,
                           subtitle: 'On Track for target',
-                        );
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),

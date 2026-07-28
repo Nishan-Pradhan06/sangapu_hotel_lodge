@@ -25,12 +25,12 @@ class EditIncomeEntryPage extends StatefulWidget {
 class _EditIncomeEntryPageState extends State<EditIncomeEntryPage> {
   final _formKey = GlobalKey<FormState>();
 
-  late final TextEditingController _incomeTypeController;
+  late final TextEditingController _incomeTypeController; 
   late final TextEditingController _customPriceController;
   late final TextEditingController _additionalNotesController;
 
   static const Map<String, String> _incomeTypeMap = {
-    'Room': 'room',
+    'Room': 'rooms',
     'Beverage': 'beverage',
     'Others': 'others',
   };
