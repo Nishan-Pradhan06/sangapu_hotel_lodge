@@ -16,7 +16,6 @@ import '../../income/blocs/bloc/get_income_bloc.dart';
 import '../../reports/widgets/earning_cards.dart';
 import '../../statements/bloc/statements_bloc.dart';
 import '../widgets/chart.dart';
-import '../widgets/room_bevereage.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -103,7 +102,6 @@ class DashboardPage extends StatelessWidget {
             children: [
               CustomPadding(child: const BannerWidget()),
               BankingSummaryChartDemo(),
-              SummaryTableDemo(),
               // 1. INCOME BLOC
               BlocBuilder<GetIncomeBloc, GetIncomeState>(
                 builder: (context, state) {
