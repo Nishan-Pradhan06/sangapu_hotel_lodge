@@ -148,6 +148,13 @@ class IncomePage extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'bottom_nav_fab',
+        onPressed: () {
+          context.pushNamed(AppRoutesName.incomeEntry);
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

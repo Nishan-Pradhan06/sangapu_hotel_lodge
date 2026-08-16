@@ -100,7 +100,7 @@ class DashboardPage extends StatelessWidget {
           child: Column(
             spacing: 20,
             children: [
-              CustomPadding(child: const BannerWidget()),
+              const BannerWidget(),
               SummaryTableDemo(),
               // 1. INCOME BLOC
               BlocBuilder<GetIncomeBloc, GetIncomeState>(
@@ -219,13 +219,7 @@ class DashboardPage extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'bottom_nav_fab',
-        onPressed: () {
-          context.pushNamed(AppRoutesName.incomeEntry);
-        },
-        child: const Icon(Icons.add),
-      ),
+      
     );
   }
 }
