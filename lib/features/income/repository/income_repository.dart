@@ -4,6 +4,7 @@ import 'package:sangapu/features/income/model/income_entry_model.dart';
 import '../../../common/typedef/either_type.dart';
 import '../../../core/network/api_services.dart';
 import '../model/income_model.dart';
+import '../model/room_beverage.dart';
 
 abstract interface class IncomeRepository {
   FutureEither<IncomeSummaryResponse> getIncomeSummary();
@@ -15,6 +16,8 @@ abstract interface class IncomeRepository {
     int incomeId,
     IncomeEntryModel incomeEntry,
   );
+
+  FutureEither<RoomBeverage> getRoomBeverageSummary();
 }
 
 class IncomeRepositoryImpl implements IncomeRepository {
@@ -59,6 +62,16 @@ class IncomeRepositoryImpl implements IncomeRepository {
 
     return response.fold((failure) => Left(failure), (success) {
       return Right("Entry Updated Successfully");
+    });
+  }
+
+  @override
+  FutureEither<RoomBeverage> getRoomBeverageSummary() async {
+    final response = await _apiService.get('statement/summary/room-beverage/');
+
+    return response.fold((failure) => Left(failure), (data) {
+      final response = RoomBeverage.fromJson(data);
+      return Right(response);
     });
   }
 }
