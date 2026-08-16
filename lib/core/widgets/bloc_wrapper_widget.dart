@@ -7,6 +7,7 @@ import 'package:sangapu/features/expenses/blocs/add_expenses/add_expenses_record
 import 'package:sangapu/features/expenses/blocs/edit_expenses/edit_expenses_bloc.dart';
 import 'package:sangapu/features/income/blocs/edit_room_entry/edit_income_entry_bloc.dart';
 import 'package:sangapu/features/income/blocs/income_entry/income_entry_bloc.dart';
+import 'package:sangapu/features/income/blocs/room_beverage/room_beverage_bloc.dart';
 import '../../../../features/auth/blocs/login/log_in_bloc.dart';
 import '../../../../features/expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import '../../../../features/income/blocs/bloc/get_income_bloc.dart';
@@ -39,6 +40,7 @@ class BlocWrapperWidget extends StatelessWidget {
         BlocProvider(create: (_) => sl<EditIncomeEntryBloc>()),
         BlocProvider(create: (_) => sl<StatementFilterCubit>()),
         BlocProvider(create: (_) => sl<GetBannerBloc>()),
+        BlocProvider(create: (_) => sl<RoomBeverageBloc>()),
 
         //##----------GET------------##//
       ],

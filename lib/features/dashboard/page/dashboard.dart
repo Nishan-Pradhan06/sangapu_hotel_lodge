@@ -13,6 +13,7 @@ import '../../../routers/app_routes_names.dart';
 import '../../banners/widgets/banner_widget.dart';
 import '../../expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import '../../income/blocs/bloc/get_income_bloc.dart';
+import '../../income/blocs/room_beverage/room_beverage_bloc.dart';
 import '../../reports/widgets/earning_cards.dart';
 import '../../statements/bloc/statements_bloc.dart';
 import '../widgets/room_bevereage.dart';
@@ -26,6 +27,9 @@ class DashboardPage extends StatelessWidget {
     context.read<GetBannerBloc>().add(const GetBannerEvent.getBanner());
     context.read<GetExpensesBloc>().add(const GetExpensesEvent.getExpenses());
     context.read<StatementsBloc>().add(const StatementsEvent.getStatement());
+    context.read<RoomBeverageBloc>().add(
+      const RoomBeverageEvent.getRoomBeverageSummary(),
+    );
   }
 
   void _showLogoutDialog(BuildContext context) {
@@ -101,7 +105,7 @@ class DashboardPage extends StatelessWidget {
             spacing: 20,
             children: [
               const BannerWidget(),
-              SummaryTableDemo(),
+              const RoomBeverageSummaryTable(),
               // 1. INCOME BLOC
               BlocBuilder<GetIncomeBloc, GetIncomeState>(
                 builder: (context, state) {
@@ -219,7 +223,6 @@ class DashboardPage extends StatelessWidget {
           ),
         ),
       ),
-      
     );
   }
 }

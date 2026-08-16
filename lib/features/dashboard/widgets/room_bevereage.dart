@@ -1,74 +1,115 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:sangapu/features/income/blocs/room_beverage/room_beverage_bloc.dart';
 
-class SummaryTableDemo extends StatelessWidget {
-  const SummaryTableDemo({super.key});
+class RoomBeverageSummaryTable extends StatelessWidget {
+  const RoomBeverageSummaryTable({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Extracted values from the JSON response
-    final response = {
-      "summary": {
-        "room_total_income": 29500,
-        "beverage_total_income": 0,
-        "total_income": 29500,
-        "room_total_expenses": 0,
-        "beverage_total_expenses": 0,
-        "total_expenses": 0,
-        "net_total": 29500,
-        "total_records": 25,
+    return BlocBuilder<RoomBeverageBloc, RoomBeverageState>(
+      builder: (context, state) {
+        return state.when(
+          initial: () => const _TableShimmer(),
+          loading: () => const _TableShimmer(),
+          failure: (failure) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Failed to load summary: ${failure.message}',
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ),
+          ),
+          loaded: (data) {
+            // Helper to format values consistently (e.g., 29500 -> "29,500.00" or raw string)
+            String formatAmount(num value) => value.toStringAsFixed(2);
+
+            final roomIncome = data.roomTotalIncome;
+            final roomExpenses = data.roomTotalExpenses;
+            final roomNet = roomIncome - roomExpenses;
+
+            final beverageIncome = data.beverageTotalIncome;
+            final beverageExpenses = data.beverageTotalExpenses;
+            final beverageNet = beverageIncome - beverageExpenses;
+
+            return FinancialSummaryTable(
+              rows: [
+                SummaryRow(
+                  snNo: 1,
+                  source: 'Room Income',
+                  total: formatAmount(roomIncome),
+                  type: SummaryRowType.income,
+                ),
+                SummaryRow(
+                  snNo: 2,
+                  source: 'Room Expenses',
+                  total: formatAmount(roomExpenses),
+                  type: SummaryRowType.expense,
+                ),
+                SummaryRow(
+                  source: 'NET TOTAL (ROOM)',
+                  total: formatAmount(roomNet),
+                  type: SummaryRowType.netTotal,
+                ),
+                SummaryRow(
+                  snNo: 3,
+                  source: 'Beverage Income',
+                  total: formatAmount(beverageIncome),
+                  type: SummaryRowType.income,
+                ),
+                SummaryRow(
+                  snNo: 4,
+                  source: 'Beverage Expenses',
+                  total: formatAmount(beverageExpenses),
+                  type: SummaryRowType.expense,
+                ),
+                SummaryRow(
+                  source: 'NET TOTAL (BEVERAGE)',
+                  total: formatAmount(beverageNet),
+                  type: SummaryRowType.netTotal,
+                ),
+              ],
+            );
+          },
+        );
       },
-    };
+    );
+  }
+}
 
-    final summary = response["summary"]!;
+class _TableShimmer extends StatelessWidget {
+  const _TableShimmer();
 
-    // Helper to format values consistently (e.g., 29500 -> "29,500.00" or raw string)
-    String formatAmount(num value) => value.toStringAsFixed(2);
-
-    final roomIncome = summary["room_total_income"] as num;
-    final roomExpenses = summary["room_total_expenses"] as num;
-    final roomNet = roomIncome - roomExpenses;
-
-    final beverageIncome = summary["beverage_total_income"] as num;
-    final beverageExpenses = summary["beverage_total_expenses"] as num;
-    final beverageNet = beverageIncome - beverageExpenses;
-
-    return FinancialSummaryTable(
-      rows: [
-        SummaryRow(
-          snNo: 1,
-          source: 'Room Income',
-          total: formatAmount(roomIncome),
-          type: SummaryRowType.income,
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Container(
+        width: 410,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: Colors.grey.shade300),
         ),
-        SummaryRow(
-          snNo: 2,
-          source: 'Room Expenses',
-          total: formatAmount(roomExpenses),
-          type: SummaryRowType.expense,
+        child: Column(
+          children: List.generate(
+            7, // Header + 6 rows
+            (index) => Container(
+              height: 40,
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.grey.shade300,
+                    width: index == 6 ? 0 : 1,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
-        SummaryRow(
-          source: 'NET TOTAL (ROOM)',
-          total: formatAmount(roomNet),
-          type: SummaryRowType.netTotal,
-        ),
-        SummaryRow(
-          snNo: 3,
-          source: 'Beverage Income',
-          total: formatAmount(beverageIncome),
-          type: SummaryRowType.income,
-        ),
-        SummaryRow(
-          snNo: 4,
-          source: 'Beverage Expenses',
-          total: formatAmount(beverageExpenses),
-          type: SummaryRowType.expense,
-        ),
-        SummaryRow(
-          source: 'NET TOTAL (BEVERAGE)',
-          total: formatAmount(beverageNet),
-          type: SummaryRowType.netTotal,
-        ),
-      ],
+      ),
     );
   }
 }

@@ -67,11 +67,11 @@ class IncomeRepositoryImpl implements IncomeRepository {
 
   @override
   FutureEither<RoomBeverage> getRoomBeverageSummary() async {
-    final response = await _apiService.get('statement/summary/room-beverage/');
+    final response = await _apiService.get<Map<String, dynamic>>('statement/summary/room-beverage/');
 
     return response.fold((failure) => Left(failure), (data) {
-      final response = RoomBeverage.fromJson(data);
-      return Right(response);
+      final responseData = RoomBeverage.fromJson(data['summary'] ?? data);
+      return Right(responseData);
     });
   }
 }

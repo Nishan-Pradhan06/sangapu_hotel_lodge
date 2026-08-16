@@ -10,6 +10,7 @@ import 'package:sangapu/features/expenses/blocs/edit_expenses/edit_expenses_bloc
 import 'package:sangapu/features/expenses/blocs/get_expenses/get_expenses_bloc.dart';
 import 'package:sangapu/features/income/blocs/edit_room_entry/edit_income_entry_bloc.dart';
 import 'package:sangapu/features/income/blocs/income_entry/income_entry_bloc.dart';
+import 'package:sangapu/features/income/blocs/room_beverage/room_beverage_bloc.dart';
 import '../../../../features/auth/blocs/login/log_in_bloc.dart';
 import '../../../../features/auth/repository/auth_repository.dart';
 import '../../../../features/expenses/repository/expenses_repository.dart';
@@ -43,6 +44,7 @@ Future<void> setupServiceLocator() async {
   sl.registerFactory(() => EditIncomeEntryBloc(repo: sl()));
   sl.registerFactory(() => StatementFilterCubit());
   sl.registerFactory(() => GetBannerBloc(repo: sl()));
+  sl.registerFactory(() => RoomBeverageBloc(repo: sl()));
 
   //###---------------CUBIT--------------------###
   sl.registerFactory(() => LogoutCubit(repo: sl()));
