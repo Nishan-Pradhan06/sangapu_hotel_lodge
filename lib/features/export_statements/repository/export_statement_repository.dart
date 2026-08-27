@@ -24,6 +24,13 @@ abstract interface class ExportStatementRepository {
     String? startDate,
     String? endDate,
   });
+
+  FutureEither<Uint8List> exportRoomBeveragePdf({
+    String? date,
+    String? month,
+    String? startDate,
+    String? endDate,
+  });
 }
 
 class ExportStatementRepositoryImpl implements ExportStatementRepository {
@@ -85,6 +92,36 @@ class ExportStatementRepositoryImpl implements ExportStatementRepository {
 
     final response = await _apiService.get<List<int>>(
       'statement/export/pdf/',
+      queryParameters: queryParams.isNotEmpty ? queryParams : null,
+      options: Options(
+        responseType: ResponseType.bytes,
+        headers: {
+          'Accept': 'application/pdf, application/octet-stream, */*',
+        },
+      ),
+    );
+
+    return response.fold(
+      (failure) => Left(failure),
+      (bytes) => Right(Uint8List.fromList(bytes)),
+    );
+  }
+
+  @override
+  FutureEither<Uint8List> exportRoomBeveragePdf({
+    String? date,
+    String? month,
+    String? startDate,
+    String? endDate,
+  }) async {
+    final queryParams = <String, dynamic>{};
+    if (date != null) queryParams['date'] = date;
+    if (month != null) queryParams['month'] = month;
+    if (startDate != null) queryParams['start_date'] = startDate;
+    if (endDate != null) queryParams['end_date'] = endDate;
+
+    final response = await _apiService.get<List<int>>(
+      'statement/export/room-beverage-pdf/',
       queryParameters: queryParams.isNotEmpty ? queryParams : null,
       options: Options(
         responseType: ResponseType.bytes,

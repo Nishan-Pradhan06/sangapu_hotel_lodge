@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../export_statements/blocs/export_pdf/export_pdf_bloc.dart';
 import '../../export_statements/blocs/export_excel/export_statement_bloc.dart';
+import '../../export_statements/blocs/export_room_beverage_pdf/export_room_beverage_pdf_bloc.dart';
 import '../widgets/export_option_tile.dart';
 
 import '../../statements/repository/transcation_repository.dart';
 
-/// A modal bottom sheet that presents export options (PDF / Excel) for
+/// A modal bottom sheet that presents export options (PDF / Excel / Room & Beverage PDF) for
 /// the statement list. Call [ExportBottomSheet.show] to display it.
 class ExportBottomSheet extends StatelessWidget {
   final StatementFilter? filter;
@@ -102,6 +103,26 @@ class ExportBottomSheet extends StatelessWidget {
                   type: filter?.type,
                   date: filter?.date,
                   ordering: filter?.ordering,
+                  startDate: filter?.dateFrom,
+                  endDate: filter?.dateTo,
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+
+          // Room & Beverage PDF option
+          ExportOptionTile(
+            icon: Icons.receipt_long_outlined,
+            iconColor: Colors.deepOrange,
+            iconBackgroundColor: Colors.deepOrange.withValues(alpha: 0.1),
+            title: 'Room & Beverage PDF',
+            subtitle: 'Download Room & Beverage income & expense summary',
+            onTap: () {
+              Navigator.pop(context);
+              context.read<ExportRoomBeveragePdfBloc>().add(
+                ExportRoomBeveragePdfEvent.exportPdf(
+                  date: filter?.date,
                   startDate: filter?.dateFrom,
                   endDate: filter?.dateTo,
                 ),

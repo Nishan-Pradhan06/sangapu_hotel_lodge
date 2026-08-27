@@ -11,6 +11,7 @@ import '../widgets/transcation_tile.dart';
 import 'export_page.dart';
 import '../../export_statements/blocs/export_pdf/export_pdf_bloc.dart';
 import '../../export_statements/blocs/export_excel/export_statement_bloc.dart';
+import '../../export_statements/blocs/export_room_beverage_pdf/export_room_beverage_pdf_bloc.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'package:nepali_utils/nepali_utils.dart';
 import 'package:open_file/open_file.dart';
@@ -91,6 +92,45 @@ class _StatementPageState extends State<StatementPage> {
                   );
                   if (context.mounted) {
                     CustomToast.showSuccess('Excel downloaded successfully');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Tap to open the file'),
+                        action: SnackBarAction(
+                          label: 'Open',
+                          onPressed: () => OpenFile.open(filePath),
+                        ),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  CustomToast.showError(e.toString());
+                }
+              },
+              failure: (failure) {
+                CustomToast.showError(failure.message);
+              },
+            );
+          },
+        ),
+        BlocListener<ExportRoomBeveragePdfBloc, ExportRoomBeveragePdfState>(
+          listener: (context, state) async {
+            state.when(
+              initial: () {},
+              loading: () {
+                CustomToast.showInfo('Downloading Room & Beverage PDF...');
+              },
+              loaded: (bytes) async {
+                try {
+                  final filePath = await DownloadHelper.saveDocument(
+                    fileName:
+                        'room_beverage_statement_${DateTime.now().millisecondsSinceEpoch}',
+                    bytes: bytes,
+                    extension: 'pdf',
+                  );
+                  if (context.mounted) {
+                    CustomToast.showSuccess(
+                      'Room & Beverage PDF downloaded successfully',
+                    );
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: const Text('Tap to open the file'),

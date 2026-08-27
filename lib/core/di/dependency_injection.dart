@@ -19,6 +19,7 @@ import '../../../../features/income/repository/income_repository.dart';
 import '../../../../features/statements/bloc/statements_bloc.dart';
 import '../../../../features/export_statements/blocs/export_excel/export_statement_bloc.dart';
 import '../../../../features/export_statements/blocs/export_pdf/export_pdf_bloc.dart';
+import '../../../../features/export_statements/blocs/export_room_beverage_pdf/export_room_beverage_pdf_bloc.dart';
 import '../../../../features/export_statements/repository/export_statement_repository.dart';
 import '../../../../features/statements/cubits/statement_filter_cubit.dart';
 import '../../../../features/statements/repository/transcation_repository.dart';
@@ -40,6 +41,7 @@ Future<void> setupServiceLocator() async {
   sl.registerFactory(() => GetIncomeBloc(repo: sl()));
   sl.registerFactory(() => ExportStatementBloc(repo: sl()));
   sl.registerFactory(() => ExportPdfBloc(repo: sl()));
+  sl.registerFactory(() => ExportRoomBeveragePdfBloc(repo: sl()));
   sl.registerFactory(() => EditExpensesBloc(repo: sl()));
   sl.registerFactory(() => EditIncomeEntryBloc(repo: sl()));
   sl.registerFactory(() => StatementFilterCubit());
