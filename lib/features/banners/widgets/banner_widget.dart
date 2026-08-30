@@ -51,7 +51,7 @@ class _BannerWidgetState extends State<BannerWidget> {
                       final banner = banners[index];
 
                       return ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
+                        // borderRadius: BorderRadius.circular(20),
                         child: CustomCachedImage(
                           imageUrl: banner.url,
                           fit: BoxFit.cover,

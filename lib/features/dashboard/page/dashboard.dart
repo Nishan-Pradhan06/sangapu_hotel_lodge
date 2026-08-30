@@ -102,7 +102,7 @@ class DashboardPage extends StatelessWidget {
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
-            spacing: 20,
+            spacing: 10,
             children: [
               const BannerWidget(),
               const RoomBeverageSummaryTable(),
