@@ -43,30 +43,35 @@ class AppDioInterceptor extends Interceptor {
 
     dLog.d("[Error] ${statusCode ?? 'Unknown Status'} on $path");
 
-    if (statusCode == 401 && _refreshCompleter == null) {
-      final Dio newDio = Dio();
-
-      _refreshCompleter = Completer<String?>();
-      final refreshToken = await CacheServices.instance.getAuthRefreshToken();
-
+    if (statusCode == 401) {
       try {
-        final response = await newDio.post(
-          "${EnvConfig.instance.apiBaseUrl}auth/refresh/",
-          data: {"refresh": refreshToken},
-        );
+        if (_refreshCompleter == null || _refreshCompleter!.isCompleted) {
+          _refreshCompleter = Completer<String?>();
 
-        final accessToken = response.data['access'];
-        await CacheServices.instance.setAuthToken(
-          access: accessToken,
-          refresh: refreshToken!,
-        );
-        _refreshCompleter?.complete(accessToken);
+          // You said you do not have a refresh token flow, so this only retries the request
+          final currentToken = await CacheServices.instance.getAuthToken();
+          final requestOptions = err.requestOptions;
+          requestOptions.headers['Authorization'] = 'Bearer $currentToken';
+
+          final Dio retryDio = Dio(
+            BaseOptions(
+              baseUrl: EnvConfig.instance.apiBaseUrl,
+              headers: requestOptions.headers,
+            ),
+          );
+
+          final response = await retryDio.fetch(requestOptions);
+          _refreshCompleter!.complete(response.statusCode?.toString());
+          return handler.resolve(response);
+        }
+
+        await _refreshCompleter!.future;
       } catch (e) {
-        _refreshCompleter?.complete(null);
+        dLog.e("Retry failed: $e");
       }
     }
 
-    log("Hello thi si serror ${err.message}");
+    log("SERVER ERROR ${err.message}");
 
     return handler.reject(err);
   }
