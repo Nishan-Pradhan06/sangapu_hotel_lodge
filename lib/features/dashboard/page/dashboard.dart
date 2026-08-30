@@ -7,7 +7,6 @@ import 'package:sangapu/features/banners/blocs/get_banner/get_banner_bloc.dart';
 import 'package:sangapu/main.dart';
 
 import '../../../core/helpers/nepali_date_helper.dart';
-import '../../../core/widgets/custom_padding.dart';
 import '../../../core/widgets/earnings_card_simmer.dart';
 import '../../../routers/app_routes_names.dart';
 import '../../banners/widgets/banner_widget.dart';
@@ -119,26 +118,24 @@ class DashboardPage extends StatelessWidget {
                       ),
                     ),
                     loaded: (income) {
-                      return CustomPadding(
-                        child: Column(
-                          spacing: 20,
-                          children: [
-                            EarningsCard(
-                              title: 'Today Earnings',
-                              amount: "Rs ${income.summary.dailyIncome}",
-                              backgroundColor: const Color(0xFF2563EB),
-                              subtitle: 'Total Record of a Day',
-                              icon: Icons.show_chart_rounded,
-                            ),
-                            EarningsCard(
-                              title: 'Total Monthly Earnings',
-                              amount: "Rs ${income.summary.monthlyIncome}",
-                              backgroundColor: const Color(0xFF0EA5E9),
-                              icon: Icons.calendar_month_rounded,
-                              subtitle: 'On Track for target',
-                            ),
-                          ],
-                        ),
+                      return Column(
+                        spacing: 10,
+                        children: [
+                          EarningsCard(
+                            title: 'Today Earnings',
+                            amount: "Rs ${income.summary.dailyIncome}",
+                            backgroundColor: const Color(0xFF2563EB),
+                            subtitle: 'Total Record of a Day',
+                            icon: Icons.show_chart_rounded,
+                          ),
+                          EarningsCard(
+                            title: 'Total Monthly Earnings',
+                            amount: "Rs ${income.summary.monthlyIncome}",
+                            backgroundColor: const Color(0xFF0EA5E9),
+                            icon: Icons.calendar_month_rounded,
+                            subtitle: 'On Track for target',
+                          ),
+                        ],
                       );
                     },
                   );
@@ -157,16 +154,13 @@ class DashboardPage extends StatelessWidget {
                         style: TextTheme.of(context).bodyMedium,
                       ),
                     ),
-                    loaded: (expenses) {
-                      return CustomPadding(
-                        vertical: 0,
-                        child: EarningsCard(
-                          title: 'Total Daily Expenses',
-                          amount: "Rs ${expenses.summary.totalDailyExpenses}",
-                          backgroundColor: const Color(0xFFE11D48),
-                          subtitle: 'Total Record of a Day',
-                          icon: Icons.trending_down_rounded,
-                        ),
+                    loaded: (expenses) {                   
+                      return EarningsCard(
+                        title: 'Total Daily Expenses',
+                        amount: "Rs ${expenses.summary.totalDailyExpenses}",
+                        backgroundColor: const Color(0xFFE11D48),
+                        subtitle: 'Total Record of a Day',
+                        icon: Icons.trending_down_rounded,
                       );
                     },
                   );
@@ -178,7 +172,10 @@ class DashboardPage extends StatelessWidget {
                 children: [
                   const Expanded(child: Divider(thickness: 1)),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 12,
+                    ),
                     child: Text(
                       'NET SUMMARY',
                       style: TextTheme.of(context).labelSmall?.copyWith(
@@ -205,15 +202,12 @@ class DashboardPage extends StatelessWidget {
                       ),
                     ),
                     loaded: (netIncome) {
-                      return CustomPadding(
-                        vertical: 0,
-                        child: EarningsCard(
-                          title: 'Total Net Earnings after Expenses',
-                          amount: "Rs ${netIncome.summary.netBalance}",
-                          backgroundColor: const Color(0xFF059669),
-                          icon: Icons.account_balance_wallet_rounded,
-                          subtitle: 'On Track for target',
-                        ),
+                      return EarningsCard(
+                        title: 'Total Net Earnings after Expenses',
+                        amount: "Rs ${netIncome.summary.netBalance}",
+                        backgroundColor: const Color(0xFF059669),
+                        icon: Icons.account_balance_wallet_rounded,
+                        subtitle: 'On Track for target',
                       );
                     },
                   );

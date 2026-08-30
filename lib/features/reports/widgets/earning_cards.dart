@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
 import '../../../core/widgets/custom_container.dart';
@@ -8,19 +9,22 @@ class EarningsCard extends StatelessWidget {
   final Color backgroundColor;
   final String? subtitle;
   final IconData? icon;
+  final BorderRadiusGeometry? borderRadius;
 
   const EarningsCard({
-    super.key,
+    Key? key,
     required this.title,
     required this.amount,
     required this.backgroundColor,
     this.subtitle,
     this.icon,
-  });
+    this.borderRadius,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CustomContainer(
+      borderRadius:borderRadius?? BorderRadius.circular(0),
       useIntrinsicHeight: true,
       backgroundColor: backgroundColor,
       child: Column(

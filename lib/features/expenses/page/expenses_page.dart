@@ -62,6 +62,8 @@ class ExpensesPage extends StatelessWidget {
                     return Column(
                       children: [
                         EarningsCard(
+                          borderRadius: BorderRadius.circular(20),
+
                           title: 'Total Daily Expenses',
                           amount:
                               "Rs ${expenses.summary.totalDailyExpenses.toString()}",
@@ -73,6 +75,8 @@ class ExpensesPage extends StatelessWidget {
                         ),
                         SizedBox(height: 16),
                         EarningsCard(
+                          borderRadius: BorderRadius.circular(20),
+
                           title: 'Total Monthly Expenses',
                           amount:
                               "Rs ${expenses.summary.totalMonthlyExpenses.toString()}",

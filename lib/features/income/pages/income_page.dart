@@ -52,6 +52,7 @@ class IncomePage extends StatelessWidget {
                     return Column(
                       children: [
                         EarningsCard(
+                          borderRadius: BorderRadius.circular(20),
                           title: 'Total Daily Income',
                           amount: "Rs ${income.summary.dailyIncome.toString()}",
                           backgroundColor: Color(
@@ -62,6 +63,8 @@ class IncomePage extends StatelessWidget {
                         ),
                         SizedBox(height: 16),
                         EarningsCard(
+                          borderRadius: BorderRadius.circular(20),
+
                           title: 'Total Monthly Income',
                           amount:
                               "Rs ${income.summary.monthlyIncome.toString()}",

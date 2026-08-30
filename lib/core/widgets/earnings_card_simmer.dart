@@ -12,6 +12,7 @@ class CardShimmer extends StatelessWidget {
       baseColor: Colors.grey.shade300,
       highlightColor: Colors.grey.shade100,
       child: CustomContainer(
+        borderRadius: BorderRadius.circular(0),
         useIntrinsicHeight: true,
         backgroundColor: Colors.white,
         child: Column(
@@ -23,7 +24,7 @@ class CardShimmer extends StatelessWidget {
               height: 16,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(4),
+                // borderRadius: BorderRadius.circular(4),
               ),
             ),
 
