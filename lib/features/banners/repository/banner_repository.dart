@@ -10,11 +10,18 @@ abstract interface class BannerRepository {
 class BannerRepositoryImpl implements BannerRepository {
   final ApiService _apiService;
 
+  // Cache the banner list after the first successful request.
+  List<GetBannerModel>? _cachedBanners;
+
   BannerRepositoryImpl({required ApiService apiService})
     : _apiService = apiService;
 
   @override
   FutureEither<List<GetBannerModel>> getBanners() async {
+    final cachedBanners = _cachedBanners;
+    if (cachedBanners != null) {
+      return Right(cachedBanners);
+    }
     final response = await _apiService.get('banners/');
 
     return response.fold((failure) => Left(failure), (data) {
@@ -22,6 +29,7 @@ class BannerRepositoryImpl implements BannerRepository {
           .map((item) => GetBannerModel.fromJson(item as Map<String, dynamic>))
           .toList();
 
+      _cachedBanners = banners;
       return Right(banners);
     });
   }
