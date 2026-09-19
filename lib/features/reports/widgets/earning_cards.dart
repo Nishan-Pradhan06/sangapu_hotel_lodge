@@ -12,14 +12,14 @@ class EarningsCard extends StatelessWidget {
   final BorderRadiusGeometry? borderRadius;
 
   const EarningsCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.amount,
     required this.backgroundColor,
     this.subtitle,
     this.icon,
     this.borderRadius,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
