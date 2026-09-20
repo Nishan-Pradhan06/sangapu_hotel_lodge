@@ -1,4 +1,4 @@
-package com.goat_tech.sangapu
+package com.nishan.sangapu
 
 import io.flutter.embedding.android.FlutterActivity
 
