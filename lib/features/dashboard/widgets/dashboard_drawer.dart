@@ -75,14 +75,14 @@ class DashboardDrawer extends StatelessWidget {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.home_outlined),
-              title: const Text('Home'),
+              title: Text('Home', style: TextTheme.of(context).titleSmall),
               onTap: () {
                 Navigator.pop(context);
               },
             ),
             ListTile(
               leading: const Icon(Icons.privacy_tip_outlined),
-              title: const Text('Privacy Policy'),
+              title: Text('Privacy Policy', style: TextTheme.of(context).titleSmall),
               onTap: () {
                 Navigator.pop(context);
                 UrlLauncherHelper.openPrivacyPolicy();
@@ -90,7 +90,7 @@ class DashboardDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.description_outlined),
-              title: const Text('Terms of Service'),
+              title: Text('Terms of Service', style: TextTheme.of(context).titleSmall),
               onTap: () {
                 Navigator.pop(context);
                 UrlLauncherHelper.openTermsOfService();
@@ -98,7 +98,7 @@ class DashboardDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.info_outline),
-              title: const Text('About App'),
+              title: Text('About App', style: TextTheme.of(context).titleSmall),
               onTap: () {
                 Navigator.pop(context);
                 _showAboutDialog(context);
@@ -108,9 +108,9 @@ class DashboardDrawer extends StatelessWidget {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout_outlined, color: Colors.red),
-              title: const Text(
+              title: Text(
                 'Logout',
-                style: TextStyle(
+                style: TextTheme.of(context).titleSmall?.copyWith(
                   color: Colors.red,
                   fontWeight: FontWeight.w600,
                 ),

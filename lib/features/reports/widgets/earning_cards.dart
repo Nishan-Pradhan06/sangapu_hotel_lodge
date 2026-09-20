@@ -24,7 +24,7 @@ class EarningsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomContainer(
-      borderRadius:borderRadius?? BorderRadius.circular(0),
+      borderRadius: borderRadius ?? BorderRadius.circular(0),
       useIntrinsicHeight: true,
       backgroundColor: backgroundColor,
       child: Column(
