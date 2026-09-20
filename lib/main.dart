@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
     return BlocWrapperWidget(
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        title: 'Sangapu Hotel and Lodge',
+        title: 'Sangapu',
         theme: AppTheme.light,
         routerConfig: appRoute,
       ),

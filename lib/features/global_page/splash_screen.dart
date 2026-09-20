@@ -53,20 +53,6 @@ class _SplashScreenState extends State<SplashScreen> {
               ],
             ),
           ),
-
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Text(
-                'The Goat Tech',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );

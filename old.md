@@ -1,9 +1,9 @@
 # Google Play Store Compliance & Policy Audit Report: "Sangapu"
 
-**Application Name:** Sangapu  
+**Application Name:** Sangapu (Shangapu Hotel & Lodge)  
 **Package Identifier:** `com.goat_tech.sangapu`  
 **Framework:** Flutter (Dart 3.10) / Android Gradle (KTS)  
-**Target Category:** Business / Daily Income & Expense Ledger Management  
+**Target Category:** Business / Hotel & Financial Ledger Management  
 **Monetization:** Free / Ad-free  
 **Date of Audit:** September 19, 2026  
 **Auditor:** Google Play Console Compliance Specialist & Principal Android Auditor  
@@ -18,8 +18,8 @@ The following table comprehensively breaks down every policy area, examining wha
 |---|---|---|---|---|---|---|
 | **1** | **In-App Account Deletion** | ❌ Missing | 🚨 **Critical Risk** | `lib/` only contains Logout (`DashboardPage`). No option exists to delete account or associated data. | Add an in-app "Delete Account" button in an Account/Settings dialog with an API call (`DELETE /auth/account/`) and local cache wipe. | **Mandatory** under Google Play User Data policy. Instant rejection if missing. |
 | **2** | **Web Account Deletion URL** | ❌ Missing | 🚨 **Critical Risk** | No public web link exists for users to submit account/data deletion without installing the app. | Deploy a public web page (e.g., `https://sangapu.com/delete-account`) detailing how users can request account & data deletion. Enter this in Play Console. | Required in Data Safety form. Google bot validates that the URL is live and functional. |
-| **3** | **Advertising ID (`AD_ID`) Permission** | ✅ Stripped | 🟢 **Safe** | Was injected by `firebase-analytics`. Stripped in `AndroidManifest.xml` via `tools:node="remove"`. | Verified stripped in `AndroidManifest.xml` with `xmlns:tools` declared. | Safe to declare "No Ads" in Google Play Console without rejection. |
-| **4** | **AdServices Permissions** | ✅ Stripped | 🟢 **Safe** | Was injected by Firebase. Stripped in `AndroidManifest.xml` via `tools:node="remove"`. | Verified stripped in `AndroidManifest.xml` with `xmlns:tools` declared. | Eliminates unnecessary ad-tracking scrutiny for an ad-free business tool. |
+| **3** | **Advertising ID (`AD_ID`) Permission** | ❌ Hidden Injection | 🚨 **Critical Risk** | `firebase-analytics` in `build.gradle.kts` automatically merged `com.google.android.gms.permission.AD_ID` into release manifest. | Add `<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>` to `android/app/src/main/AndroidManifest.xml`. | If not removed, declaring "No Ads" in Console causes immediate upload failure or policy contradiction. |
+| **4** | **AdServices Permissions** | ❌ Hidden Injection | 🚨 **Critical Risk** | Firebase automatically injected `ACCESS_ADSERVICES_AD_ID` and `ACCESS_ADSERVICES_ATTRIBUTION` into the release manifest. | Strip them in `AndroidManifest.xml` with `tools:node="remove"` for both AdServices permissions. | Eliminates unnecessary ad-tracking scrutiny for an ad-free business tool. |
 | **5** | **Data Safety: Device & Other Identifiers** | ⚠️ Needs Declaration | ⚠️ **Moderate Risk** | Firebase Analytics is included and runs natively via `FirebaseInitProvider`, generating App Instance IDs and diagnostic logs. | In Play Console Data Safety form, declare **"Device or other IDs"** as **Collected** for **Analytics** (Ephemeral: No, Encrypted in transit: Yes). | Mismatch between declared SDKs and Data Safety questionnaire leads to policy warnings. |
 | **6** | **Data Safety: Personal Info (Auth)** | ⚠️ Needs Declaration | ⚠️ **Moderate Risk** | User email and password are submitted to `auth/login/`. | Declare **Personal Info > Email address & Name** as **Collected** for **App Functionality / Account Management**. | Must state data is encrypted in transit over HTTPS. |
 | **7** | **Data Safety: Financial Info** | ⚠️ Needs Declaration | ⚠️ **Moderate Risk** | Sangapu records hotel room rates, daily sales, and operational expenses. | Declare **Financial Info > Other financial info** as **Collected** for **App Functionality** (not shared with third parties). | Hotel income/expense tracking qualifies as financial recordkeeping. |
@@ -30,7 +30,7 @@ The following table comprehensively breaks down every policy area, examining wha
 | **12** | **File Storage & Scoped Storage** | ⚠️ Architecture Flaw | ⚠️ **Moderate Risk** | `DownloadHelper` hardcodes `/storage/emulated/0/Download`, which throws permission denied on Android 10/11+ if POSIX write fails. | Use `FileSaver.instance.saveFile` directly (which uses Android MediaStore/SAF) instead of raw directory path creation. | Prevents silent failures or permission crashes during PDF/Excel statement exports. |
 | **13** | **Minimum Functionality & Empty States** | ⚠️ UI Flaw | ⚠️ **Moderate Risk** | When `income.data` or `expenses.data` is empty, the UI renders only a bare text string, hiding all cards and headers. | Render regular dashboard summary cards with `Rs 0.00` and friendly placeholders rather than completely blanking out the view. Pre-seed demo account! | Google rejects apps that look blank or broken on first launch under "Minimum Functionality". |
 | **14** | **Error Display & Crash Reporting** | ⚠️ UI Flaw | ⚠️ **Moderate Risk** | Raw Dio exception messages (`Failed to load income: ...`) are printed directly in UI on network errors. | Show user-friendly error banners with a "Retry" button instead of technical failure dumps. | Raw network errors seen by human reviewers trigger "Broken Functionality" rejections. |
-| **15** | **Branding, Scope & Impersonation ("Sangapu")** | ✅ Resolved in Code | 🟢 **Safe** | Unified app name to `Sangapu` across `main.dart`, `dashboard.dart`, `splash_screen.dart`, `AndroidManifest.xml`, and `pubspec.yaml`. Dedicated internal ledger scope clarified. | Keep app title strictly as `Sangapu` in Play Console. Follow Store Listing guidelines in Fix 5. Keep owner authorization note ready if asked. | Prevents automated flag for unverified commercial brand representation or mismatched app expectations. |
+| **15** | **Branding & Impersonation ("Sangapu")** | ⚠️ Metadata Check | ⚠️ **Moderate Risk** | Developer account (`Goat Tech`) differs from app title (`Sangapu Hotel & Lodge`). | Keep title clear (`Sangapu: Hotel Ledger & Tracker`) and avoid keyword stuffing in description. Keep authorization letter ready if asked. | Prevents automated flag for unverified commercial brand representation. |
 | **16** | **Sensitive Runtime Permissions** | ✅ Verified Clean | 🟢 **Safe** | Manifest uses only `INTERNET`. No runtime requests for Camera, Microphone, Contacts, Location, SMS, or Phone State. | Keep permissions minimal. No changes needed. | Avoids intrusive permission declaration forms in Play Console. |
 | **17** | **Google Play In-App Billing (IAP)** | ✅ 100% Free | 🟢 **Safe** | The app is free, with no digital goods, paywalls, or subscriptions. | Declare "No in-app purchases" in Play Console. | Completely exempt from Google Play Billing 15-30% service fee requirements. |
 | **18** | **Ad Policies & Monetization** | ✅ No Ads | 🟢 **Safe** | No AdMob, Unity Ads, or promotional banners exist in code. | Declare "No ads" in Play Console (after stripping `AD_ID` in finding #3). | Avoids families ad policy, SDK compliance checks, and advertising disclosures. |
@@ -41,7 +41,7 @@ The following table comprehensively breaks down every policy area, examining wha
 
 ## 2. Actionable Fixes & Code Implementations
 
-### Fix 1: Strip Unwanted Injected Permissions in AndroidManifest.xml (Implemented in Codebase ✅)
+### Fix 1: Strip Unwanted Injected Permissions in AndroidManifest.xml
 In [`android/app/src/main/AndroidManifest.xml`](file:///d:/sangapu/android/app/src/main/AndroidManifest.xml), declare the `tools` namespace and explicitly remove `AD_ID` and AdServices permissions injected by Firebase:
 
 ```xml
@@ -164,52 +164,15 @@ class DownloadHelper {
 
 ---
 
-### Fix 5: Branding & App Scope Unification (Implemented in Codebase ✅)
-
-The app branding has been unified across the entire codebase to **"Sangapu"**, removing contradictory titles and clarifying its scope as an internal daily financial recordkeeper for your friend's establishment.
-
-#### Code Updates Applied:
-1. **[`lib/main.dart`](file:///d:/sangapu/lib/main.dart)**: Set `title: 'Sangapu'` (was `'Sangapu Hotel and Lodge'`).
-2. **[`lib/features/dashboard/page/dashboard.dart`](file:///d:/sangapu/lib/features/dashboard/page/dashboard.dart)**: Changed top bar title to `'SANGAPU'` (was `'SHANGAPU HOTEL & LODGE'`).
-3. **[`lib/features/global_page/splash_screen.dart`](file:///d:/sangapu/lib/features/global_page/splash_screen.dart)**: Removed `'The Goat Tech'` footer text to avoid branding conflicts.
-4. **[`android/app/src/main/AndroidManifest.xml`](file:///d:/sangapu/android/app/src/main/AndroidManifest.xml)**: Configured `android:label="Sangapu"` and bound `xmlns:tools`.
-5. **[`pubspec.yaml`](file:///d:/sangapu/pubspec.yaml) & [`README.md`](file:///d:/sangapu/README.md)**: Updated descriptions to specify daily ledger and statement reporting.
-
-#### Recommended Play Console Store Listing:
-- **App Name (Title):** `Sangapu` (Max 30 characters)
-- **Short Description:** `Simple daily income and expense ledger with financial report generation.` (Max 80 characters)
-- **Full Description:**
-  ```text
-  Sangapu is a dedicated bookkeeping and recordkeeping application designed to track daily finances simply and efficiently.
-
-  Key Features:
-  • Daily Income Tracking: Quickly record daily earnings, sales, and payments.
-  • Expense Management: Track daily operating costs and categorize expenditures.
-  • Financial Statements: Generate and export clean PDF and Excel reports for customizable date ranges.
-  • Secure Access: Cloud-backed ledger access for authorized business staff.
-
-  Note: Sangapu is strictly an internal financial recordkeeping and daily ledger tool. It does not provide public hotel booking, consumer reservations, or payment processing services.
-  ```
-
-#### Owner Authorization Letter (Ready on Standby):
-Because the developer account name (`Goat Tech`) differs from the app title (`Sangapu`), keep a simple 1-page authorization letter signed by your friend (the hotel owner) on file in case Google ever requests proof of affiliation:
-> *"I, [Owner Name], owner of Sangapu, hereby authorize Goat Tech to develop, publish, and maintain the 'Sangapu' application on Google Play for our internal daily accounting, expense tracking, and reporting operations."*
-
----
-
 ## 3. Play Console Submission Checklist
 
-- [x] **App Title & Branding in Code:** Unified as `Sangapu` across all screens, manifest, and configs.
-- [x] **Advertising ID & AdServices Removal:** Stripped in `AndroidManifest.xml` via `tools:node="remove"`.
-- [ ] **Store Listing Metadata:** Set Title to `Sangapu` and use the provided ledger description in Play Console.
 - [ ] **App Access:** Configure demo credentials (`username` and `password`) in Play Console with detailed notes that no 2FA is needed.
 - [ ] **Data Safety:** Declare:
   - Personal Info: Email address, Name (App functionality).
   - Financial Info: Other financial info (App functionality).
   - Device/Other IDs: Device or other IDs (Firebase Analytics).
   - Data encrypted in transit: **Yes**.
-  - Account deletion mechanism: **Yes** (provide both in-app method and web deletion URL once Fix #2 is implemented).
-- [ ] **Advertising ID Declaration:** Select **"No"** (verified clean with `tools:node="remove"`).
+  - Account deletion mechanism: **Yes** (provide both in-app method and web deletion URL).
+- [ ] **Advertising ID Declaration:** Select **"No"** (only valid after applying Fix #1 above).
 - [ ] **Target Audience:** Strictly 18+ (Adults / Business owners). Declare "No" to families program.
 - [ ] **Government Apps / Financial Licensing:** Declare that Sangapu is a private business management utility, not an official government or licensed banking/credit lending application.
-

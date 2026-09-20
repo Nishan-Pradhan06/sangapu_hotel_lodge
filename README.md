@@ -1,6 +1,6 @@
-# Sangapu Hotel & Lodge
-
-Sangapu is a Flutter mobile application for managing day-to-day hotel and lodge finances. It provides a single place to record income and expenses, review statements, monitor earnings, and export financial reports.
+# Sangapu
+ 
+Sangapu is a Flutter mobile application for managing day-to-day business finances. It provides a dedicated place to record daily income and expenses, review statements, and export financial reports.
 
 ## Features
 

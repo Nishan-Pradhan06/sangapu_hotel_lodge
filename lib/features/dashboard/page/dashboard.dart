@@ -64,7 +64,7 @@ class DashboardPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'SHANGAPU HOTEL & LODGE',
+              'SANGAPU',
               style: TextTheme.of(context).titleLarge,
             ),
             Text(
