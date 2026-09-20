@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/custom_padding.dart';
+import '../../../core/widgets/empty_state_widget.dart';
+import '../../../core/widgets/error_state_widget.dart';
 import '../../../routers/app_routes_names.dart';
 import '../../reports/widgets/earning_cards.dart';
 import '../../statements/widgets/transcation_tile.dart';
@@ -41,14 +43,6 @@ class IncomePage extends StatelessWidget {
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
                   loaded: (income) {
-                    if (income.data.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'No income recorded yet.',
-                          style: TextTheme.of(context).bodyMedium,
-                        ),
-                      );
-                    }
                     return Column(
                       children: [
                         EarningsCard(
@@ -95,55 +89,66 @@ class IncomePage extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 16),
-                        ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: income.data.length,
-                          itemBuilder: (context, index) {
-                            final incomeItem = income.data[index];
-                            return Column(
-                              children: [
-                                TransactionTile(
-                                  title: Text(
-                                    "${incomeItem.incomeType} | ${incomeItem.category} | ${incomeItem.remarks}",
-                                    style: textTheme.titleSmall,
-                                  ),
-                                  dateTime: Text(
-                                    incomeItem.nepaliDate,
-                                    style: textTheme.bodySmall,
-                                  ),
-                                  amount: Text(
-                                    " +${incomeItem.amount.toString()}",
-                                    style: textTheme.titleMedium?.copyWith(
-                                      color: AppTheme.success,
+                        if (income.data.isEmpty)
+                          const EmptyStateWidget(
+                            icon: Icons.account_balance_wallet_outlined,
+                            title: 'No Income Entries Yet',
+                            message:
+                                'You haven\'t recorded any income entries yet.\nTap the + button below to create your first entry.',
+                          )
+                        else
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: income.data.length,
+                            itemBuilder: (context, index) {
+                              final incomeItem = income.data[index];
+                              return Column(
+                                children: [
+                                  TransactionTile(
+                                    title: Text(
+                                      "${incomeItem.incomeType} | ${incomeItem.category} | ${incomeItem.remarks}",
+                                      style: textTheme.titleSmall,
                                     ),
-                                  ),
-                                  balance: Text(
-                                    "",
-                                    style: textTheme.bodyMedium?.copyWith(
-                                      color: colorScheme.onSurfaceVariant,
+                                    dateTime: Text(
+                                      incomeItem.nepaliDate,
+                                      style: textTheme.bodySmall,
                                     ),
+                                    amount: Text(
+                                      " +${incomeItem.amount.toString()}",
+                                      style: textTheme.titleMedium?.copyWith(
+                                        color: AppTheme.success,
+                                      ),
+                                    ),
+                                    balance: Text(
+                                      "",
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    onLongPress: () {
+                                      context.pushNamed(
+                                        AppRoutesName.editIncomeEntry,
+                                        extra: incomeItem,
+                                      );
+                                    },
                                   ),
-                                  onLongPress: () {
-                                    context.pushNamed(
-                                      AppRoutesName.editIncomeEntry,
-                                      extra: incomeItem,
-                                    );
-                                  },
-                                ),
-                                Divider(color: colorScheme.outline, height: 32),
-                              ],
-                            );
-                          },
-                        ),
+                                  Divider(color: colorScheme.outline, height: 32),
+                                ],
+                              );
+                            },
+                          ),
                       ],
                     );
                   },
-                  failure: (failure) => Center(
-                    child: Text(
-                      'Failed to load income.',
-                      style: TextTheme.of(context).bodyMedium,
-                    ),
+                  failure: (failure) => ErrorStateWidget(
+                    title: 'Unable to Load Income',
+                    message: failure.message.isNotEmpty
+                        ? failure.message
+                        : 'Please check your internet connection and try again.',
+                    onRetry: () => context
+                        .read<GetIncomeBloc>()
+                        .add(const GetIncomeEvent.getIncome()),
                   ),
                 );
               },

@@ -26,7 +26,7 @@ class ErrorHandler {
       );
     } else {
       return UnexpectedFailure(
-        message: exception?.toString() ?? 'An unexpected error occurred.',
+        message: 'Something went wrong. Please try again later.',
         exception: exception,
       );
     }
@@ -120,13 +120,27 @@ class ErrorHandler {
         );
 
       case DioExceptionType.unknown:
+        final errorMsg = exception.message?.toLowerCase() ?? '';
+        if (exception.error is SocketException ||
+            errorMsg.contains('socket') ||
+            errorMsg.contains('failed host lookup') ||
+            errorMsg.contains('network') ||
+            errorMsg.contains('connection')) {
+          return NetworkFailure(
+            message:
+                'Unable to connect to server. Please check your internet connection.',
+            exception: exception,
+          );
+        }
         return UnexpectedFailure(
-          message: exception.message ?? 'An unexpected error occurred.',
+          message: 'An unexpected network error occurred. Please try again.',
           exception: exception,
         );
       case DioExceptionType.transformTimeout:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        return TimeoutFailure(
+          message: 'Request timed out while processing data. Please try again.',
+          exception: exception,
+        );
     }
   }
 
@@ -146,6 +160,9 @@ class ErrorHandler {
                 ? (responseData['non_field_errors'] as List).first.toString()
                 : responseData['non_field_errors']?.toString());
       } else if (responseData is String) {
+        if (responseData.trim().startsWith('<') || responseData.length > 250) {
+          return null;
+        }
         return responseData;
       }
     } catch (_) {

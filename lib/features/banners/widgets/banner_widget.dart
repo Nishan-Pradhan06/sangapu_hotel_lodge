@@ -23,12 +23,7 @@ class _BannerWidgetState extends State<BannerWidget> {
         return state.when(
           initial: () => const SizedBox.shrink(),
           loading: () => CardShimmer(),
-          failure: (failure) => Center(
-            child: Text(
-              "Failed to load banners.",
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
+          failure: (failure) => const SizedBox.shrink(),
           loaded: (banners) {
             if (banners.isEmpty) {
               return const SizedBox.shrink();

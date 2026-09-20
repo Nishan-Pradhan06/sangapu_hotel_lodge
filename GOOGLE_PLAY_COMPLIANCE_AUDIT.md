@@ -28,8 +28,8 @@ The following table comprehensively breaks down every policy area, examining wha
 | **10** | **In-App Privacy Policy Link** | ❌ Missing | ⚠️ **Moderate Risk** | `lib/` has zero references or navigation links to a Privacy Policy inside the app. | Add a clickable "Privacy Policy" link on `LoginPage` and in the dashboard/settings using `url_launcher`. | Required by Google Play for all apps handling personal, auth, or financial data. |
 | **11** | **Public Privacy Policy URL** | ⚠️ External Dependency | ⚠️ **Moderate Risk** | Must be hosted on a live URL and entered in Play Console Store Listing. | Create and host a clear privacy policy stating collected data (email, device metrics, ledger records) and retention periods. | Google crawler checks if the URL is active, mobile-responsive, and contains privacy text. |
 | **12** | **File Storage & Scoped Storage** | ⚠️ Architecture Flaw | ⚠️ **Moderate Risk** | `DownloadHelper` hardcodes `/storage/emulated/0/Download`, which throws permission denied on Android 10/11+ if POSIX write fails. | Use `FileSaver.instance.saveFile` directly (which uses Android MediaStore/SAF) instead of raw directory path creation. | Prevents silent failures or permission crashes during PDF/Excel statement exports. |
-| **13** | **Minimum Functionality & Empty States** | ⚠️ UI Flaw | ⚠️ **Moderate Risk** | When `income.data` or `expenses.data` is empty, the UI renders only a bare text string, hiding all cards and headers. | Render regular dashboard summary cards with `Rs 0.00` and friendly placeholders rather than completely blanking out the view. Pre-seed demo account! | Google rejects apps that look blank or broken on first launch under "Minimum Functionality". |
-| **14** | **Error Display & Crash Reporting** | ⚠️ UI Flaw | ⚠️ **Moderate Risk** | Raw Dio exception messages (`Failed to load income: ...`) are printed directly in UI on network errors. | Show user-friendly error banners with a "Retry" button instead of technical failure dumps. | Raw network errors seen by human reviewers trigger "Broken Functionality" rejections. |
+| **13** | **Minimum Functionality & Empty States** | ✅ Resolved in Code | 🟢 **Safe** | Empty lists in `IncomePage`, `ExpensesPage`, and `StatementsPage` previously blanked out all summary cards and headers with bare text. | Render intact summary cards (`Rs 0.00` fallback) and beautiful, guiding `EmptyStateWidget` placeholders so the app always looks complete. | Complies with Google Play Minimum Functionality policy. |
+| **14** | **Error Display & Crash Reporting** | ✅ Resolved in Code | 🟢 **Safe** | Raw Dio/network exception messages (`Failed to load income: ...`) leaked into UI on network errors. | Implemented human-friendly `ErrorStateWidget` and `ErrorBanner` with "Retry" action buttons across Dashboard, Income, Expenses, and Statements. | Prevents "Broken Functionality" rejections from reviewer network delays. |
 | **15** | **Branding, Scope & Impersonation ("Sangapu")** | ✅ Resolved in Code | 🟢 **Safe** | Unified app name to `Sangapu` across `main.dart`, `dashboard.dart`, `splash_screen.dart`, `AndroidManifest.xml`, and `pubspec.yaml`. Dedicated internal ledger scope clarified. | Keep app title strictly as `Sangapu` in Play Console. Follow Store Listing guidelines in Fix 5. Keep owner authorization note ready if asked. | Prevents automated flag for unverified commercial brand representation or mismatched app expectations. |
 | **16** | **Sensitive Runtime Permissions** | ✅ Verified Clean | 🟢 **Safe** | Manifest uses only `INTERNET`. No runtime requests for Camera, Microphone, Contacts, Location, SMS, or Phone State. | Keep permissions minimal. No changes needed. | Avoids intrusive permission declaration forms in Play Console. |
 | **17** | **Google Play In-App Billing (IAP)** | ✅ 100% Free | 🟢 **Safe** | The app is free, with no digital goods, paywalls, or subscriptions. | Declare "No in-app purchases" in Play Console. | Completely exempt from Google Play Billing 15-30% service fee requirements. |
@@ -197,10 +197,40 @@ Because the developer account name (`Goat Tech`) differs from the app title (`Sa
 
 ---
 
+### Fix 6: Empty States & Minimum Functionality (Implemented in Codebase ✅)
+
+Previously, when a new user or reviewer with a fresh account opened `IncomePage` or `ExpensesPage`, the UI rendered only a bare centered text string (e.g., `"No income recorded yet."`), which completely hid the summary cards (`Total Daily Income`, `Total Monthly Income`), headers, and subtitles. Reviewers frequently reject such screens under Google Play's **Minimum Functionality** policy ("App looks blank or broken on launch").
+
+#### Code Updates Applied:
+1. **[`lib/core/widgets/empty_state_widget.dart`](file:///d:/sangapu/lib/core/widgets/empty_state_widget.dart)**: Created a reusable, styled empty state placeholder with clean iconography, a reassuring title, and guiding instructions to tap the `+` action button.
+2. **[`lib/features/income/pages/income_page.dart`](file:///d:/sangapu/lib/features/income/pages/income_page.dart)**: Removed the destructive short-circuiting empty check. Summary cards (`Daily Income` and `Monthly Income`) and page headers remain permanently rendered, and the transaction list displays the `EmptyStateWidget` when no records exist.
+3. **[`lib/features/expenses/page/expenses_page.dart`](file:///d:/sangapu/lib/features/expenses/page/expenses_page.dart)**: Preserved summary cards (`Daily Expenses` and `Monthly Expenses`) and section headers, rendering `EmptyStateWidget` in place of the empty list.
+4. **[`lib/features/statements/pages/statements_page.dart`](file:///d:/sangapu/lib/features/statements/pages/statements_page.dart)**: Rendered `EmptyStateWidget` when filtered transactions return empty rather than leaving an empty blank container.
+
+---
+
+### Fix 7: User-Friendly Error Display & Retry Actions (Implemented in Codebase ✅)
+
+Previously, raw Dio/socket exceptions (e.g. `'Failed to load income: DioException [unknown]: SocketException...'`) were printed verbatim into the UI. Human reviewers who experience network or geo-latency issues immediately flag raw technical error dumps as **Broken Functionality**.
+
+#### Code Updates Applied:
+1. **[`lib/core/widgets/error_state_widget.dart`](file:///d:/sangapu/lib/core/widgets/error_state_widget.dart)**: Created two specialized error recovery widgets:
+   - `ErrorBanner`: A sleek, non-intrusive inline card with an informative error message and a "Retry" button.
+   - `ErrorStateWidget`: A full-view error placeholder with clear explanations and an action button to re-fetch data.
+2. **[`lib/features/dashboard/page/dashboard.dart`](file:///d:/sangapu/lib/features/dashboard/page/dashboard.dart)**: Integrated `ErrorBanner` widgets with direct Bloc event retry dispatchers for Income, Expenses, and Net Statements.
+3. **[`lib/features/dashboard/widgets/room_bevereage.dart`](file:///d:/sangapu/lib/features/dashboard/widgets/room_bevereage.dart)**: Replaced raw text with `ErrorBanner` and retry callback for room/beverage summary.
+4. **[`lib/features/banners/widgets/banner_widget.dart`](file:///d:/sangapu/lib/features/banners/widgets/banner_widget.dart)**: Configured optional promotional banners to fail silently (`SizedBox.shrink()`) instead of breaking the dashboard visual flow.
+5. **[`lib/features/income/pages/income_page.dart`](file:///d:/sangapu/lib/features/income/pages/income_page.dart)** & **[`lib/features/expenses/page/expenses_page.dart`](file:///d:/sangapu/lib/features/expenses/page/expenses_page.dart)** & **[`lib/features/statements/pages/statements_page.dart`](file:///d:/sangapu/lib/features/statements/pages/statements_page.dart)**: Replaced bare error text with `ErrorStateWidget` featuring "Try Again" buttons.
+6. **[`lib/common/error/error_handler.dart`](file:///d:/sangapu/lib/common/error/error_handler.dart)**: Sanitized raw socket/Dio exceptions and HTML responses into friendly human messages.
+
+---
+
 ## 3. Play Console Submission Checklist
 
 - [x] **App Title & Branding in Code:** Unified as `Sangapu` across all screens, manifest, and configs.
 - [x] **Advertising ID & AdServices Removal:** Stripped in `AndroidManifest.xml` via `tools:node="remove"`.
+- [x] **Minimum Functionality & Empty States:** Summary cards always visible with Rs 0.00 fallback; guiding placeholders in place.
+- [x] **Error Display & Recovery:** User-friendly error banners and retry buttons replace raw technical dumps.
 - [ ] **Store Listing Metadata:** Set Title to `Sangapu` and use the provided ledger description in Play Console.
 - [ ] **App Access:** Configure demo credentials (`username` and `password`) in Play Console with detailed notes that no 2FA is needed.
 - [ ] **Data Safety:** Declare:

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/custom_padding.dart';
+import '../../../core/widgets/empty_state_widget.dart';
+import '../../../core/widgets/error_state_widget.dart';
 import '../bloc/statements_bloc.dart';
 import '../cubits/statement_filter_cubit.dart';
 import '../widgets/filter_chip.dart';
@@ -65,8 +67,8 @@ class _StatementPageState extends State<StatementPage> {
                       ),
                     );
                   }
-                } catch (e) {
-                  CustomToast.showError(e.toString());
+                } catch (_) {
+                  CustomToast.showError('Unable to save file. Please check storage permissions.');
                 }
               },
               failure: (failure) {
@@ -102,8 +104,8 @@ class _StatementPageState extends State<StatementPage> {
                       ),
                     );
                   }
-                } catch (e) {
-                  CustomToast.showError(e.toString());
+                } catch (_) {
+                  CustomToast.showError('Unable to save file. Please check storage permissions.');
                 }
               },
               failure: (failure) {
@@ -141,8 +143,8 @@ class _StatementPageState extends State<StatementPage> {
                       ),
                     );
                   }
-                } catch (e) {
-                  CustomToast.showError(e.toString());
+                } catch (_) {
+                  CustomToast.showError('Unable to save file. Please check storage permissions.');
                 }
               },
               failure: (failure) {
@@ -252,13 +254,28 @@ class _StatementPageState extends State<StatementPage> {
                     BlocBuilder<StatementsBloc, StatementsState>(
                       builder: (context, state) {
                         return state.when(
-                          initial: () => SizedBox(),
-                          loading: () => Center(
+                          initial: () => const SizedBox(),
+                          loading: () => const Center(
                             child: CircularProgressIndicator.adaptive(),
                           ),
-                          failure: (failure) =>
-                              Text('Error: ${failure.message}'),
+                          failure: (failure) => ErrorStateWidget(
+                            title: 'Unable to Load Statements',
+                            message: failure.message.isNotEmpty
+                                ? failure.message
+                                : 'Please check your internet connection and try again.',
+                            onRetry: () => context
+                                .read<StatementsBloc>()
+                                .add(const StatementsEvent.getStatement()),
+                          ),
                           loaded: (data) {
+                            if (data.transactions.isEmpty) {
+                              return const EmptyStateWidget(
+                                icon: Icons.history_toggle_off_rounded,
+                                title: 'No Transactions Found',
+                                message:
+                                    'There are no transactions recorded for the selected filter or date range.',
+                              );
+                            }
                             return ListView.builder(
                               physics: const NeverScrollableScrollPhysics(),
                               padding: EdgeInsets.symmetric(horizontal: 10),

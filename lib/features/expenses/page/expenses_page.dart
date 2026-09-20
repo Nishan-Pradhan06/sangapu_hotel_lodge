@@ -5,6 +5,8 @@ import 'package:sangapu/features/expenses/blocs/get_expenses/get_expenses_bloc.d
 import 'package:sangapu/routers/app_routes_names.dart';
 
 import '../../../core/widgets/custom_padding.dart';
+import '../../../core/widgets/empty_state_widget.dart';
+import '../../../core/widgets/error_state_widget.dart';
 import '../../reports/widgets/earning_cards.dart';
 import '../../statements/widgets/transcation_tile.dart';
 
@@ -51,14 +53,6 @@ class ExpensesPage extends StatelessWidget {
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
                   loaded: (expenses) {
-                    if (expenses.data.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'No expenses recorded yet.',
-                          style: TextTheme.of(context).bodyMedium,
-                        ),
-                      );
-                    }
                     return Column(
                       children: [
                         EarningsCard(
@@ -107,55 +101,66 @@ class ExpensesPage extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 16),
-                        ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: expenses.data.length,
-                          itemBuilder: (context, index) {
-                            final expense = expenses.data[index];
-                            return Column(
-                              children: [
-                                TransactionTile(
-                                  title: Text(
-                                    "${expense.category} | ${expense.remarks}",
-                                    style: textTheme.titleSmall,
-                                  ),
-                                  dateTime: Text(
-                                    expense.nepaliDate,
-                                    style: textTheme.bodySmall,
-                                  ),
-                                  amount: Text(
-                                    " -${expense.amount.toString()}",
-                                    style: textTheme.titleMedium?.copyWith(
-                                      color: negativeColor,
+                        if (expenses.data.isEmpty)
+                          const EmptyStateWidget(
+                            icon: Icons.receipt_long_outlined,
+                            title: 'No Expenses Recorded Yet',
+                            message:
+                                'You haven\'t recorded any expense entries yet.\nTap the + button below to create your first entry.',
+                          )
+                        else
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: expenses.data.length,
+                            itemBuilder: (context, index) {
+                              final expense = expenses.data[index];
+                              return Column(
+                                children: [
+                                  TransactionTile(
+                                    title: Text(
+                                      "${expense.category} | ${expense.remarks}",
+                                      style: textTheme.titleSmall,
                                     ),
-                                  ),
-                                  balance: Text(
-                                    "",
-                                    style: textTheme.bodyMedium?.copyWith(
-                                      color: colorScheme.onSurfaceVariant,
+                                    dateTime: Text(
+                                      expense.nepaliDate,
+                                      style: textTheme.bodySmall,
                                     ),
+                                    amount: Text(
+                                      " -${expense.amount.toString()}",
+                                      style: textTheme.titleMedium?.copyWith(
+                                        color: negativeColor,
+                                      ),
+                                    ),
+                                    balance: Text(
+                                      "",
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    onLongPress: () {
+                                      context.pushNamed(
+                                        AppRoutesName.editExpense,
+                                        extra: expense,
+                                      );
+                                    },
                                   ),
-                                  onLongPress: () {
-                                    context.pushNamed(
-                                      AppRoutesName.editExpense,
-                                      extra: expense,
-                                    );
-                                  },
-                                ),
-                                Divider(color: colorScheme.outline, height: 32),
-                              ],
-                            );
-                          },
-                        ),
+                                  Divider(color: colorScheme.outline, height: 32),
+                                ],
+                              );
+                            },
+                          ),
                       ],
                     );
                   },
-                  failure: (failure) => Center(
-                    child: Text(
-                      'Failed to load expenses.',
-                      style: TextTheme.of(context).bodyMedium,
-                    ),
+                  failure: (failure) => ErrorStateWidget(
+                    title: 'Unable to Load Expenses',
+                    message: failure.message.isNotEmpty
+                        ? failure.message
+                        : 'Please check your internet connection and try again.',
+                    onRetry: () => context
+                        .read<GetExpensesBloc>()
+                        .add(const GetExpensesEvent.getExpenses()),
                   ),
                 );
               },

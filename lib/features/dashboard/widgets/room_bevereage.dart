@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sangapu/core/widgets/error_state_widget.dart';
 import 'package:sangapu/features/income/blocs/room_beverage/room_beverage_bloc.dart';
 
 class RoomBeverageSummaryTable extends StatelessWidget {
@@ -13,14 +14,14 @@ class RoomBeverageSummaryTable extends StatelessWidget {
         return state.when(
           initial: () => const _TableShimmer(),
           loading: () => const _TableShimmer(),
-          failure: (failure) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Failed to load summary: ${failure.message}',
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
-            ),
+          failure: (failure) => ErrorBanner(
+            title: 'Unable to Load Summary',
+            message: failure.message.isNotEmpty
+                ? failure.message
+                : 'Please check your connection and try again.',
+            onRetry: () => context
+                .read<RoomBeverageBloc>()
+                .add(const RoomBeverageEvent.getRoomBeverageSummary()),
           ),
           loaded: (data) {
             // Helper to format values consistently (e.g., 29500 -> "29,500.00" or raw string)

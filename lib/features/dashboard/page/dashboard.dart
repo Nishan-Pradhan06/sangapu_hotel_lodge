@@ -8,6 +8,7 @@ import 'package:sangapu/main.dart';
 
 import '../../../core/helpers/nepali_date_helper.dart';
 import '../../../core/widgets/earnings_card_simmer.dart';
+import '../../../core/widgets/error_state_widget.dart';
 import '../../../routers/app_routes_names.dart';
 import '../../banners/widgets/banner_widget.dart';
 import '../../expenses/blocs/get_expenses/get_expenses_bloc.dart';
@@ -111,11 +112,14 @@ class DashboardPage extends StatelessWidget {
                   return state.when(
                     initial: () => const CardShimmer(),
                     loading: () => const CardShimmer(),
-                    failure: (failure) => Center(
-                      child: Text(
-                        'Failed to load income: ${failure.message}',
-                        style: TextTheme.of(context).bodyMedium,
-                      ),
+                    failure: (failure) => ErrorBanner(
+                      title: 'Unable to Load Income',
+                      message: failure.message.isNotEmpty
+                          ? failure.message
+                          : 'Please check your connection and try again.',
+                      onRetry: () => context
+                          .read<GetIncomeBloc>()
+                          .add(const GetIncomeEvent.getIncome()),
                     ),
                     loaded: (income) {
                       return Column(
@@ -148,11 +152,14 @@ class DashboardPage extends StatelessWidget {
                   return state.when(
                     initial: () => const CardShimmer(),
                     loading: () => const CardShimmer(),
-                    failure: (failure) => Center(
-                      child: Text(
-                        'Failed to load expenses: ${failure.message}',
-                        style: TextTheme.of(context).bodyMedium,
-                      ),
+                    failure: (failure) => ErrorBanner(
+                      title: 'Unable to Load Expenses',
+                      message: failure.message.isNotEmpty
+                          ? failure.message
+                          : 'Please check your connection and try again.',
+                      onRetry: () => context
+                          .read<GetExpensesBloc>()
+                          .add(const GetExpensesEvent.getExpenses()),
                     ),
                     loaded: (expenses) {                   
                       return EarningsCard(
@@ -195,11 +202,14 @@ class DashboardPage extends StatelessWidget {
                   return state.when(
                     initial: () => const CardShimmer(),
                     loading: () => const CardShimmer(),
-                    failure: (failure) => Center(
-                      child: Text(
-                        'Failed to load statements: ${failure.message}',
-                        style: TextTheme.of(context).bodyMedium,
-                      ),
+                    failure: (failure) => ErrorBanner(
+                      title: 'Unable to Load Net Summary',
+                      message: failure.message.isNotEmpty
+                          ? failure.message
+                          : 'Please check your connection and try again.',
+                      onRetry: () => context
+                          .read<StatementsBloc>()
+                          .add(const StatementsEvent.getStatement()),
                     ),
                     loaded: (netIncome) {
                       return EarningsCard(
