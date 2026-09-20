@@ -6,6 +6,7 @@ import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_padding.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
 import '../../../core/widgets/custom_toast.dart';
+import '../../../core/utils/url_launcher_helper.dart';
 import '../../../routers/app_routes_names.dart';
 import '../cubits/remember_me/remember_me_cubit.dart';
 import '../models/login_model.dart';
@@ -139,11 +140,41 @@ class _LoginPageState extends State<LoginPage> {
                           );
                         },
                       ),
+                      const SizedBox(height: 10),
+                      _buildPrivacyPolicyLink(),
                     ],
                   );
                 },
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPrivacyPolicyLink() {
+    return Center(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(6),
+        onTap: () => UrlLauncherHelper.openPrivacyPolicy(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.privacy_tip_outlined, size: 15, color: Colors.grey[600]),
+              const SizedBox(width: 6),
+              Text(
+                'Privacy Policy & Terms of Service',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[700],
+                  fontWeight: FontWeight.w500,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ],
           ),
         ),
       ),

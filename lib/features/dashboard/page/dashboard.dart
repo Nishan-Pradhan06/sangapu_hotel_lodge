@@ -16,6 +16,7 @@ import '../../income/blocs/bloc/get_income_bloc.dart';
 import '../../income/blocs/room_beverage/room_beverage_bloc.dart';
 import '../../reports/widgets/earning_cards.dart';
 import '../../statements/bloc/statements_bloc.dart';
+import '../widgets/dashboard_drawer.dart';
 import '../widgets/room_bevereage.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -32,198 +33,172 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to log out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.read<LogoutCubit>().logout();
-            },
-            child: const Text('Logout', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: Image.asset('assets/logo/logo.png'),
-        scrolledUnderElevation: 0,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'SANGAPU',
-              style: TextTheme.of(context).titleLarge,
+    return BlocListener<LogoutCubit, LogoutState>(
+      listener: (context, state) {
+        state.whenOrNull(
+          failure: (failure) {
+            CustomToast.showError(failure.message);
+          },
+          loaded: (data) {
+            context.goNamed(AppRoutesName.loginScreenRoute);
+            RestartWidget.restartApp(context);
+            CustomToast.showSuccess(data);
+          },
+        );
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu),
+              tooltip: 'Menu',
+              onPressed: () => Scaffold.of(context).openDrawer(),
             ),
-            Text(
-              DateHelper.nepaliDate(),
-              style: TextTheme.of(context).bodySmall,
-            ),
-          ],
-        ),
-        actions: [
-          BlocConsumer<LogoutCubit, LogoutState>(
-            listener: (context, state) {
-              state.whenOrNull(
-                failure: (failure) {
-                  CustomToast.showError(failure.message);
-                },
-                loaded: (data) {
-                  context.goNamed(AppRoutesName.loginScreenRoute);
-                  RestartWidget.restartApp(context);
-                  CustomToast.showSuccess(data);
-                },
-              );
-            },
-            builder: (context, state) {
-              return IconButton(
-                onPressed: () => _showLogoutDialog(context),
-                icon: const Icon(Icons.logout_outlined),
-              );
-            },
           ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () => _handleRefresh(context),
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            spacing: 10,
+          scrolledUnderElevation: 0,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const BannerWidget(),
-              const RoomBeverageSummaryTable(),
-              // 1. INCOME BLOC
-              BlocBuilder<GetIncomeBloc, GetIncomeState>(
-                builder: (context, state) {
-                  return state.when(
-                    initial: () => const CardShimmer(),
-                    loading: () => const CardShimmer(),
-                    failure: (failure) => ErrorBanner(
-                      title: 'Unable to Load Income',
-                      message: failure.message.isNotEmpty
-                          ? failure.message
-                          : 'Please check your connection and try again.',
-                      onRetry: () => context
-                          .read<GetIncomeBloc>()
-                          .add(const GetIncomeEvent.getIncome()),
-                    ),
-                    loaded: (income) {
-                      return Column(
-                        spacing: 10,
-                        children: [
-                          EarningsCard(
-                            title: 'Today Earnings',
-                            amount: "Rs ${income.summary.dailyIncome}",
-                            backgroundColor: const Color(0xFF2563EB),
-                            subtitle: 'Total Record of a Day',
-                            icon: Icons.show_chart_rounded,
-                          ),
-                          EarningsCard(
-                            title: 'Total Monthly Earnings',
-                            amount: "Rs ${income.summary.monthlyIncome}",
-                            backgroundColor: const Color(0xFF0EA5E9),
-                            icon: Icons.calendar_month_rounded,
-                            subtitle: 'On Track for target',
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-
-              // 2. EXPENSES BLOC
-              BlocBuilder<GetExpensesBloc, GetExpensesState>(
-                builder: (context, state) {
-                  return state.when(
-                    initial: () => const CardShimmer(),
-                    loading: () => const CardShimmer(),
-                    failure: (failure) => ErrorBanner(
-                      title: 'Unable to Load Expenses',
-                      message: failure.message.isNotEmpty
-                          ? failure.message
-                          : 'Please check your connection and try again.',
-                      onRetry: () => context
-                          .read<GetExpensesBloc>()
-                          .add(const GetExpensesEvent.getExpenses()),
-                    ),
-                    loaded: (expenses) {                   
-                      return EarningsCard(
-                        title: 'Total Daily Expenses',
-                        amount: "Rs ${expenses.summary.totalDailyExpenses}",
-                        backgroundColor: const Color(0xFFE11D48),
-                        subtitle: 'Total Record of a Day',
-                        icon: Icons.trending_down_rounded,
-                      );
-                    },
-                  );
-                },
-              ),
-
-              // --- SECTION DIVIDER ---
-              Row(
-                children: [
-                  const Expanded(child: Divider(thickness: 1)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                      horizontal: 12,
-                    ),
-                    child: Text(
-                      'NET SUMMARY',
-                      style: TextTheme.of(context).labelSmall?.copyWith(
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ),
-                  const Expanded(child: Divider(thickness: 1)),
-                ],
-              ),
-
-              // 3. STATEMENTS / NET INCOME BLOC
-              BlocBuilder<StatementsBloc, StatementsState>(
-                builder: (context, state) {
-                  return state.when(
-                    initial: () => const CardShimmer(),
-                    loading: () => const CardShimmer(),
-                    failure: (failure) => ErrorBanner(
-                      title: 'Unable to Load Net Summary',
-                      message: failure.message.isNotEmpty
-                          ? failure.message
-                          : 'Please check your connection and try again.',
-                      onRetry: () => context
-                          .read<StatementsBloc>()
-                          .add(const StatementsEvent.getStatement()),
-                    ),
-                    loaded: (netIncome) {
-                      return EarningsCard(
-                        title: 'Total Net Earnings after Expenses',
-                        amount: "Rs ${netIncome.summary.netBalance}",
-                        backgroundColor: const Color(0xFF059669),
-                        icon: Icons.account_balance_wallet_rounded,
-                        subtitle: 'On Track for target',
-                      );
-                    },
-                  );
-                },
+              Text('SANGAPU', style: TextTheme.of(context).titleLarge),
+              Text(
+                DateHelper.nepaliDate(),
+                style: TextTheme.of(context).bodySmall,
               ),
             ],
+          ),
+        ),
+        drawer: const DashboardDrawer(),
+        body: RefreshIndicator(
+          onRefresh: () => _handleRefresh(context),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              spacing: 10,
+              children: [
+                const BannerWidget(),
+                const RoomBeverageSummaryTable(),
+                // 1. INCOME BLOC
+                BlocBuilder<GetIncomeBloc, GetIncomeState>(
+                  builder: (context, state) {
+                    return state.when(
+                      initial: () => const CardShimmer(),
+                      loading: () => const CardShimmer(),
+                      failure: (failure) => ErrorBanner(
+                        title: 'Unable to Load Income',
+                        message: failure.message.isNotEmpty
+                            ? failure.message
+                            : 'Please check your connection and try again.',
+                        onRetry: () => context.read<GetIncomeBloc>().add(
+                          const GetIncomeEvent.getIncome(),
+                        ),
+                      ),
+                      loaded: (income) {
+                        return Column(
+                          spacing: 10,
+                          children: [
+                            EarningsCard(
+                              title: 'Today Earnings',
+                              amount: "Rs ${income.summary.dailyIncome}",
+                              backgroundColor: const Color(0xFF2563EB),
+                              subtitle: 'Total Record of a Day',
+                              icon: Icons.show_chart_rounded,
+                            ),
+                            EarningsCard(
+                              title: 'Total Monthly Earnings',
+                              amount: "Rs ${income.summary.monthlyIncome}",
+                              backgroundColor: const Color(0xFF0EA5E9),
+                              icon: Icons.calendar_month_rounded,
+                              subtitle: 'On Track for target',
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+
+                // 2. EXPENSES BLOC
+                BlocBuilder<GetExpensesBloc, GetExpensesState>(
+                  builder: (context, state) {
+                    return state.when(
+                      initial: () => const CardShimmer(),
+                      loading: () => const CardShimmer(),
+                      failure: (failure) => ErrorBanner(
+                        title: 'Unable to Load Expenses',
+                        message: failure.message.isNotEmpty
+                            ? failure.message
+                            : 'Please check your connection and try again.',
+                        onRetry: () => context.read<GetExpensesBloc>().add(
+                          const GetExpensesEvent.getExpenses(),
+                        ),
+                      ),
+                      loaded: (expenses) {
+                        return EarningsCard(
+                          title: 'Total Daily Expenses',
+                          amount: "Rs ${expenses.summary.totalDailyExpenses}",
+                          backgroundColor: const Color(0xFFE11D48),
+                          subtitle: 'Total Record of a Day',
+                          icon: Icons.trending_down_rounded,
+                        );
+                      },
+                    );
+                  },
+                ),
+
+                // --- SECTION DIVIDER ---
+                Row(
+                  children: [
+                    const Expanded(child: Divider(thickness: 1)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 12,
+                      ),
+                      child: Text(
+                        'NET SUMMARY',
+                        style: TextTheme.of(context).labelSmall?.copyWith(
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: Divider(thickness: 1)),
+                  ],
+                ),
+
+                // 3. STATEMENTS / NET INCOME BLOC
+                BlocBuilder<StatementsBloc, StatementsState>(
+                  builder: (context, state) {
+                    return state.when(
+                      initial: () => const CardShimmer(),
+                      loading: () => const CardShimmer(),
+                      failure: (failure) => ErrorBanner(
+                        title: 'Unable to Load Net Summary',
+                        message: failure.message.isNotEmpty
+                            ? failure.message
+                            : 'Please check your connection and try again.',
+                        onRetry: () => context.read<StatementsBloc>().add(
+                          const StatementsEvent.getStatement(),
+                        ),
+                      ),
+                      loaded: (netIncome) {
+                        return EarningsCard(
+                          title: 'Total Net Earnings after Expenses',
+                          amount: "Rs ${netIncome.summary.netBalance}",
+                          backgroundColor: const Color(0xFF059669),
+                          icon: Icons.account_balance_wallet_rounded,
+                          subtitle: 'On Track for target',
+                        );
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),
