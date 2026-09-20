@@ -7,6 +7,7 @@ class DashboardDrawer extends StatelessWidget {
   const DashboardDrawer({super.key});
 
   void _showLogoutDialog(BuildContext context) {
+    final logoutCubit = context.read<LogoutCubit>();
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -20,7 +21,10 @@ class DashboardDrawer extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(dialogContext);
-              context.read<LogoutCubit>().logout();
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
+              logoutCubit.logout();
             },
             child: const Text('Logout', style: TextStyle(color: Colors.red)),
           ),
@@ -100,7 +104,6 @@ class DashboardDrawer extends StatelessWidget {
               leading: const Icon(Icons.info_outline),
               title: Text('About App', style: TextTheme.of(context).titleSmall),
               onTap: () {
-                Navigator.pop(context);
                 _showAboutDialog(context);
               },
             ),
@@ -116,7 +119,6 @@ class DashboardDrawer extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                Navigator.pop(context);
                 _showLogoutDialog(context);
               },
             ),

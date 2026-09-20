@@ -16,14 +16,14 @@ The following table comprehensively breaks down every policy area, examining wha
 
 | # | Topic / Area | Current Status | Risk Level | Problem in Current Sangapu Codebase | Solution & Action Required | Remarks |
 |---|---|---|---|---|---|---|
-| **1** | **In-App Account Deletion** | ❌ Missing | 🚨 **Critical Risk** | `lib/` only contains Logout (`DashboardPage`). No option exists to delete account or associated data. | Add an in-app "Delete Account" button in an Account/Settings dialog with an API call (`DELETE /auth/account/`) and local cache wipe. | **Mandatory** under Google Play User Data policy. Instant rejection if missing. |
-| **2** | **Web Account Deletion URL** | ❌ Missing | 🚨 **Critical Risk** | No public web link exists for users to submit account/data deletion without installing the app. | Deploy a public web page (e.g., `https://sangapu.com/delete-account`) detailing how users can request account & data deletion. Enter this in Play Console. | Required in Data Safety form. Google bot validates that the URL is live and functional. |
+| **1** | **In-App Account Deletion** | ❌ Missing | 🚨 **Critical Risk** | `lib/` only contains Logout (`DashboardPage`). No option exists to delete account or associated data. | Add an in-app "Delete Account" button in an Account/Settings dialog with an API call (`DELETE /auth/account/`) and local cache wipe (see [Backend Workflow](file:///d:/sangapu/BACKEND_ACCOUNT_DELETION_WORKFLOW.md)). | **Mandatory** under Google Play User Data policy. Instant rejection if missing. |
+| **2** | **Web Account Deletion URL** | ❌ Missing | 🚨 **Critical Risk** | No public web link exists for users to submit account/data deletion without installing the app. | Deploy a public web page (e.g., `https://sangapu.nishanpradhan.com.np/delete-account`) detailing how users can request account & data deletion. Enter this in Play Console (see [Backend Workflow](file:///d:/sangapu/BACKEND_ACCOUNT_DELETION_WORKFLOW.md)). | Required in Data Safety form. Google bot validates that the URL is live and functional. |
 | **3** | **Advertising ID (`AD_ID`) Permission** | ✅ Stripped | 🟢 **Safe** | Was injected by `firebase-analytics`. Stripped in `AndroidManifest.xml` via `tools:node="remove"`. | Verified stripped in `AndroidManifest.xml` with `xmlns:tools` declared. | Safe to declare "No Ads" in Google Play Console without rejection. |
 | **4** | **AdServices Permissions** | ✅ Stripped | 🟢 **Safe** | Was injected by Firebase. Stripped in `AndroidManifest.xml` via `tools:node="remove"`. | Verified stripped in `AndroidManifest.xml` with `xmlns:tools` declared. | Eliminates unnecessary ad-tracking scrutiny for an ad-free business tool. |
 | **5** | **Data Safety: Device & Other Identifiers** | ⚠️ Needs Declaration | ⚠️ **Moderate Risk** | Firebase Analytics is included and runs natively via `FirebaseInitProvider`, generating App Instance IDs and diagnostic logs. | In Play Console Data Safety form, declare **"Device or other IDs"** as **Collected** for **Analytics** (Ephemeral: No, Encrypted in transit: Yes). | Mismatch between declared SDKs and Data Safety questionnaire leads to policy warnings. |
 | **6** | **Data Safety: Personal Info (Auth)** | ⚠️ Needs Declaration | ⚠️ **Moderate Risk** | User email and password are submitted to `auth/login/`. | Declare **Personal Info > Email address & Name** as **Collected** for **App Functionality / Account Management**. | Must state data is encrypted in transit over HTTPS. |
 | **7** | **Data Safety: Financial Info** | ⚠️ Needs Declaration | ⚠️ **Moderate Risk** | Sangapu records hotel room rates, daily sales, and operational expenses. | Declare **Financial Info > Other financial info** as **Collected** for **App Functionality** (not shared with third parties). | Hotel income/expense tracking qualifies as financial recordkeeping. |
-| **8** | **App Access for Reviewers (Credentials)** | ⚠️ Potential Blocker | ⚠️ **Moderate Risk** | Entire app is locked behind login. If reviewer faces 2FA, OTP, or expired credentials, they cannot review. | In Play Console > App Access, provide permanent test credentials (`playreview@sangapu.com`), explicit instructions, and disable OTP for that user. | Reviewers will not contact you; they immediately reject with "Unable to review app". |
+| **8** | **App Access for Reviewers (Credentials)** | ⚠️ Potential Blocker | ⚠️ **Moderate Risk** | Entire app is locked behind login. If reviewer faces 2FA, OTP, or expired credentials, they cannot review. | In Play Console > App Access, provide permanent test credentials (`testuser@gmail.com` / `123345678`), explicit instructions, and disable OTP for that user (see Fix #8). | Reviewers will not contact you; they immediately reject with "Unable to review app". |
 | **9** | **Reviewer Geo-blocking / IP Whitelisting** | ⚠️ Potential Blocker | ⚠️ **Moderate Risk** | Reviewers test from Google servers in the US (Mountain View, CA), Ireland, or Singapore. | Ensure backend API server (`apiBaseUrl`) does not block US or foreign IP addresses or apply aggressive Cloudflare challenges to API endpoints. | If the backend drops non-Nepal requests, reviewer sees "Failed to load" and rejects app. |
 | **10** | **In-App Privacy Policy Link** | ✅ Resolved in Code | 🟢 **Safe** | Prominently accessible on LoginPage, Dashboard AppBar action, and Dashboard footer via `UrlLauncherHelper`. | Configured with `AppConstants.privacyPolicyUrl` and AndroidManifest HTTPS intent query. | Fully compliant with Google Play policy for user privacy notice accessibility. |
 | **11** | **Public Privacy Policy URL** | ⚠️ External Dependency | ⚠️ **Moderate Risk** | Must be hosted on a live URL and entered in Play Console Store Listing. | Create and host a clear privacy policy stating collected data (email, device metrics, ledger records) and retention periods. | Google crawler checks if the URL is active, mobile-responsive, and contains privacy text. |
@@ -297,6 +297,49 @@ Previously, raw Dio/socket exceptions (e.g. `'Failed to load income: DioExceptio
 
 ---
 
+### Fix 8: Reviewer App Access Configuration (Play Console Setup)
+
+Since the entire application is protected behind an authentication screen, Google reviewers cannot access features without working credentials. If the reviewer encounters 2FA, OTP, an invalid password, or an inactive account, the app will immediately be rejected with **"Unable to review app"**.
+
+#### Step-by-Step Play Console Setup:
+1. Open the [Google Play Console](https://play.google.com/console) and select **Sangapu**.
+2. In the left navigation menu, go to **Policy and programs** > **App content**.
+3. Under **App access**, click **Manage** (or **Start**).
+4. Select **"All or some functionality is restricted"** (Do *not* select "All functionality is available without special access").
+5. Click **+ Add instructions** and fill out the fields:
+
+| Field | Value |
+| :--- | :--- |
+| **Instruction Name** | `Reviewer Test Account` |
+| **Username / Email** | `testuser@gmail.com` |
+| **Password** | `123345678` |
+| **Does this account require 2-step verification or OTP?** | Select **No** |
+
+#### Reviewer Instruction Text (Copy & Paste):
+```text
+This account is provided specifically for Google Play app review.
+
+Steps to access:
+1. Open the application.
+2. On the login screen, enter:
+   - Email: testuser@gmail.com
+   - Password: 123345678
+3. Tap the "Login" button.
+4. You will be redirected to the main dashboard with full access to browse hotel rooms, bookings, lodge services, and account details.
+
+Notes for reviewer:
+- No OTP, SMS verification, 2FA, or email confirmation is required for this account.
+- This account has permanent active status and test data already seeded.
+- Internet connectivity is required to reach the backend API.
+```
+
+#### Pre-Submission Verification Checklist:
+- [ ] **Live Backend Check:** Ensure `testuser@gmail.com` and `123345678` log in successfully against the live production backend.
+- [ ] **No Geo-blocking:** Ensure the API endpoint does not block foreign IP addresses (Google reviewers test from the US, Ireland, and Singapore).
+- [ ] **Permanent Account:** Do not delete or change credentials for `testuser@gmail.com` during or after the review period.
+
+---
+
 ## 3. Play Console Submission Checklist
 
 - [x] **App Title & Branding in Code:** Unified as `Sangapu` across all screens, manifest, and configs.
@@ -304,7 +347,7 @@ Previously, raw Dio/socket exceptions (e.g. `'Failed to load income: DioExceptio
 - [x] **Minimum Functionality & Empty States:** Summary cards always visible with Rs 0.00 fallback; guiding placeholders in place.
 - [x] **Error Display & Recovery:** User-friendly error banners and retry buttons replace raw technical dumps.
 - [ ] **Store Listing Metadata:** Set Title to `Sangapu` and use the provided ledger description in Play Console.
-- [ ] **App Access:** Configure demo credentials (`username` and `password`) in Play Console with detailed notes that no 2FA is needed.
+- [ ] **App Access:** Configure demo credentials (`testuser@gmail.com` / `123345678`) in Play Console > App Access with instructions confirming no 2FA is needed.
 - [ ] **Data Safety:** Declare:
   - Personal Info: Email address, Name (App functionality).
   - Financial Info: Other financial info (App functionality).
