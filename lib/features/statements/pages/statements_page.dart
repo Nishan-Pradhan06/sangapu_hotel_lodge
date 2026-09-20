@@ -55,6 +55,7 @@ class _StatementPageState extends State<StatementPage> {
                     bytes: bytes,
                     extension: 'pdf',
                   );
+                  if (filePath == null || filePath.isEmpty) return;
                   if (context.mounted) {
                     CustomToast.showSuccess('PDF downloaded successfully');
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -92,6 +93,7 @@ class _StatementPageState extends State<StatementPage> {
                     bytes: bytes,
                     extension: 'xlsx',
                   );
+                  if (filePath == null || filePath.isEmpty) return;
                   if (context.mounted) {
                     CustomToast.showSuccess('Excel downloaded successfully');
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -129,6 +131,7 @@ class _StatementPageState extends State<StatementPage> {
                     bytes: bytes,
                     extension: 'pdf',
                   );
+                  if (filePath == null || filePath.isEmpty) return;
                   if (context.mounted) {
                     CustomToast.showSuccess(
                       'Room & Beverage PDF downloaded successfully',
