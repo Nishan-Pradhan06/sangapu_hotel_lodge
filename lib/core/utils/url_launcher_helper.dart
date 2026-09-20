@@ -25,8 +25,8 @@ class UrlLauncherHelper {
   }
 
   /// Opens the Terms of Service URL.
-  static Future<bool> openTermsOfService() {
-    return openUrl(AppConstants.termsOfServiceUrl);
+  static Future<bool> openTermsAndConditions() {
+    return openUrl(AppConstants.termsAndConditionsUrl);
   }
 
   /// Opens the official Account & Data Deletion URL.

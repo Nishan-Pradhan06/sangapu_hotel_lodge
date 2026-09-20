@@ -12,20 +12,23 @@ void main() {
   });
 
   test('AppConstants terms of service URL is valid and https', () {
-    expect(AppConstants.termsOfServiceUrl, isNotEmpty);
-    final uri = Uri.tryParse(AppConstants.termsOfServiceUrl);
+    expect(AppConstants.termsAndConditionsUrl, isNotEmpty);
+    final uri = Uri.tryParse(AppConstants.termsAndConditionsUrl);
     expect(uri, isNotNull);
     expect(uri!.hasScheme, isTrue);
     expect(uri.scheme, 'https');
   });
 
-  test('AppConstants account deletion URL is valid, https and live endpoint', () {
-    expect(AppConstants.accountDeletionUrl, isNotEmpty);
-    final uri = Uri.tryParse(AppConstants.accountDeletionUrl);
-    expect(uri, isNotNull);
-    expect(uri!.hasScheme, isTrue);
-    expect(uri.scheme, 'https');
-    expect(uri.host, 'sangapu.nishanpradhan.com.np');
-    expect(uri.path, '/delete-account/');
-  });
+  test(
+    'AppConstants account deletion URL is valid, https and live endpoint',
+    () {
+      expect(AppConstants.accountDeletionUrl, isNotEmpty);
+      final uri = Uri.tryParse(AppConstants.accountDeletionUrl);
+      expect(uri, isNotNull);
+      expect(uri!.hasScheme, isTrue);
+      expect(uri.scheme, 'https');
+      expect(uri.host, 'sangapu.nishanpradhan.com.np');
+      expect(uri.path, '/delete-account/');
+    },
+  );
 }

@@ -49,7 +49,7 @@ class DashboardDrawer extends StatelessWidget {
       children: [
         const SizedBox(height: 16),
         const Text(
-          'Sangapu is an internal hotel and lodge ledger management application designed to track room stays, beverage sales, and daily operational expenses.',
+          'Sangapu is a simple tool to record your daily income and expenses. Keep track of everyday entries, and export clean reports in PDF or Excel.',
         ),
       ],
     );
@@ -88,7 +88,10 @@ class DashboardDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.privacy_tip_outlined),
-              title: Text('Privacy Policy', style: TextTheme.of(context).titleSmall),
+              title: Text(
+                'Privacy Policy',
+                style: TextTheme.of(context).titleSmall,
+              ),
               onTap: () {
                 Navigator.pop(context);
                 UrlLauncherHelper.openPrivacyPolicy();
@@ -96,10 +99,13 @@ class DashboardDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.description_outlined),
-              title: Text('Terms of Service', style: TextTheme.of(context).titleSmall),
+              title: Text(
+                'Terms and Conditions',
+                style: TextTheme.of(context).titleSmall,
+              ),
               onTap: () {
                 Navigator.pop(context);
-                UrlLauncherHelper.openTermsOfService();
+                UrlLauncherHelper.openTermsAndConditions();
               },
             ),
             ListTile(
@@ -110,8 +116,14 @@ class DashboardDrawer extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.delete_outline, color: Colors.redAccent),
-              title: Text('Account Deletion', style: TextTheme.of(context).titleSmall),
+              leading: const Icon(
+                Icons.delete_outline,
+                color: Colors.redAccent,
+              ),
+              title: Text(
+                'Account Deletion',
+                style: TextTheme.of(context).titleSmall,
+              ),
               onTap: () {
                 Navigator.pop(context);
                 context.pushNamed(AppRoutesName.deleteAccount);
