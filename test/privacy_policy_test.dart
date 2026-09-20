@@ -18,4 +18,14 @@ void main() {
     expect(uri!.hasScheme, isTrue);
     expect(uri.scheme, 'https');
   });
+
+  test('AppConstants account deletion URL is valid, https and live endpoint', () {
+    expect(AppConstants.accountDeletionUrl, isNotEmpty);
+    final uri = Uri.tryParse(AppConstants.accountDeletionUrl);
+    expect(uri, isNotNull);
+    expect(uri!.hasScheme, isTrue);
+    expect(uri.scheme, 'https');
+    expect(uri.host, 'sangapu.nishanpradhan.com.np');
+    expect(uri.path, '/delete-account/');
+  });
 }
