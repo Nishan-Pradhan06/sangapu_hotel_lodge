@@ -6,6 +6,7 @@
 **Target Category:** Business / Daily Income & Expense Ledger Management  
 **Monetization:** Free / Ad-free  
 **Date of Audit:** September 19, 2026  
+**Last Verified & Updated:** September 20, 2026  
 **Auditor:** Google Play Console Compliance Specialist & Principal Android Auditor  
 
 ---
@@ -16,7 +17,7 @@ The following table comprehensively breaks down every policy area, examining wha
 
 | # | Topic / Area | Current Status | Risk Level | Problem in Current Sangapu Codebase | Solution & Action Required | Remarks |
 |---|---|---|---|---|---|---|
-| **1** | **In-App Account Deletion** | ❌ Missing | 🚨 **Critical Risk** | `lib/` only contains Logout (`DashboardPage`). No option exists to delete account or associated data. | Add an in-app "Delete Account" button in an Account/Settings dialog with an API call (`DELETE /auth/account/`) and local cache wipe (see [Backend Workflow](file:///d:/sangapu/BACKEND_ACCOUNT_DELETION_WORKFLOW.md)). | **Mandatory** under Google Play User Data policy. Instant rejection if missing. |
+| **1** | **In-App Account Deletion** | ✅ Resolved in Code | 🟢 **Safe** | Was missing. Now fully implemented via dedicated `DeleteAccountPage` with password verification, warning alerts, data retention explanation, and local cache wiping. | Accessible from `DashboardDrawer` ('Account Deletion'), connected to backend `DELETE /auth/account/` via `AccountDeletionCubit`, with unit tests in `test/account_deletion_test.dart`. | **Mandatory** under Google Play User Data policy. Meets all in-app deletion requirements. |
 | **2** | **Web Account Deletion URL** | ✅ Deployed & Verified | 🟢 **Safe** | Was missing. Now live at `https://sangapu.nishanpradhan.com.np/delete-account/`. | Hosted and verified live with self-service deletion form and retention policies. Enter `https://sangapu.nishanpradhan.com.np/delete-account/` in Play Console Data Safety form. | Fully satisfies Google Play mandatory web deletion policy. Verified active and accessible. |
 | **3** | **Advertising ID (`AD_ID`) Permission** | ✅ Stripped | 🟢 **Safe** | Was injected by `firebase-analytics`. Stripped in `AndroidManifest.xml` via `tools:node="remove"`. | Verified stripped in `AndroidManifest.xml` with `xmlns:tools` declared. | Safe to declare "No Ads" in Google Play Console without rejection. |
 | **4** | **AdServices Permissions** | ✅ Stripped | 🟢 **Safe** | Was injected by Firebase. Stripped in `AndroidManifest.xml` via `tools:node="remove"`. | Verified stripped in `AndroidManifest.xml` with `xmlns:tools` declared. | Eliminates unnecessary ad-tracking scrutiny for an ad-free business tool. |
@@ -24,7 +25,7 @@ The following table comprehensively breaks down every policy area, examining wha
 | **6** | **Data Safety: Personal Info (Auth)** | ⚠️ Needs Declaration | ⚠️ **Moderate Risk** | User email and password are submitted to `auth/login/`. | Declare **Personal Info > Email address & Name** as **Collected** for **App Functionality / Account Management**. | Must state data is encrypted in transit over HTTPS. |
 | **7** | **Data Safety: Financial Info** | ⚠️ Needs Declaration | ⚠️ **Moderate Risk** | Sangapu records hotel room rates, daily sales, and operational expenses. | Declare **Financial Info > Other financial info** as **Collected** for **App Functionality** (not shared with third parties). | Hotel income/expense tracking qualifies as financial recordkeeping. |
 | **8** | **App Access for Reviewers (Credentials)** | ⚠️ Potential Blocker | ⚠️ **Moderate Risk** | Entire app is locked behind login. If reviewer faces 2FA, OTP, or expired credentials, they cannot review. | In Play Console > App Access, provide permanent test credentials (`testuser@gmail.com` / `123345678`), explicit instructions, and disable OTP for that user (see Fix #8). | Reviewers will not contact you; they immediately reject with "Unable to review app". |
-| **9** | **Reviewer Geo-blocking / IP Whitelisting** | ⚠️ Potential Blocker | ⚠️ **Moderate Risk** | Reviewers test from Google servers in the US (Mountain View, CA), Ireland, or Singapore. | Ensure backend API server (`apiBaseUrl`) does not block US or foreign IP addresses or apply aggressive Cloudflare challenges to API endpoints. | If the backend drops non-Nepal requests, reviewer sees "Failed to load" and rejects app. |
+| **9** | **Reviewer Geo-blocking / IP Whitelisting** | ✅ Verified Clean (Code) | 🟢 **Safe** | Reviewers test from Google servers in the US (Mountain View, CA), Ireland, or Singapore. If backend drops foreign IPs, reviewer sees "Failed to load". | Codebase verified 100% clean (no GeoIP packages, no IP restrictions, open CORS/ALLOWED_HOSTS, generous rate limits, US-based DB). Ensure production Cloudflare WAF and hosting allow foreign API traffic. | Prevents silent review failure or rejection from Google testing centers. |
 | **10** | **In-App Privacy Policy Link** | ✅ Resolved in Code | 🟢 **Safe** | Prominently accessible on LoginPage, Dashboard AppBar action, and Dashboard footer via `UrlLauncherHelper`. | Configured with `AppConstants.privacyPolicyUrl` and AndroidManifest HTTPS intent query. | Fully compliant with Google Play policy for user privacy notice accessibility. |
 | **11** | **Public Privacy Policy URL** | ⚠️ External Dependency | ⚠️ **Moderate Risk** | Must be hosted on a live URL and entered in Play Console Store Listing. | Create and host a clear privacy policy stating collected data (email, device metrics, ledger records) and retention periods. | Google crawler checks if the URL is active, mobile-responsive, and contains privacy text. |
 | **12** | **File Storage & Scoped Storage** | ✅ Resolved in Code | 🟢 **Safe** | `DownloadHelper` saves exported files directly to the public device `Download` folder for immediate user access, backed by Storage Access Framework (SAF) and scoped storage fallbacks. | Complies with Play policies (no invasive `MANAGE_EXTERNAL_STORAGE` permission required) while guaranteeing files are saved in accessible device storage. | Prevents silent failures or permission crashes during PDF/Excel statement exports while keeping downloads easily discoverable. |
@@ -66,74 +67,39 @@ In [`android/app/src/main/AndroidManifest.xml`](file:///d:/sangapu/android/app/s
 
 ---
 
-### Fix 2: In-App Account Deletion Dialog
-Add an account deletion option in your settings or user action menu:
+### Fix 2: In-App Account Deletion Flow (Implemented in Codebase ✅)
 
-```dart
-// Suggested placement: lib/features/auth/widgets/delete_account_dialog.dart
-import 'package:flutter/material.dart';
+A complete, policy-compliant account deletion workflow is implemented across the app:
 
-void showDeleteAccountDialog(BuildContext context, {required VoidCallback onConfirmDelete}) {
-  showDialog(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Delete Account & Data', style: TextStyle(fontWeight: FontWeight.bold)),
-      content: const Text(
-        'Are you sure you want to permanently delete your account? '
-        'This will erase your login credentials, room logs, income, and expense records. '
-        'This action cannot be undone.',
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-          onPressed: () {
-            Navigator.pop(ctx);
-            onConfirmDelete();
-          },
-          child: const Text('Delete Account', style: TextStyle(color: Colors.white)),
-        ),
-      ],
-    ),
-  );
-}
-```
+#### Code Updates Applied:
+1. **[`lib/features/auth/screens/delete_account.dart`](file:///d:/sangapu/lib/features/auth/screens/delete_account.dart)**:
+   - **Warning Banner:** Highlights the irreversible nature of account deletion.
+   - **Data Retention & Policy Breakdown:** Transparently informs the user that personal data and credentials are wiped immediately, while statutory financial ledger logs are preserved securely for up to 90 days as required by accounting regulations.
+   - **Identity Confirmation:** Requires the user to enter their current password.
+   - **Consent Checkbox:** Requires the user to check an acknowledgment box before enabling the delete action.
+   - **Confirmation Dialog:** Triggers a secondary alert modal before issuing the delete call.
+   - **Web Fallback Link:** Displays an interactive button to open the web portal (`https://sangapu.nishanpradhan.com.np/delete-account/`) via `UrlLauncherHelper.openAccountDeletion()`.
+2. **[`lib/features/auth/cubits/account_deletions/account_deletion_cubit.dart`](file:///d:/sangapu/lib/features/auth/cubits/account_deletions/account_deletion_cubit.dart)**:
+   - State-managed Cubit handling loading, success, and error states.
+3. **[`lib/features/auth/repository/auth_repository.dart`](file:///d:/sangapu/lib/features/auth/repository/auth_repository.dart)**:
+   - Calls backend endpoint `DELETE auth/account/` with optional password payload.
+   - Automatically executes `clearAuthToken()`, `clearAll()`, and `clearApiCache()` upon successful deletion.
+   - Redirects user to the login screen and restarts the application via `RestartWidget.restartApp()`.
+4. **[`lib/features/dashboard/widgets/dashboard_drawer.dart`](file:///d:/sangapu/lib/features/dashboard/widgets/dashboard_drawer.dart)**:
+   - Added prominent "Account Deletion" navigation tile leading to `AppRoutesName.deleteAccount`.
+5. **[`test/account_deletion_test.dart`](file:///d:/sangapu/test/account_deletion_test.dart)**:
+   - Automated unit tests validating route registration, Cubit emission on success, and failure handling.
 
 ---
 
-### Fix 3: In-App Privacy Policy Link on Login & Dashboard (Implemented in Codebase ✅)
-On [`lib/features/auth/screens/login_page.dart`](file:///d:/sangapu/lib/features/auth/screens/login_page.dart), add a clickable link to your privacy policy:
+### Fix 3: In-App Privacy Policy & Terms on Login & Dashboard (Implemented in Codebase ✅)
+Prominently accessible across multiple entry points using [`UrlLauncherHelper`](file:///d:/sangapu/lib/core/utils/url_launcher_helper.dart) and declared in [`AppConstants`](file:///d:/sangapu/lib/core/constant/app_constants.dart):
 
-```dart
-import 'package:url_launcher/url_launcher.dart';
-
-Widget _buildPrivacyPolicyLink() {
-  return Center(
-    child: InkWell(
-      onTap: () async {
-        final uri = Uri.parse('https://sangapu.com/privacy-policy');
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        }
-      },
-      child: const Padding(
-        padding: EdgeInsets.symmetric(vertical: 8.0),
-        child: Text(
-          'Privacy Policy & Terms of Service',
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-            decoration: TextDecoration.underline,
-          ),
-        ),
-      ),
-    ),
-  );
-}
-```
+#### Code Updates Applied:
+1. **[`lib/features/auth/screens/login_page.dart`](file:///d:/sangapu/lib/features/auth/screens/login_page.dart)**: Clickable link calling `UrlLauncherHelper.openPrivacyPolicy()`.
+2. **[`lib/features/dashboard/widgets/dashboard_drawer.dart`](file:///d:/sangapu/lib/features/dashboard/widgets/dashboard_drawer.dart)**: "Privacy Policy" and "Terms of Service" tiles calling `openPrivacyPolicy()` and `openTermsOfService()`.
+3. **[`android/app/src/main/AndroidManifest.xml`](file:///d:/sangapu/android/app/src/main/AndroidManifest.xml)**: `<queries>` section declared for HTTPS intent handling.
+4. **[`test/privacy_policy_test.dart`](file:///d:/sangapu/test/privacy_policy_test.dart)**: Unit tests confirming all legal URLs are valid HTTPS schemes.
 
 ---
 
@@ -334,21 +300,57 @@ Notes for reviewer:
 ```
 
 #### Pre-Submission Verification Checklist:
+- [x] **Code Geo-blocking Audit:** Verified 100% clean; no GeoIP/country filtering, open CORS/ALLOWED_HOSTS, and safe rate limiting.
 - [ ] **Live Backend Check:** Ensure `testuser@gmail.com` and `123345678` log in successfully against the live production backend.
-- [ ] **No Geo-blocking:** Ensure the API endpoint does not block foreign IP addresses (Google reviewers test from the US, Ireland, and Singapore).
+- [ ] **Infrastructure WAF Check:** Ensure Cloudflare/hosting WAF does not block or challenge US/foreign IPs.
 - [ ] **Permanent Account:** Do not delete or change credentials for `testuser@gmail.com` during or after the review period.
+
+---
+
+### Fix 9: Reviewer Geo-blocking & Foreign IP Compatibility (Codebase Verified ✅)
+
+Google app review emulators and human reviewers test from data centers located in the **United States (Mountain View, CA)**, **Ireland (Dublin)**, and **Singapore**. If foreign traffic is dropped or served interactive security challenges (e.g. Cloudflare Turnstile / Captcha), the app encounters connection drops or JSON parsing errors, resulting in immediate rejection for broken functionality.
+
+#### 1. Codebase & Application Layer Audit Results: ✅ PASSED (Clean)
+- **GeoIP / Country Restriction:** None. No GeoIP packages (`geoip2`, `pygeoip`) or country-detecting middleware exist anywhere in the backend codebase.
+- **IP Filtering:** None. No IP whitelisting, blacklisting, or checks against `REMOTE_ADDR` or `X-Forwarded-For` are present.
+- **Allowed Hosts:** In `.env`, `ALLOWED_HOSTS=*`, preventing rejection from mismatched host headers.
+- **CORS Policy:** In `.env`, `CORS_ALLOW_ALL_ORIGINS=True`.
+- **DRF Throttling:** Configured in `core/settings.py` (`anon: 1000/day`, `user: 5000/day`, `auth: 15/minute`). Reviewers logging in will never be throttled under standard review conditions.
+- **Database Routing:** Neon PostgreSQL database is hosted in AWS `us-east-1` (US East, N. Virginia) with SSL enabled, fully compatible with international and US reviewer access.
+
+#### 2. Infrastructure & Hosting Layer Actionable Checklist (Deployment):
+- [ ] **Cloudflare / CDN WAF Rules:**
+  - Verify Cloudflare Security Level is set to **Medium** or **Low** (never "I'm Under Attack").
+  - Ensure there are no custom WAF rules blocking non-Nepal (`ip.geoip.country ne "NP"`) traffic.
+  - Recommended: Create a Cloudflare WAF Skip/Bypass rule for path prefix `/api/*` so automated review bots are not served JavaScript challenges.
+- [ ] **Cloud Host Cold-Starts (Render, Railway, Koyeb):**
+  - If using a free-tier hosting instance that spins down during inactivity, cold starts can exceed 30–60 seconds, causing Flutter connection timeouts (`SocketException` / `TimeoutException`).
+  - Keep the backend awake during the review window using an automated uptime ping (e.g., UptimeRobot every 5 minutes) or an always-on tier.
+- [ ] **SSL / CA Certificate:**
+  - Ensure the production API URL uses valid HTTPS from a standard trusted Certificate Authority (e.g., Let's Encrypt, Cloudflare, AWS ACM) with no self-signed certificates.
 
 ---
 
 ## 3. Play Console Submission Checklist
 
+### Codebase & Technical Readiness (100% Completed ✅)
+- [x] **In-App Account Deletion Flow:** Complete UI in `DeleteAccountPage` with password verification, warning alerts, data retention explanation, local cache wiping, and drawer entry.
+- [x] **Web Account Deletion Portal:** Live and verified at `https://sangapu.nishanpradhan.com.np/delete-account/`.
+- [x] **In-App Privacy Policy & Terms Links:** Prominently accessible on Login page and Dashboard navigation drawer via `UrlLauncherHelper`.
 - [x] **App Title & Branding in Code:** Unified as `Sangapu` across all screens, manifest, and configs.
 - [x] **Advertising ID & AdServices Removal:** Stripped in `AndroidManifest.xml` via `tools:node="remove"`.
+- [x] **File Storage & Scoped Storage:** Resilient public storage saving in `/storage/emulated/0/Download` without invasive permissions.
 - [x] **Minimum Functionality & Empty States:** Summary cards always visible with Rs 0.00 fallback; guiding placeholders in place.
 - [x] **Error Display & Recovery:** User-friendly error banners and retry buttons replace raw technical dumps.
-- [ ] **Store Listing Metadata:** Set Title to `Sangapu` and use the provided ledger description in Play Console.
+- [x] **Sensitive Runtime Permissions:** Verified clean; only `INTERNET` permission retained.
+- [x] **Geo-blocking & IP Compatibility:** Codebase verified 100% clean; open CORS, open hosts, generous rate limits, and US-compatible Neon PostgreSQL.
+- [x] **Unit & Regression Tests:** 8/8 tests passing (`test/account_deletion_test.dart`, `test/privacy_policy_test.dart`, `test/widget_test.dart`).
+
+### Play Console Manual Tasks (Action Items for Developer in Console)
+- [ ] **Store Listing Metadata:** Set Title strictly to `Sangapu` and paste the provided ledger description in Play Console.
 - [ ] **App Access:** Configure demo credentials (`testuser@gmail.com` / `123345678`) in Play Console > App Access with instructions confirming no 2FA is needed.
-- [ ] **Data Safety:** Declare:
+- [ ] **Data Safety Questionnaire:** Declare:
   - Personal Info: Email address, Name (App functionality).
   - Financial Info: Other financial info (App functionality).
   - Device/Other IDs: Device or other IDs (Firebase Analytics).
@@ -357,4 +359,5 @@ Notes for reviewer:
 - [ ] **Advertising ID Declaration:** Select **"No"** (verified clean with `tools:node="remove"`).
 - [ ] **Target Audience:** Strictly 18+ (Adults / Business owners). Declare "No" to families program.
 - [ ] **Government Apps / Financial Licensing:** Declare that Sangapu is a private business management utility, not an official government or licensed banking/credit lending application.
+- [ ] **Infrastructure Verification:** Confirm production hosting does not sleep on idle and Cloudflare WAF allows `/api/*` requests from US/international test IPs without challenge screens.
 
