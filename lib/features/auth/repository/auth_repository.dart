@@ -8,6 +8,7 @@ import '../models/login_model.dart';
 abstract interface class AuthRepository {
   FutureEither<String> logIn({required LogInModel logIn});
   FutureEither<String> logOut();
+  FutureEither<String> deleteAccount({String? password});
 }
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -45,5 +46,29 @@ class AuthRepositoryImpl implements AuthRepository {
     await CacheServices.instance.clearAll();
     await clearApiCache();
     return const Right('Logout successful');
+  }
+
+  @override
+  FutureEither<String> deleteAccount({String? password}) async {
+    final response = await _apiService.delete<dynamic>(
+      'auth/account/',
+      data: password != null && password.isNotEmpty ? {'password': password} : null,
+    );
+
+    return response.fold(
+      (failure) => Left(failure),
+      (success) async {
+        await CacheServices.instance.clearAuthToken();
+        await CacheServices.instance.clearAll();
+        await clearApiCache();
+
+        String message =
+            'Your account and associated data have been permanently deleted.';
+        if (success is Map<String, dynamic> && success['message'] != null) {
+          message = success['message'].toString();
+        }
+        return Right(message);
+      },
+    );
   }
 }

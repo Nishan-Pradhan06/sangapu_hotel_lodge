@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sangapu/features/auth/cubits/account_deletions/account_deletion_cubit.dart';
 import 'package:sangapu/features/auth/cubits/logout/logout_cubit.dart';
 import 'package:sangapu/features/auth/cubits/remember_me/remember_me_cubit.dart';
 import 'package:sangapu/features/banners/blocs/get_banner/get_banner_bloc.dart';
@@ -29,6 +30,7 @@ class BlocWrapperWidget extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => sl<LogInBloc>()),
         BlocProvider(create: (_) => sl<LogoutCubit>()),
+        BlocProvider(create: (_) => sl<AccountDeletionCubit>()),
         BlocProvider(create: (_) => sl<RememberMeCubit>()),
         BlocProvider(create: (_) => sl<IncomeEntryBloc>()),
         BlocProvider(create: (_) => sl<StatementsBloc>()),

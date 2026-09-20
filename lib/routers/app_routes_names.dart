@@ -13,4 +13,5 @@ class AppRoutesName {
   static const String addExpense = 'addExpense';
   static const String editExpense = 'editExpense';
   static const String editIncomeEntry = 'editRoomEntry';
+  static const String deleteAccount = 'deleteAccount';
 }

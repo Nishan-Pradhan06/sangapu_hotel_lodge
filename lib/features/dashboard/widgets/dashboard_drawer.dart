@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/utils/url_launcher_helper.dart';
+import '../../../routers/app_routes_names.dart';
 import '../../auth/cubits/logout/logout_cubit.dart';
 
 class DashboardDrawer extends StatelessWidget {
@@ -107,6 +109,15 @@ class DashboardDrawer extends StatelessWidget {
                 _showAboutDialog(context);
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.delete_outline, color: Colors.redAccent),
+              title: Text('Account Deletion', style: TextTheme.of(context).titleSmall),
+              onTap: () {
+                Navigator.pop(context);
+                context.pushNamed(AppRoutesName.deleteAccount);
+              },
+            ),
+
             const Spacer(),
             const Divider(),
             ListTile(
