@@ -1,5 +1,5 @@
 **Application Name:** Sangapu  
-**Package Identifier:** `com.goat_tech.sangapu`  
+**Package Identifier:** `com.nishan.sangapu`  
 **Target Category:** Productivity / Business Utility 
 **Target Audience:** Adults (18+)  
 **Monetization Model:** Free / Ad-Free / No In-App Purchases (IAP)  
@@ -47,3 +47,17 @@
 ---
 
 sangapu
+
+
+
+
+https://web.iarcservices.com/terms
+https://play.google/developer-content-policy/
+https://play.google/developer-content-policy/
+https://support.google.com/googleplay/android-developer/answer/6320428
+https://support.google.com/googleplay/android-developer/answer/6320428
+https://developer.android.com/guide/app-bundle
+https://play.google/play-app-signing-terms/
+https://support.google.com/googleplay/android-developer/answer/9842756?hl=en-GB
+https://support.google.com/googleplay/android-developer/answer/113770?hl=en-GB
+https://support.google.com/googleplay/android-developer/answer/10183279
