@@ -63,7 +63,10 @@ class _StatementPageState extends State<StatementPage> {
                         content: const Text('Tap to open the file'),
                         action: SnackBarAction(
                           label: 'Open',
-                          onPressed: () => OpenFile.open(filePath),
+                          onPressed: () => OpenFile.open(
+                            filePath,
+                            type: 'application/pdf',
+                          ),
                         ),
                       ),
                     );
@@ -101,7 +104,11 @@ class _StatementPageState extends State<StatementPage> {
                         content: const Text('Tap to open the file'),
                         action: SnackBarAction(
                           label: 'Open',
-                          onPressed: () => OpenFile.open(filePath),
+                          onPressed: () => OpenFile.open(
+                            filePath,
+                            type:
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                          ),
                         ),
                       ),
                     );
@@ -141,7 +148,10 @@ class _StatementPageState extends State<StatementPage> {
                         content: const Text('Tap to open the file'),
                         action: SnackBarAction(
                           label: 'Open',
-                          onPressed: () => OpenFile.open(filePath),
+                          onPressed: () => OpenFile.open(
+                            filePath,
+                            type: 'application/pdf',
+                          ),
                         ),
                       ),
                     );
