@@ -1,12 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../../core/utils/url_launcher_helper.dart';
 import '../../../routers/app_routes_names.dart';
 import '../../auth/cubits/logout/logout_cubit.dart';
+import '../../app_update/services/app_update_manager.dart';
 
-class DashboardDrawer extends StatelessWidget {
+class DashboardDrawer extends StatefulWidget {
   const DashboardDrawer({super.key});
+
+  @override
+  State<DashboardDrawer> createState() => _DashboardDrawerState();
+}
+
+class _DashboardDrawerState extends State<DashboardDrawer> {
+  String _appVersion = '2.1.10';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (mounted) {
+        setState(() {
+          _appVersion = '${info.version}+${info.buildNumber}';
+        });
+      }
+    } catch (_) {}
+  }
 
   void _showLogoutDialog(BuildContext context) {
     final logoutCubit = context.read<LogoutCubit>();
@@ -39,7 +65,7 @@ class DashboardDrawer extends StatelessWidget {
     showAboutDialog(
       context: context,
       applicationName: 'Sangapu',
-      applicationVersion: '1.0.0',
+      applicationVersion: _appVersion,
       applicationIcon: Image.asset(
         'assets/logo/logo.png',
         height: 50,
@@ -116,6 +142,22 @@ class DashboardDrawer extends StatelessWidget {
               },
             ),
             ListTile(
+              leading: const Icon(Icons.system_update_rounded),
+              title: Text('Check for Updates', style: TextTheme.of(context).titleSmall),
+              subtitle: Text(
+                'v$_appVersion',
+                style: TextTheme.of(context).bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded, size: 20),
+              onTap: () {
+                Navigator.pop(context);
+                AppUpdateManager.checkAppUpdate(context, isManual: true);
+              },
+            ),
+            ListTile(
               leading: const Icon(
                 Icons.delete_outline,
                 color: Colors.redAccent,
@@ -145,7 +187,16 @@ class DashboardDrawer extends StatelessWidget {
                 _showLogoutDialog(context);
               },
             ),
-            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                'Version $_appVersion',
+                style: TextTheme.of(context).bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                  fontSize: 11,
+                ),
+              ),
+            ),
           ],
         ),
       ),

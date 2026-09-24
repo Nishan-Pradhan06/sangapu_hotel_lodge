@@ -16,11 +16,27 @@ import '../../income/blocs/bloc/get_income_bloc.dart';
 import '../../income/blocs/room_beverage/room_beverage_bloc.dart';
 import '../../reports/widgets/earning_cards.dart';
 import '../../statements/bloc/statements_bloc.dart';
+import '../../app_update/services/app_update_manager.dart';
 import '../widgets/dashboard_drawer.dart';
 import '../widgets/room_bevereage.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        AppUpdateManager.checkAppUpdate(context, isManual: false);
+      }
+    });
+  }
 
   // Pull-to-refresh triggers all blocs including statements
   Future<void> _handleRefresh(BuildContext context) async {

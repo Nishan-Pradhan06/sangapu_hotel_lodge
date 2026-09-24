@@ -24,6 +24,7 @@ import '../../../../features/export_statements/blocs/export_room_beverage_pdf/ex
 import '../../../../features/export_statements/repository/export_statement_repository.dart';
 import '../../../../features/statements/cubits/statement_filter_cubit.dart';
 import '../../../../features/statements/repository/transcation_repository.dart';
+import '../../features/app_update/repository/app_update_repository.dart';
 import '../network/api_services.dart';
 import '../network/dio_client.dart';
 import '../services/once_cache_service.dart';
@@ -73,6 +74,9 @@ Future<void> setupServiceLocator() async {
   );
   sl.registerLazySingleton<ExportStatementRepository>(
     () => ExportStatementRepositoryImpl(apiService: sl()),
+  );
+  sl.registerLazySingleton<AppUpdateRepository>(
+    () => AppUpdateRepositoryImpl(apiService: sl()),
   );
 
   //###---------------EXTERNAL REPOSITORY SERVICES---------------###

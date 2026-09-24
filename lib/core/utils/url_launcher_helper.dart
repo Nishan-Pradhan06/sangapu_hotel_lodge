@@ -33,4 +33,17 @@ class UrlLauncherHelper {
   static Future<bool> openAccountDeletion() {
     return openUrl(AppConstants.accountDeletionUrl);
   }
+
+  /// Opens the app page on Google Play Store with market:// scheme or web URL fallback.
+  static Future<bool> openPlayStore([String? customUrl]) async {
+    try {
+      final marketUri = Uri.parse('market://details?id=com.nishan.sangapu');
+      if (await canLaunchUrl(marketUri)) {
+        return await launchUrl(marketUri, mode: LaunchMode.externalApplication);
+      }
+    } catch (_) {}
+    return openUrl(
+      customUrl ?? 'https://play.google.com/store/apps/details?id=com.nishan.sangapu',
+    );
+  }
 }
