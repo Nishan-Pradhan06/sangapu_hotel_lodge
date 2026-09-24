@@ -54,17 +54,14 @@ class AppUpdateDialog extends StatelessWidget {
               // Header Badge & Icon
               Center(
                 child: Container(
-                  height: 72,
-                  width: 72,
+                  height: 76,
+                  width: 76,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        colorScheme.primary,
-                        AppTheme.accentTeal,
-                      ],
+                      colors: [colorScheme.primary, AppTheme.accentTeal],
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -74,10 +71,18 @@ class AppUpdateDialog extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.rocket_launch_rounded,
-                    color: Colors.white,
-                    size: 36,
+                  padding: const EdgeInsets.all(3),
+                  child: CircleAvatar(
+                    radius: 35,
+                    backgroundColor: colorScheme.surface,
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/logo/logo.png',
+                        height: 60,
+                        width: 60,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -134,7 +139,9 @@ class AppUpdateDialog extends StatelessWidget {
                 constraints: const BoxConstraints(maxHeight: 180),
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                  color: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.4,
+                  ),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: colorScheme.outlineVariant.withValues(alpha: 0.5),
@@ -191,8 +198,9 @@ class AppUpdateDialog extends StatelessWidget {
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   style: TextButton.styleFrom(
-                    foregroundColor:
-                        colorScheme.onSurface.withValues(alpha: 0.7),
+                    foregroundColor: colorScheme.onSurface.withValues(
+                      alpha: 0.7,
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 10),
                   ),
                   child: const Text('Remind Me Later'),
