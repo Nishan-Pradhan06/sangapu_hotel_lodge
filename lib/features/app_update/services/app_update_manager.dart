@@ -3,9 +3,12 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/di/dependency_injection.dart';
 import '../../../core/widgets/custom_toast.dart';
+import '../../../routers/app_router.dart';
 import '../models/app_version_info.dart';
 import '../repository/app_update_repository.dart';
 import '../widgets/app_update_dialog.dart';
+import '../widgets/checking_update_dialog.dart';
+import '../widgets/up_to_date_dialog.dart';
 
 class AppUpdateManager {
   static const String _lastUpdatePromptKey = 'last_update_prompt_timestamp';
@@ -41,21 +44,46 @@ class AppUpdateManager {
 
   /// Checks if an update is required or available.
   /// [isManual]: When true (e.g. user clicked "Check for Updates" in drawer),
-  /// feedback is always displayed even if up to date or recently snoozed.
+  /// a visual "Checking for Updates" loading dialog is shown, followed by either
+  /// the update prompt or an "Up to date" confirmation dialog.
   static Future<void> checkAppUpdate(
     BuildContext context, {
     bool isManual = false,
   }) async {
+    final navContext = rootNavigatorKey.currentContext ?? context;
+    bool isProgressShowing = false;
+
+    if (isManual && navContext.mounted) {
+      isProgressShowing = true;
+      CheckingUpdateDialog.show(navContext);
+    }
+
     try {
+      final startTime = DateTime.now();
       final repository = sl<AppUpdateRepository>();
       final result = await repository.checkAppVersion();
 
-      if (!context.mounted) return;
+      // Ensure loading indicator is visible for at least 600ms for smooth UX
+      if (isManual) {
+        final elapsed = DateTime.now().difference(startTime);
+        if (elapsed < const Duration(milliseconds: 600)) {
+          await Future.delayed(const Duration(milliseconds: 600) - elapsed);
+        }
+      }
+
+      final activeContext = rootNavigatorKey.currentContext ?? context;
+      if (isProgressShowing && activeContext.mounted) {
+        CheckingUpdateDialog.hide(activeContext);
+        isProgressShowing = false;
+      }
+
+      if (!activeContext.mounted) return;
 
       await result.fold(
         (failure) async {
-          if (isManual) {
-            CustomToast.showError('Unable to check for updates. Please try again.');
+          debugPrint('[AppUpdateManager] Failed to fetch version info: ${failure.message}');
+          if (isManual && activeContext.mounted) {
+            CustomToast.showError('Unable to check for updates. Please check your connection.');
           }
         },
         (versionInfo) async {
@@ -69,6 +97,12 @@ class AppUpdateManager {
               versionInfo.latestBuildNumber > currentBuildNumber;
 
           final isUpdateAvailable = hasNewerVersion || hasNewerBuild;
+
+          debugPrint(
+            '[AppUpdateManager] Current App: $currentVersion+$currentBuildNumber | '
+            'Server Latest: ${versionInfo.latestVersion}+${versionInfo.latestBuildNumber} | '
+            'Update Available: $isUpdateAvailable | Force: ${versionInfo.forceUpdate}',
+          );
 
           final isBelowMinVersion =
               compareVersions(versionInfo.minSupportedVersion, currentVersion) >
@@ -106,25 +140,32 @@ class AppUpdateManager {
               await prefs.setInt(_lastUpdatePromptKey, now);
             }
 
-            if (context.mounted) {
+            if (activeContext.mounted) {
               AppUpdateDialog.show(
-                context,
+                activeContext,
                 versionInfo: effectiveVersionInfo,
                 currentVersion: currentVersion,
                 currentBuildNumber: currentBuildNumber,
               );
             }
           } else {
-            if (isManual && context.mounted) {
-              CustomToast.showSuccess(
-                'Sangapu is up to date! (v$currentVersion)',
+            if (isManual && activeContext.mounted) {
+              UpToDateDialog.show(
+                activeContext,
+                currentVersion: currentVersion,
+                currentBuildNumber: currentBuildNumber,
               );
             }
           }
         },
       );
-    } catch (_) {
-      if (isManual && context.mounted) {
+    } catch (e, stack) {
+      debugPrint('[AppUpdateManager] Exception during update check: $e\n$stack');
+      final activeContext = rootNavigatorKey.currentContext ?? context;
+      if (isProgressShowing && activeContext.mounted) {
+        CheckingUpdateDialog.hide(activeContext);
+      }
+      if (isManual && activeContext.mounted) {
         CustomToast.showError('Error checking for updates.');
       }
     }
