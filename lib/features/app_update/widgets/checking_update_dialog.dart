@@ -48,7 +48,9 @@ class CheckingUpdateDialog extends StatelessWidget {
                     height: 34,
                     child: CircularProgressIndicator(
                       strokeWidth: 3.2,
-                      valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        colorScheme.primary,
+                      ),
                     ),
                   ),
                 ),
