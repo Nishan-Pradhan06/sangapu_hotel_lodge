@@ -5,6 +5,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../../../core/utils/url_launcher_helper.dart';
 import '../../../routers/app_routes_names.dart';
 import '../../auth/cubits/logout/logout_cubit.dart';
+import '../../auth/cubits/profile/profile_cubit.dart';
+import '../../auth/models/user_profile_model.dart';
 import '../../app_update/services/app_update_manager.dart';
 
 class DashboardDrawer extends StatefulWidget {
@@ -51,6 +53,7 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
               Navigator.pop(dialogContext);
               if (context.mounted) {
                 Navigator.pop(context);
+                context.read<ProfileCubit>().reset();
               }
               logoutCubit.logout();
             },
@@ -87,23 +90,28 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
       child: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.topLeft,
-              child: CircleAvatar(
-                radius: 40,
-                backgroundColor: Colors.transparent,
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/logo/logo.png',
-                    height: 120,
-                    width: 120,
-                    fit: BoxFit.contain,
-                  ),
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+                context.pushNamed(AppRoutesName.profilePage);
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: BlocBuilder<ProfileCubit, ProfileState>(
+                  builder: (context, state) {
+                    return state.maybeWhen(
+                      loaded: (profile) =>
+                          _buildProfileDrawerHeader(context, profile),
+                      loading: () => _buildLoadingDrawerHeader(context),
+                      orElse: () => _buildDefaultDrawerHeader(context),
+                    );
+                  },
                 ),
               ),
             ),
-            const SizedBox(height: 12),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.home_outlined),
@@ -143,7 +151,10 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
             ),
             ListTile(
               leading: const Icon(Icons.system_update_rounded),
-              title: Text('Check for Updates', style: TextTheme.of(context).titleSmall),
+              title: Text(
+                'Check for Updates',
+                style: TextTheme.of(context).titleSmall,
+              ),
               subtitle: Text(
                 'v$_appVersion',
                 style: TextTheme.of(context).bodySmall?.copyWith(
@@ -192,7 +203,9 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
               child: Text(
                 'Version $_appVersion',
                 style: TextTheme.of(context).bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                   fontSize: 11,
                 ),
               ),
@@ -200,6 +213,135 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildProfileDrawerHeader(
+    BuildContext context,
+    UserProfileModel profile,
+  ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 26,
+          backgroundColor: colorScheme.primary,
+          child: Text(
+            profile.initials,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                profile.displayName,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+              Text(
+                profile.email,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+        const Icon(Icons.chevron_right_rounded, size: 20),
+      ],
+    );
+  }
+
+  Widget _buildDefaultDrawerHeader(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 26,
+          backgroundColor: Colors.transparent,
+          child: ClipOval(
+            child: Image.asset(
+              'assets/logo/logo.png',
+              height: 52,
+              width: 52,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Sangapu Lodge',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                'Tap to view profile',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Icon(Icons.chevron_right_rounded, size: 20),
+      ],
+    );
+  }
+
+  Widget _buildLoadingDrawerHeader(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 26,
+          backgroundColor: colorScheme.surfaceContainerHighest,
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 12,
+                width: 100,
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                height: 10,
+                width: 140,
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

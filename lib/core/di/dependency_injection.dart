@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:retry/retry.dart';
 import 'package:sangapu/features/auth/cubits/account_deletions/account_deletion_cubit.dart';
 import 'package:sangapu/features/auth/cubits/logout/logout_cubit.dart';
+import 'package:sangapu/features/auth/cubits/profile/profile_cubit.dart';
 import 'package:sangapu/features/auth/cubits/remember_me/remember_me_cubit.dart';
 import 'package:sangapu/features/banners/blocs/get_banner/get_banner_bloc.dart';
 import 'package:sangapu/features/banners/repository/banner_repository.dart';
@@ -53,6 +54,7 @@ Future<void> setupServiceLocator() async {
   //###---------------CUBIT--------------------###
   sl.registerFactory(() => LogoutCubit(repo: sl()));
   sl.registerFactory(() => AccountDeletionCubit(repo: sl()));
+  sl.registerFactory(() => ProfileCubit(repo: sl()));
   sl.registerFactory(() => RememberMeCubit());
 
   //###---------------REPOSITORY---------------###

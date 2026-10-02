@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:sangapu/features/auth/screens/delete_account.dart';
+import 'package:sangapu/features/auth/screens/profile_page.dart';
 import 'package:sangapu/features/expenses/page/edit_expenses.dart';
 import 'package:sangapu/features/income/pages/edit_income_entry_page.dart';
 import '../../common/extension/extension.dart';
@@ -46,5 +47,10 @@ List<GoRoute> pageAppRoutes = [
     path: AppRoutesName.deleteAccount.path,
     name: AppRoutesName.deleteAccount,
     builder: (context, state) => const DeleteAccountPage(),
+  ),
+  GoRoute(
+    path: AppRoutesName.profilePage.path,
+    name: AppRoutesName.profilePage,
+    builder: (context, state) => const ProfilePage(),
   ),
 ];

@@ -4,11 +4,13 @@ import '../../../core/network/api_services.dart';
 import '../../../core/services/cache_service.dart';
 import '../../../core/services/cache_policy_service.dart';
 import '../models/login_model.dart';
+import '../models/user_profile_model.dart';
 
 abstract interface class AuthRepository {
   FutureEither<String> logIn({required LogInModel logIn});
   FutureEither<String> logOut();
   FutureEither<String> deleteAccount({String? password});
+  FutureEither<UserProfileModel> getProfile();
 }
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -70,5 +72,15 @@ class AuthRepositoryImpl implements AuthRepository {
         return Right(message);
       },
     );
+  }
+
+  @override
+  FutureEither<UserProfileModel> getProfile() async {
+    final response = await _apiService.get<UserProfileModel>(
+      'auth/profile/',
+      fromJson: (json) => UserProfileModel.fromJson(json as Map<String, dynamic>),
+    );
+
+    return response;
   }
 }
