@@ -32,14 +32,16 @@ class MoneyMovementBottomSheet extends StatelessWidget {
 
     return BlocBuilder<StatementFilterCubit, StatementFilterState>(
       builder: (context, state) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 24.0,
-            right: 24.0,
-            top: 24.0,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 24.0,
-          ),
-          child: Column(
+        return SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 24.0,
+              right: 24.0,
+              top: 24.0,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24.0,
+            ),
+            child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -77,8 +79,9 @@ class MoneyMovementBottomSheet extends StatelessWidget {
               ),
             ],
           ),
-        );
-      },
+        ),
+      );
+    },
     );
   }
 

@@ -135,34 +135,37 @@ class _AddExpensesState extends State<AddExpenses> {
                 loading: () => true,
                 orElse: () => false,
               );
-              return CustomPadding(
-                child: SizedBox(
-                  height: MediaQuery.heightOf(context) / 14,
-                  child: CustomButton(
-                    isLoading: isLoading,
-                    isDisabled: isLoading,
-                    text: 'Save',
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        context.read<AddExpensesRecordBloc>().add(
-                          AddExpensesRecordEvent.addExpensesRecord(
-                            ExpensesRecordModel(
-                              category:
-                                  expenseCategoryMap[_expensesTypeController
-                                      .text] ??
-                                  '',
-                              amount:
-                                  double.tryParse(
-                                    _expensesAmountController.text,
-                                  ) ??
-                                  0.0,
-                              remarks: _remarkController.text,
-                              nepaliDate: DateHelper.nepaliDateDash(),
+              return SafeArea(
+                top: false,
+                child: CustomPadding(
+                  child: SizedBox(
+                    height: MediaQuery.heightOf(context) / 14,
+                    child: CustomButton(
+                      isLoading: isLoading,
+                      isDisabled: isLoading,
+                      text: 'Save',
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          context.read<AddExpensesRecordBloc>().add(
+                            AddExpensesRecordEvent.addExpensesRecord(
+                              ExpensesRecordModel(
+                                category:
+                                    expenseCategoryMap[_expensesTypeController
+                                        .text] ??
+                                    '',
+                                amount:
+                                    double.tryParse(
+                                      _expensesAmountController.text,
+                                    ) ??
+                                    0.0,
+                                remarks: _remarkController.text,
+                                nepaliDate: DateHelper.nepaliDateDash(),
+                              ),
                             ),
-                          ),
-                        );
-                      }
-                    },
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ),
               );

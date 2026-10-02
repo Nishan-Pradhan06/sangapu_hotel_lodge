@@ -48,32 +48,37 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
 
         bottomNavigationBar: Material(
           elevation: 8,
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home_rounded),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.trending_up_rounded),
-                label: 'Income',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.trending_down_rounded),
-                label: 'Expenses',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.analytics_rounded),
-                label: 'Statements',
-              ),
-            ],
+          color: Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
+              Theme.of(context).colorScheme.surface,
+          child: SafeArea(
+            top: false,
+            child: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_rounded),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.trending_up_rounded),
+                  label: 'Income',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.trending_down_rounded),
+                  label: 'Expenses',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.analytics_rounded),
+                  label: 'Statements',
+                ),
+              ],
+            ),
           ),
         ),
       ),

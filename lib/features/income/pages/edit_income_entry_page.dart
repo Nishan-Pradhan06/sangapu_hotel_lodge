@@ -222,14 +222,17 @@ class _EditIncomeEntryPageState extends State<EditIncomeEntryPage> {
                   orElse: () => false,
                 );
 
-                return CustomPadding(
-                  child: SizedBox(
-                    height: MediaQuery.heightOf(context) / 14,
-                    child: CustomButton(
-                      isLoading: isLoading,
-                      isDisabled: isLoading,
-                      text: 'Update Entry',
-                      onPressed: _submitForm,
+                return SafeArea(
+                  top: false,
+                  child: CustomPadding(
+                    child: SizedBox(
+                      height: MediaQuery.heightOf(context) / 14,
+                      child: CustomButton(
+                        isLoading: isLoading,
+                        isDisabled: isLoading,
+                        text: 'Update Entry',
+                        onPressed: _submitForm,
+                      ),
                     ),
                   ),
                 );

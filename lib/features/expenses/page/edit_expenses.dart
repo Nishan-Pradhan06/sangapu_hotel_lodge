@@ -155,33 +155,36 @@ class _EditExpensesState extends State<EditExpenses> {
             loading: () => true,
             orElse: () => false,
           );
-          return CustomPadding(
-            child: SizedBox(
-              height: MediaQuery.heightOf(context) / 14,
-              child: CustomButton(
-                isLoading: isLoading,
-                isDisabled: isLoading,
-                text: 'Save',
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    context.read<EditExpensesBloc>().add(
-                      EditExpensesEvent.editExpense(
-                        widget.expense.id,
-                        ExpensesRecordModel(
-                          category:
-                              expenseCategoryMap[_expensesTypeController
-                                  .text] ??
-                              '',
-                          amount:
-                              double.tryParse(_expensesAmountController.text) ??
-                              0.0,
-                          remarks: _remarkController.text,
-                          nepaliDate: widget.expense.nepaliDate,
+          return SafeArea(
+            top: false,
+            child: CustomPadding(
+              child: SizedBox(
+                height: MediaQuery.heightOf(context) / 14,
+                child: CustomButton(
+                  isLoading: isLoading,
+                  isDisabled: isLoading,
+                  text: 'Save',
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      context.read<EditExpensesBloc>().add(
+                        EditExpensesEvent.editExpense(
+                          widget.expense.id,
+                          ExpensesRecordModel(
+                            category:
+                                expenseCategoryMap[_expensesTypeController
+                                    .text] ??
+                                '',
+                            amount:
+                                double.tryParse(_expensesAmountController.text) ??
+                                0.0,
+                            remarks: _remarkController.text,
+                            nepaliDate: widget.expense.nepaliDate,
+                          ),
                         ),
-                      ),
-                    );
-                  }
-                },
+                      );
+                    }
+                  },
+                ),
               ),
             ),
           );

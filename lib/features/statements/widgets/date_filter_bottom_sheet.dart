@@ -118,14 +118,16 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
 
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 24.0,
-        right: 24.0,
-        top: 24.0,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24.0,
-      ),
-      child: Column(
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: 24.0,
+          right: 24.0,
+          top: 24.0,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24.0,
+        ),
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -210,8 +212,9 @@ class _DateFilterBottomSheetState extends State<DateFilterBottomSheet> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildRadioOption(String title, String? subtitle) {
     final theme = Theme.of(context);

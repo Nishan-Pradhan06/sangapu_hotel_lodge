@@ -1,4 +1,6 @@
 import 'dart:developer';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import '../config/env_config.dart';
@@ -8,6 +10,19 @@ import '../services/cache_service.dart';
 
 class AppInitializer {
   static Future<void> init({GoRouter? router}) async {
+    // Enable edge-to-edge mode and transparent system bars for Android 15+ & backward compatibility
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarDividerColor: Colors.transparent,
+      ),
+    );
+
     // Load .env
     await dotenv.load(fileName: '.env');
 
